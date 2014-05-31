@@ -19,3 +19,23 @@ void DestroyProdSpace(ProdSpace sp)
 	}
 	free(sp);
 }
+
+void MultToProdSpace(ProdSpace a, ProdSpace b)
+{
+	ProdSpace last = b;
+	while (last->next) {
+		last = last->next;
+	}
+	last->next = CopyProdSpace(a);
+}
+
+ProdSpace CopyProdSpace(ProdSpace sp)
+{
+	ProdSpace copy = 0;
+	if (sp) {
+		copy = (ProdSpace) malloc(sizeof(*copy));
+		copy->dim = sp->dim;
+		copy->next = CopyProdSpace(sp->next);
+	}
+	return copy;
+}
