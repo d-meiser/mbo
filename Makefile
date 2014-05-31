@@ -5,7 +5,11 @@ all: BUILD_TESTS
 
 test_ElemOp: ElemOpImpl.o
 
-TEST_EXECUTABLES=test_ElemOp test_BraKet test_ProdSpace
+test_ProdSpace: ProdSpaceImpl.o
+
+TEST_EXECUTABLES=test_ElemOp \
+		 test_BraKet \
+		 test_ProdSpace
 
 BUILD_TESTS: ${TEST_EXECUTABLES}
 
