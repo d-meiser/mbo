@@ -8,7 +8,7 @@ struct ElemOp {
 	struct ElemOp *next;
 };
 
-static ElemOp ElemOpLast(ElemOp);
-static ElemOp ElemOpCopy(ElemOp);
+ElemOp ElemOpLast(ElemOp);
+ElemOp ElemOpCopy(ElemOp);
 
 #endif
