@@ -1,16 +1,28 @@
 #include "TensProdOp.h"
 #include "TensProdOpImpl.h"
 
-int test_embed()
+#include <stdlib.h>
+
+int test_CreateTOp()
 {
 	int errs = 0;
-	TOp op = embed(0, 0, 0);
+	TOp op = CreateTOp(0);
+	DestroyTOp(op);
+	return errs;
+}
+
+int test_AddToOp()
+{
+	int errs = 0;
+	TOp op = CreateTOp(0);
+	DestroyTOp(op);
 	return errs;
 }
 
 int main()
 {
 	int errs = 0;
-	errs += test_embed();
+	errs += test_CreateTOp();
+        errs += test_AddToOp();
 	return errs;
 }

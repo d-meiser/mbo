@@ -7,6 +7,10 @@
 struct TOp;
 typedef struct TOp *TOp;
 
-TOp embed(ElemOp, int i, ProdSpace);
+
+TOp CreateTOp(ProdSpace *);
+void DestroyTOp(TOp);
+
+void AddToTOp(ElemOp, int, TOp);
 
 #endif
