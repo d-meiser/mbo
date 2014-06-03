@@ -1,9 +1,12 @@
 #ifndef TENS_PROD_OP_H
 #define TENS_PROD_OP_H
 
-struct TOp;
-struct ElemOp;
+#include "ProdSpace.h"
+#include "ElemOp.h"
 
-struct TOp *embed(const struct ElemOp *, const struct TSpace *);
+struct TOp;
+typedef struct TOp *TOp;
+
+TOp embed(ElemOp, ProdSpace);
 
 #endif
