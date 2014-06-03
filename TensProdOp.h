@@ -7,6 +7,6 @@
 struct TOp;
 typedef struct TOp *TOp;
 
-TOp embed(ElemOp, ProdSpace);
+TOp embed(ElemOp, int i, ProdSpace);
 
 #endif
