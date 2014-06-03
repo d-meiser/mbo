@@ -6,11 +6,11 @@
 struct Embedding {
 	ElemOp op;
 	int i;
-        struct Embedding *next;
+	struct Embedding *next;
 };
 
 struct TOp {
 	ProdSpace space;
-        struct Embedding *sum;
+	struct Embedding *sum;
 };
 #endif

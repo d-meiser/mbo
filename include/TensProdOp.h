@@ -7,7 +7,6 @@
 struct TOp;
 typedef struct TOp *TOp;
 
-
 TOp CreateTOp(ProdSpace *);
 void DestroyTOp(TOp);
 

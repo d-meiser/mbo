@@ -23,6 +23,6 @@ int main()
 {
 	int errs = 0;
 	errs += test_CreateTOp();
-        errs += test_AddToOp();
+	errs += test_AddToOp();
 	return errs;
 }
