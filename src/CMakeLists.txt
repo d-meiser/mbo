@@ -1,0 +1,23 @@
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../include
+    ${CMAKE_CURRENT_SOURCE_DIR})
+set(QUO_SRCS
+  ElemOpImpl.c
+  ProdSpaceImpl.c
+  TensProdOpImpl.c
+  )
+
+add_library(QUO
+    ${QUO_SRCS}
+    )
+
+set(TESTS
+  test_ElemOp
+  test_ProdSpace
+  test_TensProdOp
+  )
+
+foreach(t ${TESTS})
+  add_executable(${t} ${t}.c)
+  target_link_libraries(${t} QUO)
+  add_test(${t} ${t})
+endforeach()
