@@ -1,5 +1,6 @@
 #include "ElemOpImpl.h"
 #include "BraKet.h"
+#include "TestUtils.h"
 
 int testCreateElemOp()
 {
@@ -12,10 +13,10 @@ int testCreateElemOp()
 
 	CreateElemOp(bk, &a);
 
-	errs += (a->op.m != bk.m);
-	errs += (a->op.n != bk.n);
-	errs += (a->op.val != bk.val);
-	errs += (a->next != 0);
+        CHK_EQUAL(a->op.m, bk.m, errs);
+        CHK_EQUAL(a->op.n, bk.n, errs);
+        CHK_EQUAL(a->op.val, bk.val, errs);
+        CHK_EQUAL(a->next, 0, errs);
 
 	DestroyElemOp(a);
 	return errs;
@@ -39,18 +40,18 @@ int testAddToElemOp()
 
 	AddToElemOp(a, b);
 
-	errs += (a->op.m != bka.m);
-	errs += (a->op.n != bka.n);
-	errs += (a->op.val != bka.val);
-	errs += (a->next != 0);
-	errs += (b->op.m != bkb.m);
-	errs += (b->op.n != bkb.n);
-	errs += (b->op.val != bkb.val);
-	errs += (b->next == 0);
-	errs += (b->next->op.m != bka.m);
-	errs += (b->next->op.n != bka.n);
-	errs += (b->next->op.val != bka.val);
-	errs += (b->next->next != 0);
+        CHK_EQUAL(a->op.m, bka.m, errs);
+        CHK_EQUAL(a->op.n, bka.n, errs);
+        CHK_EQUAL(a->op.val, bka.val, errs);
+        CHK_EQUAL(a->next, 0, errs);
+        CHK_EQUAL(b->op.m, bkb.m, errs);
+        CHK_EQUAL(b->op.n, bkb.n, errs);
+        CHK_EQUAL(b->op.val, bkb.val, errs);
+        CHK_NOT_EQUAL(b->next, 0, errs);
+        CHK_EQUAL(b->next->op.m, bka.m, errs);
+        CHK_EQUAL(b->next->op.n, bka.n, errs);
+        CHK_EQUAL(b->next->op.val, bka.val, errs);
+        CHK_EQUAL(b->next->next, 0, errs);
 
 	DestroyElemOp(a);
 	DestroyElemOp(b);

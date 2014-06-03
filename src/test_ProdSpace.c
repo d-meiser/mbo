@@ -1,6 +1,8 @@
 #include "ProdSpace.h"
 #include <stdio.h>
 
+#include "TestUtils.h"
+
 int testCreateProdSpace()
 {
 	int errs = 0;
@@ -19,7 +21,11 @@ int testMultToProdSpace()
 	sp1 = CreateProdSpace(2);
 	sp2 = CreateProdSpace(2);
 
+	CHK_EQUAL(DimProdSpace(sp1), 2, errs);
+	CHK_EQUAL(DimProdSpace(sp2), 2, errs);
 	MultToProdSpace(sp1, &sp2);
+	CHK_EQUAL(DimProdSpace(sp1), 2, errs);
+	CHK_EQUAL(DimProdSpace(sp2), 4, errs);
 
 	DestroyProdSpace(&sp1);
 	DestroyProdSpace(&sp2);
@@ -29,25 +35,22 @@ int testMultToProdSpace()
 int testBuildSpace()
 {
 	int errs = 0;
-        int N = 20;
-        int i;
+	int N = 20;
+	int i;
 	ProdSpace h;
 	ProdSpace hTot;
 
 	h = CreateProdSpace(2);
-        errs += (2 != DimProdSpace(h));
-        printf("DimProdSpace(h) == %lld\n", DimProdSpace(h));
-        hTot = CreateProdSpace(0);
-        errs += (0 != DimProdSpace(hTot));
-        printf("DimProdSpace(hTot) == %lld\n", DimProdSpace(hTot));
+	CHK_EQUAL(DimProdSpace(h), 2, errs);
+	hTot = CreateProdSpace(0);
+	CHK_EQUAL(DimProdSpace(hTot), 0, errs);
 	for (i = 0; i < N; ++i) {
 		MultToProdSpace(h, &hTot);
 	}
-        errs += ((1 << N) != DimProdSpace(hTot));
-        printf("DimProdSpace(hTot) == %lld\n", DimProdSpace(hTot));
+	CHK_EQUAL(DimProdSpace(hTot), 1 << N, errs);
 
-        DestroyProdSpace(&h);
-        DestroyProdSpace(&hTot);
+	DestroyProdSpace(&h);
+	DestroyProdSpace(&hTot);
 	return errs;
 }
 
@@ -56,6 +59,6 @@ int main()
 	int errs = 0;
 	errs += testCreateProdSpace();
 	errs += testMultToProdSpace();
-        errs += testBuildSpace();
+	errs += testBuildSpace();
 	return errs;
 }

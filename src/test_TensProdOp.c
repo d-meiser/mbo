@@ -1,5 +1,6 @@
 #include "TensProdOp.h"
 #include "TensProdOpImpl.h"
+#include "TestUtils.h"
 
 #include <stdlib.h>
 
