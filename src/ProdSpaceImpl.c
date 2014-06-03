@@ -5,7 +5,7 @@
 
 ProdSpace CreateProdSpace(int d)
 {
-	ProdSpace sp = (ProdSpace) malloc(sizeof(*sp));
+	ProdSpace sp = malloc(sizeof(*sp));
 	sp->dim = d;
 	sp->next = 0;
 	return sp;
@@ -40,7 +40,7 @@ ProdSpace CopyProdSpace(ProdSpace sp)
 {
 	ProdSpace copy = 0;
 	if (sp) {
-		copy = (ProdSpace) malloc(sizeof(*copy));
+		copy = malloc(sizeof(*copy));
 		copy->dim = sp->dim;
 		copy->next = CopyProdSpace(sp->next);
 	}

@@ -4,7 +4,7 @@
 
 TOp CreateTOp(ProdSpace * h)
 {
-	TOp op = (TOp) malloc(sizeof(*op));
+	TOp op = malloc(sizeof(*op));
 	return op;
 }
 
