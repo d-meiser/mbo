@@ -1,45 +1,27 @@
 #include "ElemOpImpl.h"
 #include <stdlib.h>
 
-void CreateElemOp(struct BraKet bk, ElemOp *op)
+void CreateElemOp(ElemOp *op)
 {
-	ElemOp newop = malloc(sizeof(*newop));
-	newop->op = bk;
-	newop->next = 0;
-	*op = newop;
+  *op = 0;
 }
 
-void DestroyElemOp(ElemOp op)
+void DestroyElemOp(ElemOp *op)
 {
-	if (op->next) {
-		DestroyElemOp(op->next);
+	if (*op) {
+		DestroyElemOp(&(*op)->next);
+		free(*op);
+		*op = 0;
 	}
-	free(op);
 }
 
-void AddToElemOp(ElemOp a, ElemOp b)
+void AddToElemOp(int m, int n, double val, ElemOp *a)
 {
-	ElemOp last = ElemOpLast(b);
-	ElemOp aprime = ElemOpCopy(a);
-	last->next = aprime;
+	struct ElemOp *b = malloc(sizeof(*b));
+        b->op.m = m;
+        b->op.n = n;
+        b->op.val = val;
+        b->next = *a;
+        *a = b;
 }
 
-ElemOp ElemOpLast(ElemOp op)
-{
-	ElemOp last = op;
-	while (last->next) {
-		last = last->next;
-	}
-	return last;
-}
-
-ElemOp ElemOpCopy(ElemOp a)
-{
-	ElemOp copy = 0;
-	if (a) {
-		copy = malloc(sizeof(*copy));
-		copy->op = a->op;
-		copy->next = ElemOpCopy(a->next);
-	}
-	return copy;
-}

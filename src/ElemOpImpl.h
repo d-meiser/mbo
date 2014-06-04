@@ -2,13 +2,11 @@
 #define ELEM_OP_IMPL_H
 
 #include "ElemOp.h"
+#include "BraKet.h"
 
 struct ElemOp {
 	struct BraKet op;
 	struct ElemOp *next;
 };
-
-ElemOp ElemOpLast(ElemOp);
-ElemOp ElemOpCopy(ElemOp);
 
 #endif
