@@ -7,8 +7,8 @@
 struct TOp;
 typedef struct TOp *TOp;
 
-TOp CreateTOp(ProdSpace *);
-void DestroyTOp(TOp);
+void CreateTOp(ProdSpace, TOp *);
+void DestroyTOp(TOp *);
 
 void AddToTOp(ElemOp, int, TOp);
 

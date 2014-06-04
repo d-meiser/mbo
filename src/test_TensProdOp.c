@@ -7,16 +7,18 @@
 int test_CreateTOp()
 {
 	int errs = 0;
-	TOp op = CreateTOp(0);
-	DestroyTOp(op);
+	TOp op;
+        CreateTOp(0, &op);
+	DestroyTOp(&op);
 	return errs;
 }
 
 int test_AddToOp()
 {
 	int errs = 0;
-	TOp op = CreateTOp(0);
-	DestroyTOp(op);
+        TOp op;
+	CreateTOp(0, &op);
+	DestroyTOp(&op);
 	return errs;
 }
 

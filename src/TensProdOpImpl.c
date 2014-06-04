@@ -2,15 +2,18 @@
 
 #include <stdlib.h>
 
-TOp CreateTOp(ProdSpace * h)
+void CreateTOp(ProdSpace h, TOp *op)
 {
-	TOp op = malloc(sizeof(*op));
-	return op;
+	TOp a = malloc(sizeof(*a));
+        a->space = h;
+        a->sum = 0;
+        *op = a;
 }
 
-void DestroyTOp(TOp op)
+void DestroyTOp(TOp *op)
 {
-	free(op);
+	free(*op);
+        *op = 0;
 }
 
 void AddToOp(ElemOp a, int i, TOp op)
