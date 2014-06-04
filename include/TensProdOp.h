@@ -4,12 +4,18 @@
 #include "ProdSpace.h"
 #include "ElemOp.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct TOp;
 typedef struct TOp *TOp;
 
 void CreateTOp(ProdSpace, TOp *);
 void DestroyTOp(TOp *);
-
 void AddToTOp(ElemOp, int, TOp);
 
+#ifdef __cplusplus
+}
+#endif
 #endif
