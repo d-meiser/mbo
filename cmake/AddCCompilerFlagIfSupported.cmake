@@ -1,8 +1,8 @@
 include(CheckCCompilerFlag)
-function(add_c_compiler_flag_if_supported FLAG FLAGS)
+macro(add_c_compiler_flag_if_supported FLAG)
   CHECK_C_COMPILER_FLAG(${FLAG} FLAG_SUPPORTED)
   if(FLAG_SUPPORTED)
-    set(FLAGS "${FLAGS} ${FLAG}")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${FLAG}")
   endif()
-endfunction(add_c_compiler_flag_if_supported)
+endmacro(add_c_compiler_flag_if_supported)
 

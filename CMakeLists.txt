@@ -9,15 +9,14 @@ option(RUN_EXAMPLES_AS_TESTS
 
 if(CMAKE_COMPILER_IS_GNUCC)
   set(WARNING_FLAGS "-Wall")
-  add_c_compiler_flag_if_supported("-Wpedantic" WARNING_FLAGS)
-  add_c_compiler_flag_if_supported("-fdiagnostics-color=auto" CC_FLAGS)
-  set(CMAKE_C_FLAGS 
-      "${CMAKE_C_FLAGS} -std=c99 ${CC_FLAGS} ${WARNING_FLAGS}")
-  add_c_compiler_flag_if_supported("-fsanitize=address" WARNING_FLAGS)
-  add_c_compiler_flag_if_supported("-ftest-coverage" WARNING_FLAGS)
-  set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${CC_FLAGS} ${WARNING_FLAGS}")
-  set(CMAKE_EXE_LINKER_FLAGS_DEBUG
-      "${CMAKE_EXE_LINKER_FLAGS} -lgcov")
+  add_c_compiler_flag_if_supported("-Wpedantic")
+  add_c_compiler_flag_if_supported("-fdiagnostics-color=auto")
+  if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+    add_c_compiler_flag_if_supported("-fsanitize=address")
+    add_c_compiler_flag_if_supported("-ftest-coverage")
+  endif()
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 ${CC_FLAGS} ${WARNING_FLAGS}")
+  set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS} -lgcov")
 elseif("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
   set(WARNING_FLAGS "-Wall -Wpedantic")
   set(CMAKE_C_FLAGS 
