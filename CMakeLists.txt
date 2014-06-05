@@ -3,6 +3,8 @@ project(QUO)
 
 enable_testing()
 
+option(RUN_EXAMPLES_AS_TESTS 
+    "Whether to run the examples as part of the test suite" ON)
 
 if(CMAKE_COMPILER_IS_GNUCC)
   set(WARNING_OPTIONS "-Wall -Wpedantic")

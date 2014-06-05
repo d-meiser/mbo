@@ -10,7 +10,8 @@ typedef struct ElemOp *ElemOp;
 
 void CreateElemOp(ElemOp *);
 void DestroyElemOp(ElemOp *);
-void AddToElemOp(int m, int n, double val, ElemOp *);
+void AddToElemOp(int, int, double, ElemOp *);
+void ScaleElemOp(double, ElemOp);
 
 #ifdef __cplusplus
 }

@@ -1,4 +1,7 @@
 #include <Quo.h>
+#include <stdio.h>
+
+double omega(int i);
 
 int main()
 {
@@ -8,7 +11,7 @@ int main()
 	ElemOp sp;
 	ElemOp sz;
 	const int N = 20;
-        TOp Hamiltonian;
+	TOp inhomogeneousJz;
 
 	CreateElemOp(&sm);
 	AddToElemOp(0, 1, 1.0, &sm);
@@ -24,15 +27,23 @@ int main()
 		MultToProdSpace(h, &hTot);
 	}
 
-        CreateTOp(hTot, &Hamiltonian);
+	CreateTOp(hTot, &inhomogeneousJz);
+	for (int i = 0; i < N; ++i) {
+		AddScaledToTOp(omega(i), sz, i, inhomogeneousJz);
+	}
 
 	DestroyElemOp(&sm);
 	DestroyElemOp(&sp);
 	DestroyElemOp(&sz);
 	DestroyProdSpace(&h);
 	DestroyProdSpace(&hTot);
-        DestroyTOp(&Hamiltonian);
+	DestroyTOp(&inhomogeneousJz);
 
 	return 0;
+}
+
+double omega(int i)
+{
+	return 1.3 * i;
 }
 

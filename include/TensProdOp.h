@@ -14,6 +14,7 @@ typedef struct TOp *TOp;
 void CreateTOp(ProdSpace, TOp *);
 void DestroyTOp(TOp *);
 void AddToTOp(ElemOp, int, TOp);
+void AddScaledToTOp(double, ElemOp, int, TOp);
 
 #ifdef __cplusplus
 }
