@@ -16,6 +16,11 @@ void DestroyTOp(TOp *);
 void AddToTOp(ElemOp, int, TOp);
 void AddScaledToTOp(double, ElemOp, int, TOp);
 
+void MulTOp(TOp, TOp);
+void AddTOp(TOp, TOp);
+void ScaleTOp(double alpha, TOp);
+void KronTOp(TOp, TOp, TOp);
+
 #ifdef __cplusplus
 }
 #endif

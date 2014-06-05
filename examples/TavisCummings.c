@@ -5,13 +5,17 @@ double omega(int i);
 
 int main()
 {
-	ProdSpace h;
+	ProdSpace hSingleAtom;
+	ProdSpace hAtoms;
+	ProdSpace hField;
 	ProdSpace hTot;
 	ElemOp sm;
 	ElemOp sp;
 	ElemOp sz;
-	const int N = 20;
+	const int nAtoms = 20;
+	const int nPhotons = 30;
 	TOp inhomogeneousJz;
+	TOp jMinus;
 
 	CreateElemOp(&sm);
 	AddToElemOp(0, 1, 1.0, &sm);
@@ -21,23 +25,32 @@ int main()
 	AddToElemOp(1, 1, 1.0, &sz);
 	AddToElemOp(0, 0, -1.0, &sz);
 
-	h = CreateProdSpace(2);
-	hTot = CreateProdSpace(0);
-	for (int i = 0; i < N; ++i) {
-		MultToProdSpace(h, &hTot);
+	hSingleAtom = CreateProdSpace(2);
+	hAtoms = CreateProdSpace(0);
+	for (int i = 0; i < nAtoms; ++i) {
+		MultToProdSpace(hSingleAtom, &hAtoms);
 	}
+	hField = CreateProdSpace(nPhotons + 1);
+	hTot = CreateProdSpace(0);
+	MultToProdSpace(hAtoms, &hTot);
+	MultToProdSpace(hField, &hTot);
 
-	CreateTOp(hTot, &inhomogeneousJz);
-	for (int i = 0; i < N; ++i) {
+	CreateTOp(hAtoms, &inhomogeneousJz);
+	for (int i = 0; i < nAtoms; ++i) {
 		AddScaledToTOp(omega(i), sz, i, inhomogeneousJz);
 	}
+
+	CreateTOp(hTot, &jMinus);
 
 	DestroyElemOp(&sm);
 	DestroyElemOp(&sp);
 	DestroyElemOp(&sz);
-	DestroyProdSpace(&h);
+	DestroyProdSpace(&hSingleAtom);
+	DestroyProdSpace(&hAtoms);
+	DestroyProdSpace(&hField);
 	DestroyProdSpace(&hTot);
 	DestroyTOp(&inhomogeneousJz);
+	DestroyTOp(&jMinus);
 
 	return 0;
 }

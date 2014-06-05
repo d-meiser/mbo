@@ -13,6 +13,14 @@ void DestroyElemOp(ElemOp *);
 void AddToElemOp(int, int, double, ElemOp *);
 void ScaleElemOp(double, ElemOp);
 
+ElemOp sigmaPlus();
+ElemOp sigmaMinus();
+ElemOp sigmaZ();
+ElemOp eye(int);
+ElemOp numOp(int);
+ElemOp annihilationOp(int);
+ElemOp creationOp(int);
+
 #ifdef __cplusplus
 }
 #endif

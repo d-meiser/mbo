@@ -9,6 +9,7 @@ set(QUO_SRCS
 add_library(QUO
     ${QUO_SRCS}
     )
+target_link_libraries(QUO m)
 
 set(TESTS
   test_ElemOp

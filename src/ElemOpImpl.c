@@ -1,5 +1,8 @@
 #include "ElemOpImpl.h"
 #include <stdlib.h>
+#include <math.h>
+
+double sqrt(double);
 
 void CreateElemOp(ElemOp *op)
 {
@@ -32,4 +35,74 @@ void ScaleElemOp(double alpha, ElemOp op)
 		a->op.val *= alpha;
 	}
 }
+
+ElemOp sigmaPlus()
+{
+	ElemOp sp;
+	CreateElemOp(&sp);
+	AddToElemOp(1, 0, 1.0, &sp);
+	return sp;
+}
+
+ElemOp sigmaMinus()
+{
+	ElemOp sm;
+	CreateElemOp(&sm);
+	AddToElemOp(0, 1, 1.0, &sm);
+	return sm;
+}
+
+ElemOp sigmaZ()
+{
+	ElemOp sz;
+	CreateElemOp(&sz);
+	AddToElemOp(1, 1, 1.0, &sz);
+	AddToElemOp(0, 0, -1.0, &sz);
+	return sz;
+}
+
+ElemOp eye(int d)
+{
+	ElemOp e;
+        int i;
+	CreateElemOp(&e);
+	for (i = 0; i < d; ++i) {
+		AddToElemOp(i, i, 1.0, &e);
+	}
+	return e;
+}
+
+ElemOp numOp(int d)
+{
+	ElemOp n;
+        int i;
+	CreateElemOp(&n);
+	for (i = 1; i < d; ++i) {
+		AddToElemOp(i, i, i, &n);
+	}
+	return n;
+}
+
+ElemOp annihilationOp(int d)
+{
+	ElemOp a;
+        int i;
+	CreateElemOp(&a);
+	for (i = 1; i < d; ++i) {
+		AddToElemOp(i - 1, i, sqrt(i), &a);
+	}
+	return a;
+}
+
+ElemOp creationOp(int d)
+{
+	ElemOp ad;
+        int i;
+	CreateElemOp(&ad);
+	for (i = 1; i < d; ++i) {
+		AddToElemOp(i, i - 1, sqrt(i), &ad);
+	}
+	return ad;
+}
+
 
