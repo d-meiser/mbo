@@ -1,0 +1,8 @@
+- Function Naming: TypeOperation
+
+- Return types: Return error codes
+
+- Add TOp arithmetic.
+
+
+
