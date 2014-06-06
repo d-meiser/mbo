@@ -1,5 +1,7 @@
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../include
-    ${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    )
 set(QUO_SRCS
   ElemOpImpl.c
   ProdSpaceImpl.c
@@ -9,7 +11,9 @@ set(QUO_SRCS
 add_library(QUO
     ${QUO_SRCS}
     )
-target_link_libraries(QUO m)
+if(UNIX)
+  target_link_libraries(QUO m)
+endif()
 
 set(TESTS
   test_ElemOp

@@ -1,9 +1,10 @@
 #ifndef TEST_UTILS_H
 #define TEST_UTILS_H
 
-#include <stdio.h>
-
+double sqrt(double);
 double fabs(double);
+int printf(const char*, ...);
+
 static void report_error(const char* file, int line)
 {
 	printf("Error occured at %s(%d).\n", file, line);

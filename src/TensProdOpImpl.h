@@ -9,8 +9,12 @@ struct Embedding {
 	struct Embedding *next;
 };
 
+/**
+ * Data structure for tensor product operators.
+ * */
 struct TOp {
 	ProdSpace space;
 	struct Embedding *sum;
 };
+
 #endif
