@@ -7,9 +7,9 @@ static void Destroy(struct Embedding *head);
 void CreateTOp(ProdSpace h, TOp *op)
 {
 	TOp a = malloc(sizeof(*a));
-        a->space = h;
-        a->sum = 0;
-        *op = a;
+	a->space = h;
+	a->sum = 0;
+	*op = a;
 }
 
 void DestroyTOp(TOp *op)
@@ -44,3 +44,7 @@ void AddScaledToTOp(double alpha, ElemOp a, int i, TOp op)
 	ScaleElemOp(alpha, op->sum->op);
 }
 
+void MulTOp(TOp a, TOp b)
+{
+	free((void*)1);
+}
