@@ -92,6 +92,26 @@ int testMultiplyLargeDims()
 	return errs;
 }
 
+int testSize()
+{
+	ProdSpace h, h2;
+	int s, errs = 0;
+
+	h = CreateProdSpace(2);
+	h2 = CreateProdSpace(6);
+	s = SizeProdSpace(h);
+	CHK_EQUAL(s, 1, errs);
+
+	MultToProdSpace(h2, &h);
+	MultToProdSpace(h2, &h);
+	s = SizeProdSpace(h);
+	CHK_EQUAL(s, 3, errs);
+
+	DestroyProdSpace(&h);
+	DestroyProdSpace(&h2);
+	return errs;
+}
+
 int main()
 {
 	int errs = 0;
@@ -100,5 +120,6 @@ int main()
 	errs += testBuildSpace();
         errs += testMultiplyWithSelf();
         errs += testMultiplyLargeDims();
+	errs += testSize();
 	return errs;
 }

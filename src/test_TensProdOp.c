@@ -102,7 +102,7 @@ int test_MulTOp()
 	CreateTOp(0, &op2);
 	AddToTOp(eop2, 0, op2);
 
-	MulTOp(op1, op2);
+	MulTOp(op1, &op2);
 
 	DestroyTOp(&op1);
 	DestroyTOp(&op2);

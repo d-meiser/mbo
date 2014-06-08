@@ -13,6 +13,7 @@ void DestroyProdSpace(ProdSpace *);
 void MultToProdSpace(ProdSpace, ProdSpace *);
 ProdSpace CopyProdSpace(ProdSpace);
 long long DimProdSpace(ProdSpace);
+int SizeProdSpace(ProdSpace);
 
 #ifdef __cplusplus
 }

@@ -36,6 +36,14 @@ void ScaleElemOp(double alpha, ElemOp op)
 	}
 }
 
+void PlusElemOp(ElemOp a, ElemOp *b)
+{
+	while (a) {
+		AddToElemOp(a->op.m, a->op.n, a->op.val, b);
+		a = a->next;
+	}
+}
+
 ElemOp sigmaPlus()
 {
 	ElemOp sp;
