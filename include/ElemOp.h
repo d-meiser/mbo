@@ -13,6 +13,7 @@ void DestroyElemOp(ElemOp *);
 void AddToElemOp(int, int, double, ElemOp *);
 void ScaleElemOp(double, ElemOp);
 void PlusElemOp(ElemOp, ElemOp *);
+void MulElemOp(ElemOp, ElemOp *);
 
 ElemOp sigmaPlus();
 ElemOp sigmaMinus();

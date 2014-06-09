@@ -161,6 +161,142 @@ int testCreationOp()
 	return errs;
 }
 
+int testPlusElemOp()
+{
+	int errs = 0;
+	ElemOp a = 0;
+	ElemOp b = 0;
+
+	CreateElemOp(&a);
+	CreateElemOp(&b);
+	AddToElemOp(0, 1, 3.0, &a);
+	PlusElemOp(a, &b);
+	CHK_EQUAL(a->op.m, 0, errs);
+	CHK_EQUAL(a->op.n, 1, errs);
+	CHK_CLOSE(a->op.val, 3.0, EPS, errs);
+	CHK_EQUAL(a->next, 0, errs);
+	CHK_EQUAL(b->op.m, 0, errs);
+	CHK_EQUAL(b->op.n, 1, errs);
+	CHK_CLOSE(b->op.val, 3.0, EPS, errs);
+	CHK_EQUAL(b->next, 0, errs);
+	DestroyElemOp(&a);
+	DestroyElemOp(&b);
+
+	CreateElemOp(&a);
+	CreateElemOp(&b);
+	AddToElemOp(0, 1, 3.0, &b);
+	PlusElemOp(a, &b);
+	CHK_EQUAL(a, 0, errs);
+	CHK_EQUAL(b->op.m, 0, errs);
+	CHK_EQUAL(b->op.n, 1, errs);
+	CHK_CLOSE(b->op.val, 3.0, EPS, errs);
+	CHK_EQUAL(b->next, 0, errs);
+	DestroyElemOp(&a);
+	DestroyElemOp(&b);
+
+	CreateElemOp(&a);
+	CreateElemOp(&b);
+	AddToElemOp(0, 1, 3.0, &a);
+	AddToElemOp(0, 1, 3.0, &b);
+	PlusElemOp(a, &b);
+	CHK_EQUAL(a->op.m, 0, errs);
+	CHK_EQUAL(a->op.n, 1, errs);
+	CHK_CLOSE(a->op.val, 3.0, EPS, errs);
+	CHK_EQUAL(a->next, 0, errs);
+	CHK_EQUAL(b->op.m, 0, errs);
+	CHK_EQUAL(b->op.n, 1, errs);
+	CHK_CLOSE(b->op.val, 3.0, EPS, errs);
+	CHK_EQUAL(b->next->op.m, 0, errs);
+	CHK_EQUAL(b->next->op.n, 1, errs);
+	CHK_CLOSE(b->next->op.val, 3.0, EPS, errs);
+	CHK_EQUAL(b->next->next, 0, errs);
+	DestroyElemOp(&a);
+	DestroyElemOp(&b);
+
+	CreateElemOp(&a);
+	CreateElemOp(&b);
+	AddToElemOp(0, 1, 3.0, &a);
+	AddToElemOp(5, 11, -2.0, &b);
+	PlusElemOp(a, &b);
+	CHK_EQUAL(a->op.m, 0, errs);
+	CHK_EQUAL(a->op.n, 1, errs);
+	CHK_CLOSE(a->op.val, 3.0, EPS, errs);
+	CHK_EQUAL(a->next, 0, errs);
+	CHK_EQUAL(b->op.m, 0, errs);
+	CHK_EQUAL(b->op.n, 1, errs);
+	CHK_CLOSE(b->op.val, 3.0, EPS, errs);
+	CHK_EQUAL(b->next->op.m, 5, errs);
+	CHK_EQUAL(b->next->op.n, 11, errs);
+	CHK_CLOSE(b->next->op.val, -2.0, EPS, errs);
+	CHK_EQUAL(b->next->next, 0, errs);
+	DestroyElemOp(&a);
+	DestroyElemOp(&b);
+	return errs;
+}
+
+int testMulElemOp()
+{
+	int errs = 0;
+	ElemOp a = 0;
+	ElemOp b = 0;
+
+	/* non-zero a * zero b */
+	CreateElemOp(&a);
+	CreateElemOp(&b);
+	AddToElemOp(0, 1, 3.0, &a);
+	MulElemOp(a, &b);
+	CHK_EQUAL(a->op.m, 0, errs);
+	CHK_EQUAL(a->op.n, 1, errs);
+	CHK_CLOSE(a->op.val, 3.0, EPS, errs);
+	CHK_EQUAL(a->next, 0, errs);
+	CHK_EQUAL(b, 0, errs);
+	DestroyElemOp(&a);
+	DestroyElemOp(&b);
+
+	/* zero a * non-zero b */
+	CreateElemOp(&a);
+	CreateElemOp(&b);
+	AddToElemOp(0, 1, 3.0, &b);
+	MulElemOp(a, &b);
+	CHK_EQUAL(a, 0, errs);
+	CHK_EQUAL(b, 0, errs);
+	DestroyElemOp(&a);
+	DestroyElemOp(&b);
+
+	/* non-zero a * non-zero b with zero product */
+	CreateElemOp(&a);
+	CreateElemOp(&b);
+	AddToElemOp(0, 1, 3.0, &a);
+	AddToElemOp(0, 1, 3.0, &b);
+	MulElemOp(a, &b);
+	CHK_EQUAL(a->op.m, 0, errs);
+	CHK_EQUAL(a->op.n, 1, errs);
+	CHK_CLOSE(a->op.val, 3.0, EPS, errs);
+	CHK_EQUAL(a->next, 0, errs);
+	CHK_EQUAL(b, 0, errs);
+	DestroyElemOp(&a);
+	DestroyElemOp(&b);
+
+	/* non-zero a * non-zero b with non-zero product */
+	CreateElemOp(&a);
+	CreateElemOp(&b);
+	AddToElemOp(0, 1, 3.0, &a);
+	AddToElemOp(1, 0, 3.0, &b);
+	MulElemOp(a, &b);
+	CHK_EQUAL(a->op.m, 0, errs);
+	CHK_EQUAL(a->op.n, 1, errs);
+	CHK_CLOSE(a->op.val, 3.0, EPS, errs);
+	CHK_EQUAL(a->next, 0, errs);
+	CHK_EQUAL(b->op.m, 0, errs);
+	CHK_EQUAL(b->op.n, 0, errs);
+	CHK_CLOSE(b->op.val, 9.0, EPS, errs);
+	CHK_EQUAL(b->next, 0, errs);
+	DestroyElemOp(&a);
+	DestroyElemOp(&b);
+
+	return errs;
+}
+
 int main()
 {
 	int errs = 0;
@@ -174,5 +310,7 @@ int main()
 	errs += testNumOp();
 	errs += testAnnihilationOp();
 	errs += testCreationOp();
+	errs += testPlusElemOp();
+	errs += testMulElemOp();
 	return errs;
 }
