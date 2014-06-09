@@ -58,13 +58,10 @@ void MultiplyIthEmbeddings(int i, struct Embedding *asum,
 {
 	struct Embedding *ea = GatherIthEmbedding(i, asum);
 	struct Embedding *eb = GatherIthEmbedding(i, bsum);
-	if (ea != 0 && eb != 0) {
-	}
-	if (ea == 0 && eb != 0) {
-	}
-	if (ea != 0 && eb == 0) {
-	}
-	if (ea == 0 && eb == 0) {
+	if (ea != 0) {
+		MulElemOp(ea->op, &eb->op);
+	} else {
+		/* Identity in ea, needn't do anything */
 	}
 }
 

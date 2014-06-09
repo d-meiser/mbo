@@ -18,9 +18,9 @@ struct TOp {
 	struct Embedding *sum;
 };
 
-static struct Embedding *FindEmbedding(int, struct Embedding *);
-static void MultiplyIthEmbeddings(int i, struct Embedding *,
+struct Embedding *FindEmbedding(int, struct Embedding *);
+void MultiplyIthEmbeddings(int i, struct Embedding *,
 				  struct Embedding *);
-static struct Embedding *GatherIthEmbedding(int i, struct Embedding *);
+struct Embedding *GatherIthEmbedding(int i, struct Embedding *);
 
 #endif
