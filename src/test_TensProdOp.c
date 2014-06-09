@@ -95,14 +95,30 @@ int test_MulTOp()
 
 	CreateElemOp(&eop2);
 	AddToElemOp(8, 3, -3.4, &eop2);
-	AddToElemOp(2, 3, 2.0, &eop2);
+	AddToElemOp(3, 4, 2.0, &eop2);
 
-	CreateTOp(0, &op1);
+	CreateTOp(h, &op1);
 	AddToTOp(eop1, 0, op1);
-	CreateTOp(0, &op2);
+	CreateTOp(h, &op2);
 	AddToTOp(eop2, 0, op2);
 
 	MulTOp(op1, &op2);
+
+	CHK_EQUAL(op1->sum->i, 0, errs);
+	CHK_EQUAL(op1->sum->next, 0, errs);
+	CHK_EQUAL(op1->sum->op->op.m, 2, errs);
+	CHK_EQUAL(op1->sum->op->op.n, 3, errs);
+	CHK_EQUAL(op1->sum->op->next->op.m, 1, errs);
+	CHK_EQUAL(op1->sum->op->next->op.n, 5, errs);
+	CHK_EQUAL(op1->sum->op->next->next->op.m, 14, errs);
+	CHK_EQUAL(op1->sum->op->next->next->op.n, 15, errs);
+	CHK_EQUAL(op1->sum->op->next->next->next, 0, errs);
+
+	CHK_EQUAL(op2->sum->i, 0, errs);
+	CHK_EQUAL(op2->sum->next, 0, errs);
+	CHK_EQUAL(op2->sum->op->op.m, 2, errs);
+	CHK_EQUAL(op2->sum->op->op.n, 4, errs);
+	CHK_CLOSE(op2->sum->op->op.val, 4.0, EPS, errs);
 
 	DestroyTOp(&op1);
 	DestroyTOp(&op2);
