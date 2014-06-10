@@ -34,10 +34,11 @@ int test_AddToTOp()
 
 	CreateTOp(0, &op);
 	AddToTOp(eop, 0, op);
-	CHK_EQUAL(op->sum->i, 0, errs);
-	CHK_EQUAL(op->sum->op->op.m, 14, errs);
-	CHK_EQUAL(op->sum->op->op.n, 15, errs);
-	CHK_CLOSE(op->sum->op->op.val, matrixElement, EPS, errs);
+	CHK_EQUAL(op->sum->first->i, 0, errs);
+	CHK_EQUAL(op->sum->first->op->op.m, 14, errs);
+	CHK_EQUAL(op->sum->first->op->op.n, 15, errs);
+	CHK_CLOSE(op->sum->first->op->op.val, matrixElement, EPS, errs);
+	CHK_EQUAL(op->sum->first->op->next, 0, errs);
 	CHK_EQUAL(op->sum->next, 0, errs);
 
 	DestroyTOp(&op);
@@ -62,15 +63,56 @@ int test_AddScaledToTOp()
 
 	CreateTOp(0, &op);
 	AddScaledToTOp(alpha, eop, 0, op);
-	CHK_EQUAL(op->sum->i, 0, errs);
-	CHK_EQUAL(op->sum->op->op.m, 14, errs);
-	CHK_EQUAL(op->sum->op->op.n, 15, errs);
-	CHK_CLOSE(op->sum->op->op.val, alpha * matrixElement, EPS, errs);
+	CHK_EQUAL(op->sum->first->i, 0, errs);
+	CHK_EQUAL(op->sum->first->op->op.m, 14, errs);
+	CHK_EQUAL(op->sum->first->op->op.n, 15, errs);
+	CHK_CLOSE(op->sum->first->op->op.val, alpha * matrixElement, EPS, errs);
+	CHK_EQUAL(op->sum->first->op->next, 0, errs);
 	CHK_EQUAL(op->sum->next, 0, errs);
 
 	DestroyTOp(&op);
 	DestroyElemOp(&eop);
 	DestroyProdSpace(&h);
+	return errs;
+}
+
+int test_FindEmbedding()
+{
+	int errs = 0;
+	int i;
+	int N = 10;
+	TOp op;
+	ElemOp eop;
+	ProdSpace h;
+	struct Embedding *emb;
+
+	h = CreateProdSpace(20);
+	for (i = 0; i < N; ++i) {
+		MultToProdSpace(h, &h);
+	}
+
+	CreateElemOp(&eop);
+	AddToElemOp(14, 15, -3.4, &eop);
+	AddToElemOp(1, 5, 2.0, &eop);
+	AddToElemOp(2, 3, 2.0, &eop);
+
+	CreateTOp(h, &op);
+	AddToTOp(eop, 0, op);
+	AddToTOp(eop, 3, op);
+
+	emb = FindEmbedding(0, op->sum->first);
+	CHK_NOT_EQUAL(emb, 0, errs);
+	emb = FindEmbedding(1, op->sum->first);
+	CHK_EQUAL(emb, 0, errs);
+	emb = FindEmbedding(3, op->sum->next->first);
+	CHK_NOT_EQUAL(emb, 0, errs);
+	emb = FindEmbedding(1, op->sum->next->first);
+	CHK_EQUAL(emb, 0, errs);
+
+	DestroyTOp(&op);
+	DestroyElemOp(&eop);
+	DestroyProdSpace(&h);
+
 	return errs;
 }
 
@@ -104,21 +146,21 @@ int test_MulTOp()
 
 	MulTOp(op1, &op2);
 
-	CHK_EQUAL(op1->sum->i, 0, errs);
+	CHK_EQUAL(op1->sum->first->i, 0, errs);
 	CHK_EQUAL(op1->sum->next, 0, errs);
-	CHK_EQUAL(op1->sum->op->op.m, 2, errs);
-	CHK_EQUAL(op1->sum->op->op.n, 3, errs);
-	CHK_EQUAL(op1->sum->op->next->op.m, 1, errs);
-	CHK_EQUAL(op1->sum->op->next->op.n, 5, errs);
-	CHK_EQUAL(op1->sum->op->next->next->op.m, 14, errs);
-	CHK_EQUAL(op1->sum->op->next->next->op.n, 15, errs);
-	CHK_EQUAL(op1->sum->op->next->next->next, 0, errs);
+	CHK_EQUAL(op1->sum->first->op->op.m, 2, errs);
+	CHK_EQUAL(op1->sum->first->op->op.n, 3, errs);
+	CHK_EQUAL(op1->sum->first->op->next->op.m, 1, errs);
+	CHK_EQUAL(op1->sum->first->op->next->op.n, 5, errs);
+	CHK_EQUAL(op1->sum->first->op->next->next->op.m, 14, errs);
+	CHK_EQUAL(op1->sum->first->op->next->next->op.n, 15, errs);
+	CHK_EQUAL(op1->sum->first->op->next->next->next, 0, errs);
 
-	CHK_EQUAL(op2->sum->i, 0, errs);
-	CHK_EQUAL(op2->sum->next, 0, errs);
-	CHK_EQUAL(op2->sum->op->op.m, 2, errs);
-	CHK_EQUAL(op2->sum->op->op.n, 4, errs);
-	CHK_CLOSE(op2->sum->op->op.val, 4.0, EPS, errs);
+	CHK_EQUAL(op2->sum->first->i, 0, errs);
+	CHK_EQUAL(op2->sum->first->next, 0, errs);
+	CHK_EQUAL(op2->sum->first->op->op.m, 2, errs);
+	CHK_EQUAL(op2->sum->first->op->op.n, 4, errs);
+	CHK_CLOSE(op2->sum->first->op->op.val, 4.0, EPS, errs);
 
 	DestroyTOp(&op1);
 	DestroyTOp(&op2);
@@ -134,6 +176,7 @@ int main()
 	errs += test_CreateTOp();
 	errs += test_AddToTOp();
 	errs += test_AddScaledToTOp();
-	errs += test_MulTOp();
+	errs += test_FindEmbedding();
+//	errs += test_MulTOp();
 	return errs;
 }

@@ -4,23 +4,30 @@
 #include "TensProdOp.h"
 #include "Errors.h"
 
-struct Embedding {
+struct Embedding
+{
 	ElemOp op;
 	int i;
 	struct Embedding *next;
 };
 
+struct EmbeddingList
+{
+	struct Embedding *first;
+	struct EmbeddingList *next;
+};
+
 /**
  * Data structure for tensor product operators.
  * */
-struct TOp {
+struct TOp
+{
 	ProdSpace space;
-	struct Embedding *sum;
+	struct EmbeddingList *sum;
 };
 
 struct Embedding *FindEmbedding(int, struct Embedding *);
-void MultiplyIthEmbeddings(int i, struct Embedding *,
-				  struct Embedding *);
-struct Embedding *GatherIthEmbedding(int i, struct Embedding *);
+void MultiplyEmbeddings(int, struct Embedding *, struct Embedding *);
+struct Embedding *GatherIthEmbedding(int, struct Embedding *);
 
 #endif

@@ -2,7 +2,7 @@
 
 #include <stdlib.h>
 
-static void Destroy(struct Embedding *head);
+static void Destroy(struct EmbeddingList *sum);
 
 void CreateTOp(ProdSpace h, TOp *op)
 {
@@ -21,57 +21,66 @@ void DestroyTOp(TOp *op)
 	}
 }
 
-void Destroy(struct Embedding *head)
+void Destroy(struct EmbeddingList *sum)
 {
-	if (head) {
-		Destroy(head->next);
-		free(head);
+	struct Embedding* e;
+	if (sum) {
+		Destroy(sum->next);
+		e = sum->first->next;
+		while (e) {
+			free(sum->first);
+			e = e->next;
+		}
+		free(sum);
 	}
 }
 
 void AddToTOp(ElemOp a, int i, TOp op)
 {
+	struct EmbeddingList *sum = malloc(sizeof(*sum));
+	sum->first = 0;
+	sum->next = op->sum;
 	struct Embedding *aprime = malloc(sizeof(*aprime));
 	aprime->op = a;
 	aprime->i = i;
-	aprime->next = op->sum;
-	op->sum = aprime;
+	aprime->next = 0;
+	op->sum = sum;
 }
 
 void AddScaledToTOp(double alpha, ElemOp a, int i, TOp op)
 {
 	AddToTOp(a, i, op);
-	ScaleElemOp(alpha, op->sum->op);
+	ScaleElemOp(alpha, op->sum->first->op);
 }
 
 void MulTOp(TOp a, TOp *b)
 {
-	int i;
+	struct Embedding* ea;
+	struct Embedding* eb;
 	int N = SizeProdSpace((*b)->space);
+
+	for (ea = a->sum; ea != 0; ea = ea->next) {
+		for (eb = (*b)->sum; eb != 0; eb = eb->next) {
+			MultiplyEmbeddings(N, ea, eb);
+		}
+	}
+}
+
+void MultiplyEmbeddings(int N, struct Embedding *asum, struct Embedding *bsum)
+{
+	int i;
+	struct Embedding *ea;
+	struct Embedding *eb;
+
 	for (i = 0; i < N; ++i) {
-		MultiplyIthEmbeddings(i, a->sum, (*b)->sum);
+		ea = GatherIthEmbedding(i, asum);
+		eb = GatherIthEmbedding(i, bsum);
+		if (ea != 0) {
+			MulElemOp(ea->op, &eb->op);
+		} else {
+			/* Identity in ea, needn't do anything */
+		}
 	}
-}
-
-void MultiplyIthEmbeddings(int i, struct Embedding *asum,
-			   struct Embedding *bsum)
-{
-	struct Embedding *ea = GatherIthEmbedding(i, asum);
-	struct Embedding *eb = GatherIthEmbedding(i, bsum);
-	if (ea != 0) {
-		MulElemOp(ea->op, &eb->op);
-	} else {
-		/* Identity in ea, needn't do anything */
-	}
-}
-
-struct Embedding *FindEmbedding(int i, struct Embedding *sum)
-{
-	while (sum) {
-		if (sum->i == i) return sum;
-		sum = sum->next;
-	}
-	return 0;
 }
 
 struct Embedding *GatherIthEmbedding(int i, struct Embedding *sum)
@@ -91,5 +100,14 @@ struct Embedding *GatherIthEmbedding(int i, struct Embedding *sum)
 		next = prev->next;
 	}
 	return first;
+}
+
+struct Embedding *FindEmbedding(int i, struct Embedding *emb)
+{
+	while (emb) {
+		if (emb->i == i) return emb;
+		emb = emb->next;
+	}
+	return 0;
 }
 

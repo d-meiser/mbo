@@ -116,17 +116,15 @@ ElemOp creationOp(int d)
 void MulElemOp(ElemOp a, ElemOp *bp)
 {
 	ElemOp prod;
-	ElemOp b = *bp;
+	ElemOp b;
 	CreateElemOp(&prod);
-	while (a) {
-		while (b) {
+	for (; a != 0; a = a->next) {
+		for (b = *bp; b != 0; b = b->next) {
 			if (a->op.n == b->op.m) {
 				AddToElemOp(a->op.m, b->op.n,
 					    a->op.val * b->op.val, &prod);
 			}
-			b = b->next;
 		}
-		a = a->next;
 	}
 	DestroyElemOp(bp);
 	*bp = prod;
