@@ -4,9 +4,10 @@
 typedef struct MboList *MboList;
 
 MboList mboListCreate();
-void mboListDestroy(MboList);
+void mboListDestroy(MboList *);
+void mboListCons(void *, MboList *);
 void *mboListHead(MboList);
-void *mboListTail(MboList);
+MboList mboListTail(MboList);
 void mboListMap(MboList, void *(void*, void*), void*);
 
 #endif
