@@ -1,0 +1,10 @@
+#ifndef ERRORS_H
+#define ERRORS_H
+
+enum QUO_ERROR {
+	QUO_SUCCESS = 0,
+	QUO_OUT_OF_MEMORY,
+	QUO_SPACE_MISMATCH,
+};
+
+#endif
