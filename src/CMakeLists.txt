@@ -6,6 +6,7 @@ set(QUO_SRCS
   ElemOpImpl.c
   ProdSpaceImpl.c
   TensProdOpImpl.c
+  MboListImpl.c
   )
 
 add_library(QUO
@@ -19,6 +20,7 @@ set(TESTS
   test_ElemOp
   test_ProdSpace
   test_TensProdOp
+  test_MboList
   )
 
 foreach(t ${TESTS})
