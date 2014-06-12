@@ -43,6 +43,10 @@ MboList mboListTail(MboList l)
 	}
 }
 
-void mboListMap(MboList l, void *f(void *ptr, void *ctx), void *ctx)
+void mboListMap(MboList l, void f(void *, void *), void *ctx)
 {
+	while (l) {
+		f(mboListHead(l), ctx);
+		l = mboListTail(l);
+	}
 }

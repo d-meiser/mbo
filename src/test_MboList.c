@@ -68,12 +68,55 @@ int testMboListTail()
 	return errs;
 }
 
+void doubleItems(void *node, void *ctx)
+{
+	int *i = (int *)node;
+	*i *= 2;
+}
+
+void accumulate(void *node, void *sum)
+{
+	*(int *)sum += *(int *)node;
+}
+
 int testMboListMap()
 {
 	int errs = 0;
-	MboList l;
+	int data[3];
+	int doublingResult[3];
+	int i, sum, sumResult;
+	MboList l, lIter;
 
 	l = mboListCreate();
+
+	data[0] = 10;
+	mboListCons(data + 0, &l);
+	data[1] = 13;
+	mboListCons(data + 1, &l);
+	data[2] = -3;
+	mboListCons(data + 2, &l);
+
+	mboListMap(l, &doubleItems, 0);
+	doublingResult[0] = 2 * 10;
+	doublingResult[1] = 2 * 13;
+	doublingResult[2] = 2 * -3;
+	i = 0;
+	for (lIter = l; lIter != 0; lIter = mboListTail(lIter)) {
+		CHK_EQUAL(*(int*)mboListHead(lIter), data[2 - i], errs);
+		++i;
+	}
+	for (i = 0; i < 3; ++i) {
+		CHK_EQUAL(doublingResult[i], data[i], errs);
+	}
+
+	sum = 0;
+	mboListMap(l, &accumulate, &sum);
+	sumResult = 0;
+	for (i = 0; i < 3; ++i) {
+		sumResult += data[i];
+	}
+	CHK_EQUAL(sumResult, sum, errs);
+
 	mboListDestroy(&l);
 	return errs;
 }

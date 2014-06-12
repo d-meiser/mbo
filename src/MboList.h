@@ -8,7 +8,7 @@ void mboListDestroy(MboList *);
 void mboListCons(void *, MboList *);
 void *mboListHead(MboList);
 MboList mboListTail(MboList);
-void mboListMap(MboList, void *(void*, void*), void*);
+void mboListMap(MboList, void (void*, void*), void*);
 
 #endif
 
