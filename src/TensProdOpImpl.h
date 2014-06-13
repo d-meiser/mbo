@@ -11,23 +11,34 @@ struct Embedding
 	struct Embedding *next;
 };
 
-struct EmbeddingList
-{
-	struct Embedding *first;
-	struct EmbeddingList *next;
-};
+struct Embedding *FindEmbedding(int i, struct Embedding *list);
+void MultiplyEmbeddings(int, struct Embedding *a, struct Embedding *b);
 
 /**
- * Data structure for tensor product operators.
+ * @brief A simple product of embeddings
+ *
+ * A SimpleTOp represents a single term in a sum making up a TOp.
  * */
-struct TOp
+struct SimpleTOp
 {
-	ProdSpace space;
-	struct EmbeddingList *sum;
+	struct Embedding *embedding;
+	struct SimpleTOp *next;
 };
 
-struct Embedding *FindEmbedding(int, struct Embedding *);
-void MultiplyEmbeddings(int, struct Embedding *, struct Embedding *);
-struct Embedding *GatherIthEmbedding(int, struct Embedding *);
+struct Embedding *GatherIthEmbedding(int, struct SimpleTOp *);
+void DestroySimpleTOp(struct SimpleTOp *term);
+
+/**
+   Data structure for tensor product operators.
+   */
+struct TOp
+{
+	/* Product space on which the operator is defined. */
+	ProdSpace space;
+	/* Pointer to first SimpleTOp in list making up the sum over SimpleTOp
+	   operators. */
+	struct SimpleTOp *sum;
+};
+
 
 #endif

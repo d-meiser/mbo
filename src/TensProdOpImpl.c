@@ -2,7 +2,7 @@
 
 #include <stdlib.h>
 
-static void Destroy(struct EmbeddingList *sum);
+static void Destroy(struct Embedding *sum);
 
 void CreateTOp(ProdSpace h, TOp *op)
 {
@@ -14,67 +14,75 @@ void CreateTOp(ProdSpace h, TOp *op)
 
 void DestroyTOp(TOp *op)
 {
-	if (*op) {
-		Destroy((*op)->sum);
-		free(*op);
-		*op = 0;
+	struct SimpleTOp *nextTerm;
+
+	if (*op == 0) return;
+	DestroyProdSpace(&(*op)->space);
+	while ((*op)->sum) {
+		nextTerm = (*op)->sum;
+		DestroySimpleTOp((*op)->sum);
+		(*op)->sum = nextTerm;
 	}
+	free(*op);
+	*op = 0;
 }
 
-void Destroy(struct EmbeddingList *sum)
+void DestroySimpleTOp(struct SimpleTOp *term)
 {
-	struct Embedding* e;
-	if (sum) {
-		Destroy(sum->next);
-		e = sum->first->next;
-		while (e) {
-			free(sum->first);
-			e = e->next;
-		}
-		free(sum);
+	struct Embedding* nextEmbedding;
+
+	if (term == 0) return;
+	while (term->embedding) {
+		nextEmbedding = term->embedding->next;
+		DestroyElemOp(&term->embedding->op);
+		free(term->embedding);
+		term->embedding = nextEmbedding;
 	}
 }
 
 void AddToTOp(ElemOp a, int i, TOp op)
 {
-	struct EmbeddingList *sum = malloc(sizeof(*sum));
-	sum->first = 0;
-	sum->next = op->sum;
-	struct Embedding *aprime = malloc(sizeof(*aprime));
-	aprime->op = a;
-	aprime->i = i;
-	aprime->next = 0;
-	op->sum = sum;
+	struct Embedding *aEmbedded;
+	struct SimpleTOp *simpleTOp;
+
+	aEmbedded = malloc(sizeof(*aEmbedded));
+	aEmbedded->op = a;
+	aEmbedded->i = i;
+	aEmbedded->next = 0;
+	simpleTOp = malloc(sizeof(*simpleTOp));
+	simpleTOp->embedding = aEmbedded;
+	simpleTOp->next = op->sum;
+	op->sum = simpleTOp;
 }
 
 void AddScaledToTOp(double alpha, ElemOp a, int i, TOp op)
 {
 	AddToTOp(a, i, op);
-	ScaleElemOp(alpha, op->sum->first->op);
+	ScaleElemOp(alpha, op->sum->embedding->op);
 }
 
 void MulTOp(TOp a, TOp *b)
 {
-	struct Embedding* ea;
-	struct Embedding* eb;
+	struct SimpleTOp* sa;
+	struct SimpleTOp* sb;
 	int N = SizeProdSpace((*b)->space);
 
-	for (ea = a->sum; ea != 0; ea = ea->next) {
-		for (eb = (*b)->sum; eb != 0; eb = eb->next) {
-			MultiplyEmbeddings(N, ea, eb);
+	for (sa = a->sum; sa != 0; sa = sa->next) {
+		for (sb = (*b)->sum; sb != 0; sb = sb->next) {
+			MultiplySimpleTOps(N, sa, sb);
 		}
 	}
 }
 
-void MultiplyEmbeddings(int N, struct Embedding *asum, struct Embedding *bsum)
+void MultiplySimpleTOps(int N, struct SimpleTOp *a, struct SimpleTOp *b)
 {
 	int i;
 	struct Embedding *ea;
 	struct Embedding *eb;
 
 	for (i = 0; i < N; ++i) {
-		ea = GatherIthEmbedding(i, asum);
-		eb = GatherIthEmbedding(i, bsum);
+		ea = GatherIthEmbedding(i, a);
+		eb = GatherIthEmbedding(i, b);
 		if (ea != 0) {
 			MulElemOp(ea->op, &eb->op);
 		} else {
@@ -83,7 +91,7 @@ void MultiplyEmbeddings(int N, struct Embedding *asum, struct Embedding *bsum)
 	}
 }
 
-struct Embedding *GatherIthEmbedding(int i, struct Embedding *sum)
+struct Embedding *GatherIthEmbedding(int i, struct SimpleTOp *sum)
 {
 	struct Embedding *first, *prev, *next;
 	first = FindEmbedding(i, sum);
