@@ -2,8 +2,6 @@
 
 #include <stdlib.h>
 
-static void Destroy(struct Embedding *sum);
-
 void CreateTOp(ProdSpace h, TOp *op)
 {
 	TOp a = malloc(sizeof(*a));
@@ -17,9 +15,8 @@ void DestroyTOp(TOp *op)
 	struct SimpleTOp *nextTerm;
 
 	if (*op == 0) return;
-	DestroyProdSpace(&(*op)->space);
 	while ((*op)->sum) {
-		nextTerm = (*op)->sum;
+		nextTerm = (*op)->sum->next;
 		DestroySimpleTOp((*op)->sum);
 		(*op)->sum = nextTerm;
 	}
@@ -34,10 +31,10 @@ void DestroySimpleTOp(struct SimpleTOp *term)
 	if (term == 0) return;
 	while (term->embedding) {
 		nextEmbedding = term->embedding->next;
-		DestroyElemOp(&term->embedding->op);
 		free(term->embedding);
 		term->embedding = nextEmbedding;
 	}
+	free(term);
 }
 
 void AddToTOp(ElemOp a, int i, TOp op)
@@ -94,7 +91,7 @@ void MultiplySimpleTOps(int N, struct SimpleTOp *a, struct SimpleTOp *b)
 struct Embedding *GatherIthEmbedding(int i, struct SimpleTOp *sum)
 {
 	struct Embedding *first, *prev, *next;
-	first = FindEmbedding(i, sum);
+	first = FindEmbedding(i, sum->embedding);
 	if (first == 0) return first;
 	prev = first;
 	next = prev->next;

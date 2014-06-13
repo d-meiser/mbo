@@ -13,11 +13,12 @@ ProdSpace CreateProdSpace(int d)
 
 void DestroyProdSpace(ProdSpace *sp)
 {
+	if (*sp == 0) return;
 	if ((*sp)->next) {
 		DestroyProdSpace(&(*sp)->next);
 	}
 	free(*sp);
-        *sp = 0;
+	*sp = 0;
 }
 
 void MultToProdSpace(ProdSpace a, ProdSpace *b)
@@ -28,12 +29,12 @@ void MultToProdSpace(ProdSpace a, ProdSpace *b)
 		*b = 0;
 	}
 	ProdSpace aCopy = CopyProdSpace(a);
-        ProdSpace last = aCopy;
-        while (last->next) {
+	ProdSpace last = aCopy;
+	while (last->next) {
 		last = last->next;
 	}
-        last->next = *b;
-        *b = aCopy;
+	last->next = *b;
+	*b = aCopy;
 }
 
 ProdSpace CopyProdSpace(ProdSpace sp)
@@ -54,7 +55,7 @@ long long DimProdSpace(ProdSpace sp)
 		dim *= sp->dim;
 		sp = sp->next;
 	}
-        return dim;
+	return dim;
 }
 
 int SizeProdSpace(ProdSpace h)

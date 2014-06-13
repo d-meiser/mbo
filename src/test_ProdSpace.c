@@ -12,6 +12,16 @@ int testCreateProdSpace()
 	return errs;
 }
 
+int testDestroyProdSpace()
+{
+	int errs = 0;
+	ProdSpace sp;
+
+	sp = CreateProdSpace(0);
+	DestroyProdSpace(&sp);
+	return errs;
+}
+
 int testMultToProdSpace()
 {
 	int errs = 0;
@@ -116,6 +126,7 @@ int main()
 {
 	int errs = 0;
 	errs += testCreateProdSpace();
+	errs += testDestroyProdSpace();
 	errs += testMultToProdSpace();
 	errs += testBuildSpace();
         errs += testMultiplyWithSelf();

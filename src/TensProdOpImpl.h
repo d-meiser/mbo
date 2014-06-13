@@ -27,6 +27,7 @@ struct SimpleTOp
 
 struct Embedding *GatherIthEmbedding(int, struct SimpleTOp *);
 void DestroySimpleTOp(struct SimpleTOp *term);
+void MultiplySimpleTOps(int, struct SimpleTOp *sa, struct SimpleTOp *sb);
 
 /**
    Data structure for tensor product operators.

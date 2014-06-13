@@ -34,11 +34,11 @@ int test_AddToTOp()
 
 	CreateTOp(0, &op);
 	AddToTOp(eop, 0, op);
-	CHK_EQUAL(op->sum->first->i, 0, errs);
-	CHK_EQUAL(op->sum->first->op->op.m, 14, errs);
-	CHK_EQUAL(op->sum->first->op->op.n, 15, errs);
-	CHK_CLOSE(op->sum->first->op->op.val, matrixElement, EPS, errs);
-	CHK_EQUAL(op->sum->first->op->next, 0, errs);
+	CHK_EQUAL(op->sum->embedding->i, 0, errs);
+	CHK_EQUAL(op->sum->embedding->op->op.m, 14, errs);
+	CHK_EQUAL(op->sum->embedding->op->op.n, 15, errs);
+	CHK_CLOSE(op->sum->embedding->op->op.val, matrixElement, EPS, errs);
+	CHK_EQUAL(op->sum->embedding->op->next, 0, errs);
 	CHK_EQUAL(op->sum->next, 0, errs);
 
 	DestroyTOp(&op);
@@ -63,11 +63,11 @@ int test_AddScaledToTOp()
 
 	CreateTOp(0, &op);
 	AddScaledToTOp(alpha, eop, 0, op);
-	CHK_EQUAL(op->sum->first->i, 0, errs);
-	CHK_EQUAL(op->sum->first->op->op.m, 14, errs);
-	CHK_EQUAL(op->sum->first->op->op.n, 15, errs);
-	CHK_CLOSE(op->sum->first->op->op.val, alpha * matrixElement, EPS, errs);
-	CHK_EQUAL(op->sum->first->op->next, 0, errs);
+	CHK_EQUAL(op->sum->embedding->i, 0, errs);
+	CHK_EQUAL(op->sum->embedding->op->op.m, 14, errs);
+	CHK_EQUAL(op->sum->embedding->op->op.n, 15, errs);
+	CHK_CLOSE(op->sum->embedding->op->op.val, alpha * matrixElement, EPS, errs);
+	CHK_EQUAL(op->sum->embedding->op->next, 0, errs);
 	CHK_EQUAL(op->sum->next, 0, errs);
 
 	DestroyTOp(&op);
@@ -100,13 +100,13 @@ int test_FindEmbedding()
 	AddToTOp(eop, 0, op);
 	AddToTOp(eop, 3, op);
 
-	emb = FindEmbedding(0, op->sum->first);
+	emb = FindEmbedding(0, op->sum->next->embedding);
 	CHK_NOT_EQUAL(emb, 0, errs);
-	emb = FindEmbedding(1, op->sum->first);
+	emb = FindEmbedding(1, op->sum->next->embedding);
 	CHK_EQUAL(emb, 0, errs);
-	emb = FindEmbedding(3, op->sum->next->first);
+	emb = FindEmbedding(3, op->sum->embedding);
 	CHK_NOT_EQUAL(emb, 0, errs);
-	emb = FindEmbedding(1, op->sum->next->first);
+	emb = FindEmbedding(1, op->sum->embedding);
 	CHK_EQUAL(emb, 0, errs);
 
 	DestroyTOp(&op);
@@ -146,21 +146,21 @@ int test_MulTOp()
 
 	MulTOp(op1, &op2);
 
-	CHK_EQUAL(op1->sum->first->i, 0, errs);
+	CHK_EQUAL(op1->sum->embedding->i, 0, errs);
 	CHK_EQUAL(op1->sum->next, 0, errs);
-	CHK_EQUAL(op1->sum->first->op->op.m, 2, errs);
-	CHK_EQUAL(op1->sum->first->op->op.n, 3, errs);
-	CHK_EQUAL(op1->sum->first->op->next->op.m, 1, errs);
-	CHK_EQUAL(op1->sum->first->op->next->op.n, 5, errs);
-	CHK_EQUAL(op1->sum->first->op->next->next->op.m, 14, errs);
-	CHK_EQUAL(op1->sum->first->op->next->next->op.n, 15, errs);
-	CHK_EQUAL(op1->sum->first->op->next->next->next, 0, errs);
+	CHK_EQUAL(op1->sum->embedding->op->op.m, 2, errs);
+	CHK_EQUAL(op1->sum->embedding->op->op.n, 3, errs);
+	CHK_EQUAL(op1->sum->embedding->op->next->op.m, 1, errs);
+	CHK_EQUAL(op1->sum->embedding->op->next->op.n, 5, errs);
+	CHK_EQUAL(op1->sum->embedding->op->next->next->op.m, 14, errs);
+	CHK_EQUAL(op1->sum->embedding->op->next->next->op.n, 15, errs);
+	CHK_EQUAL(op1->sum->embedding->op->next->next->next, 0, errs);
 
-	CHK_EQUAL(op2->sum->first->i, 0, errs);
-	CHK_EQUAL(op2->sum->first->next, 0, errs);
-	CHK_EQUAL(op2->sum->first->op->op.m, 2, errs);
-	CHK_EQUAL(op2->sum->first->op->op.n, 4, errs);
-	CHK_CLOSE(op2->sum->first->op->op.val, 4.0, EPS, errs);
+	CHK_EQUAL(op2->sum->embedding->i, 0, errs);
+	CHK_EQUAL(op2->sum->embedding->next, 0, errs);
+	CHK_EQUAL(op2->sum->embedding->op->op.m, 2, errs);
+	CHK_EQUAL(op2->sum->embedding->op->op.n, 4, errs);
+	CHK_CLOSE(op2->sum->embedding->op->op.val, 4.0, EPS, errs);
 
 	DestroyTOp(&op1);
 	DestroyTOp(&op2);
