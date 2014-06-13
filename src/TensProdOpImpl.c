@@ -31,6 +31,7 @@ void DestroySimpleTOp(struct SimpleTOp *term)
 	if (term == 0) return;
 	while (term->embedding) {
 		nextEmbedding = term->embedding->next;
+		DestroyElemOp(&term->embedding->op);
 		free(term->embedding);
 		term->embedding = nextEmbedding;
 	}
@@ -43,7 +44,8 @@ void AddToTOp(ElemOp a, int i, TOp op)
 	struct SimpleTOp *simpleTOp;
 
 	aEmbedded = malloc(sizeof(*aEmbedded));
-	aEmbedded->op = a;
+	CreateElemOp(&aEmbedded->op);
+	PlusElemOp(a, &aEmbedded->op);
 	aEmbedded->i = i;
 	aEmbedded->next = 0;
 	simpleTOp = malloc(sizeof(*simpleTOp));
