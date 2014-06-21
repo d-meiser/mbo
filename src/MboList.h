@@ -9,6 +9,8 @@ void mboListCons(void *, MboList *);
 void *mboListHead(MboList);
 MboList mboListTail(MboList);
 void mboListMap(MboList, void (void*, void*), void*);
+int mboListCheck(MboList);
+int mboListTest();
 
 #endif
 

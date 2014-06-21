@@ -3,10 +3,10 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
     )
 set(QUO_SRCS
-  ElemOpImpl.c
+  ElemOp.c
   ProdSpaceImpl.c
   TensProdOpImpl.c
-  MboListImpl.c
+  MboList.c
   )
 
 add_library(QUO
