@@ -2,10 +2,10 @@
 #include <math.h>
 
 #include "ElemOp.h"
-#include "BraKet.h"
+#include "NonZeroEntry.h"
 
 struct ElemOp {
-	struct BraKet op;
+	struct NonZeroEntry op;
 	struct ElemOp *next;
 };
 

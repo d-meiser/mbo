@@ -1,5 +1,5 @@
-#ifndef BRA_KET_H
-#define BRA_KET_H
+#ifndef NON_ZERO_ENTRY_H
+#define NON_ZERO_ENTRY_H
 
 #include "Amplitude.h"
 
@@ -7,7 +7,7 @@
  * @brief A sparse matrix entry
  *
  */
-struct BraKet {
+struct NonZeroEntry {
 	int m;
 	int n;
 	Amplitude val;
