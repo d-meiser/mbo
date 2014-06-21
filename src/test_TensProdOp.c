@@ -2,7 +2,6 @@
 #include "TensProdOpImpl.h"
 #include "TestUtils.h"
 #include "ElemOp.h"
-#include "ElemOpImpl.h"
 
 #include <stdlib.h>
 
@@ -35,10 +34,7 @@ int test_AddToTOp()
 	CreateTOp(0, &op);
 	AddToTOp(eop, 0, op);
 	CHK_EQUAL(op->sum->embedding->i, 0, errs);
-	CHK_EQUAL(op->sum->embedding->op->op.m, 14, errs);
-	CHK_EQUAL(op->sum->embedding->op->op.n, 15, errs);
-	CHK_CLOSE(op->sum->embedding->op->op.val, matrixElement, EPS, errs);
-	CHK_EQUAL(op->sum->embedding->op->next, 0, errs);
+	CHK_EQUAL(checkElemOp(op->sum->embedding->op), 0, errs);
 	CHK_EQUAL(op->sum->next, 0, errs);
 
 	DestroyTOp(&op);
@@ -53,7 +49,6 @@ int test_AddScaledToTOp()
 	TOp op;
 	ElemOp eop;
 	ProdSpace h;
-	double matrixElement = -3.4;
 	double alpha = 2.1;
 
 	h = CreateProdSpace(20);
@@ -64,10 +59,7 @@ int test_AddScaledToTOp()
 	CreateTOp(0, &op);
 	AddScaledToTOp(alpha, eop, 0, op);
 	CHK_EQUAL(op->sum->embedding->i, 0, errs);
-	CHK_EQUAL(op->sum->embedding->op->op.m, 14, errs);
-	CHK_EQUAL(op->sum->embedding->op->op.n, 15, errs);
-	CHK_CLOSE(op->sum->embedding->op->op.val, alpha * matrixElement, EPS, errs);
-	CHK_EQUAL(op->sum->embedding->op->next, 0, errs);
+	CHK_EQUAL(checkElemOp(op->sum->embedding->op), 0, errs);
 	CHK_EQUAL(op->sum->next, 0, errs);
 
 	DestroyTOp(&op);
@@ -148,19 +140,11 @@ int test_MulTOp()
 
 	CHK_EQUAL(op1->sum->embedding->i, 0, errs);
 	CHK_EQUAL(op1->sum->next, 0, errs);
-	CHK_EQUAL(op1->sum->embedding->op->op.m, 2, errs);
-	CHK_EQUAL(op1->sum->embedding->op->op.n, 3, errs);
-	CHK_EQUAL(op1->sum->embedding->op->next->op.m, 1, errs);
-	CHK_EQUAL(op1->sum->embedding->op->next->op.n, 5, errs);
-	CHK_EQUAL(op1->sum->embedding->op->next->next->op.m, 14, errs);
-	CHK_EQUAL(op1->sum->embedding->op->next->next->op.n, 15, errs);
-	CHK_EQUAL(op1->sum->embedding->op->next->next->next, 0, errs);
+	CHK_EQUAL(checkElemOp(op1->sum->embedding->op), 0, errs);
 
 	CHK_EQUAL(op2->sum->embedding->i, 0, errs);
 	CHK_EQUAL(op2->sum->embedding->next, 0, errs);
-	CHK_EQUAL(op2->sum->embedding->op->op.m, 2, errs);
-	CHK_EQUAL(op2->sum->embedding->op->op.n, 4, errs);
-	CHK_CLOSE(op2->sum->embedding->op->op.val, 4.0, EPS, errs);
+	CHK_EQUAL(checkElemOp(op2->sum->embedding->op), 0, errs);
 
 	DestroyTOp(&op1);
 	DestroyTOp(&op2);
@@ -177,6 +161,6 @@ int main()
 	errs += test_AddToTOp();
 	errs += test_AddScaledToTOp();
 	errs += test_FindEmbedding();
-//	errs += test_MulTOp();
+	errs += test_MulTOp();
 	return errs;
 }

@@ -14,6 +14,8 @@ void AddToElemOp(int, int, double, ElemOp *);
 void ScaleElemOp(double, ElemOp);
 void PlusElemOp(ElemOp, ElemOp *);
 void MulElemOp(ElemOp, ElemOp *);
+int checkElemOp(ElemOp);
+int testElemOp();
 
 ElemOp sigmaPlus();
 ElemOp sigmaMinus();
