@@ -14,6 +14,8 @@ void MultToProdSpace(ProdSpace, ProdSpace *);
 ProdSpace CopyProdSpace(ProdSpace);
 long long DimProdSpace(ProdSpace);
 int SizeProdSpace(ProdSpace);
+int prodSpaceCheck(ProdSpace);
+int prodSpaceTest();
 
 #ifdef __cplusplus
 }

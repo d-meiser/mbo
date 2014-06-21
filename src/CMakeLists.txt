@@ -4,7 +4,7 @@ include_directories(
     )
 set(QUO_SRCS
   ElemOp.c
-  ProdSpaceImpl.c
+  ProdSpace.c
   TensProdOpImpl.c
   MboList.c
   )
