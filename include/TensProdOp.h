@@ -20,6 +20,8 @@ void MulTOp(TOp, TOp *);
 void PlusOp(TOp, TOp *);
 void ScaleTOp(double alpha, TOp *);
 void KronTOp(TOp, TOp, TOp *);
+int tensProdOpCheck(TOp);
+int tensProdOpTest();
 
 #ifdef __cplusplus
 }
