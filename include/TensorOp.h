@@ -1,5 +1,5 @@
-#ifndef TENS_OP_H
-#define TENS_OP_H
+#ifndef TENSOR_OP_H
+#define TENSOR_OP_H
 
 #include "ProdSpace.h"
 #include "ElemOp.h"

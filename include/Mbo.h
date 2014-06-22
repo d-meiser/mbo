@@ -1,5 +1,5 @@
-#ifndef QUO_H
-#define QUO_H
+#ifndef MBO_H
+#define MBO_H
 
 #ifdef __cplusplus
 extern "C" {

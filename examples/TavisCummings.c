@@ -1,4 +1,4 @@
-#include <Quo.h>
+#include <Mbo.h>
 #include <stdio.h>
 
 double omega(int i);
