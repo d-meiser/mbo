@@ -448,7 +448,7 @@ static int testCreationOp()
 	return errs;
 }
 
-int testElemOp()
+int elemOpTest()
 {
 	int errs = 0;
 	errs += testElemOpCreate();

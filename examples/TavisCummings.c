@@ -25,15 +25,15 @@ int main()
 	elemOpAddTo(1, 1, 1.0, &sz);
 	elemOpAddTo(0, 0, -1.0, &sz);
 
-	hSingleAtom = CreateProdSpace(2);
-	hAtoms = CreateProdSpace(0);
+	hSingleAtom = prodSpaceCreate(2);
+	hAtoms = prodSpaceCreate(0);
 	for (int i = 0; i < nAtoms; ++i) {
-		MultToProdSpace(hSingleAtom, &hAtoms);
+		prodSpaceMul(hSingleAtom, &hAtoms);
 	}
-	hField = CreateProdSpace(nPhotons + 1);
-	hTot = CreateProdSpace(0);
-	MultToProdSpace(hAtoms, &hTot);
-	MultToProdSpace(hField, &hTot);
+	hField = prodSpaceCreate(nPhotons + 1);
+	hTot = prodSpaceCreate(0);
+	prodSpaceMul(hAtoms, &hTot);
+	prodSpaceMul(hField, &hTot);
 
 	tensorOpCreate(hAtoms, &inhomogeneousJz);
 	for (int i = 0; i < nAtoms; ++i) {
@@ -45,10 +45,10 @@ int main()
 	elemOpDestroy(&sm);
 	elemOpDestroy(&sp);
 	elemOpDestroy(&sz);
-	DestroyProdSpace(&hSingleAtom);
-	DestroyProdSpace(&hAtoms);
-	DestroyProdSpace(&hField);
-	DestroyProdSpace(&hTot);
+	prodSpaceDestroy(&hSingleAtom);
+	prodSpaceDestroy(&hAtoms);
+	prodSpaceDestroy(&hField);
+	prodSpaceDestroy(&hTot);
 	tensorOpDestroy(&inhomogeneousJz);
 	tensorOpDestroy(&jMinus);
 

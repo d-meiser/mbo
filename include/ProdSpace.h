@@ -8,12 +8,12 @@ extern "C" {
 struct ProdSpace;
 typedef struct ProdSpace *ProdSpace;
 
-ProdSpace CreateProdSpace(int);
-void DestroyProdSpace(ProdSpace *);
-void MultToProdSpace(ProdSpace, ProdSpace *);
-ProdSpace CopyProdSpace(ProdSpace);
-long long DimProdSpace(ProdSpace);
-int SizeProdSpace(ProdSpace);
+ProdSpace prodSpaceCreate(int);
+void prodSpaceDestroy(ProdSpace *);
+void prodSpaceMul(ProdSpace, ProdSpace *);
+ProdSpace prodSpaceCopy(ProdSpace);
+long long prodSpaceDim(ProdSpace);
+int prodSpaceSize(ProdSpace);
 int prodSpaceCheck(ProdSpace);
 int prodSpaceTest();
 

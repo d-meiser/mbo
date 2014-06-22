@@ -101,7 +101,7 @@ void tensorOpMul(TensorOp a, TensorOp *b)
 {
 	struct SimpleTOp* sa;
 	struct SimpleTOp* sb;
-	int N = SizeProdSpace((*b)->space);
+	int N = prodSpaceSize((*b)->space);
 
 	for (sa = a->sum; sa != 0; sa = sa->next) {
 		for (sb = (*b)->sum; sb != 0; sb = sb->next) {
@@ -187,7 +187,7 @@ static int testTensorOpAddTo()
 	ProdSpace h;
 	double matrixElement = -3.4;
 
-	h = CreateProdSpace(20);
+	h = prodSpaceCreate(20);
 
 	elemOpCreate(&eop);
 	elemOpAddTo(14, 15, matrixElement, &eop);
@@ -200,7 +200,7 @@ static int testTensorOpAddTo()
 
 	tensorOpDestroy(&op);
 	elemOpDestroy(&eop);
-	DestroyProdSpace(&h);
+	prodSpaceDestroy(&h);
 	return errs;
 }
 
@@ -212,7 +212,7 @@ static int testTensorOpAddScaledTo()
 	ProdSpace h;
 	double alpha = 2.1;
 
-	h = CreateProdSpace(20);
+	h = prodSpaceCreate(20);
 
 	elemOpCreate(&eop);
 	elemOpAddTo(14, 15, -3.4, &eop);
@@ -225,7 +225,7 @@ static int testTensorOpAddScaledTo()
 
 	tensorOpDestroy(&op);
 	elemOpDestroy(&eop);
-	DestroyProdSpace(&h);
+	prodSpaceDestroy(&h);
 	return errs;
 }
 
@@ -239,9 +239,9 @@ static int testFindEmbedding()
 	ProdSpace h;
 	struct Embedding *emb;
 
-	h = CreateProdSpace(20);
+	h = prodSpaceCreate(20);
 	for (i = 0; i < N; ++i) {
-		MultToProdSpace(h, &h);
+		prodSpaceMul(h, &h);
 	}
 
 	elemOpCreate(&eop);
@@ -264,7 +264,7 @@ static int testFindEmbedding()
 
 	tensorOpDestroy(&op);
 	elemOpDestroy(&eop);
-	DestroyProdSpace(&h);
+	prodSpaceDestroy(&h);
 
 	return errs;
 }
@@ -278,9 +278,9 @@ static int testTensorOpMul()
 	ElemOp eop1, eop2;
 	ProdSpace h;
 
-	h = CreateProdSpace(20);
+	h = prodSpaceCreate(20);
 	for (i = 0; i < N; ++i) {
-		MultToProdSpace(h, &h);
+		prodSpaceMul(h, &h);
 	}
 
 	elemOpCreate(&eop1);
@@ -311,7 +311,7 @@ static int testTensorOpMul()
 	tensorOpDestroy(&op2);
 	elemOpDestroy(&eop1);
 	elemOpDestroy(&eop2);
-	DestroyProdSpace(&h);
+	prodSpaceDestroy(&h);
 	return errs;
 }
 

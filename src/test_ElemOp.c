@@ -2,5 +2,5 @@
 
 int main()
 {
-	return testElemOp();
+	return elemOpTest();
 }
