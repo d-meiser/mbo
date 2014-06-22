@@ -14,8 +14,8 @@ int main()
 	ElemOp sz;
 	const int nAtoms = 20;
 	const int nPhotons = 30;
-	TOp inhomogeneousJz;
-	TOp jMinus;
+	TensorOp inhomogeneousJz;
+	TensorOp jMinus;
 
 	CreateElemOp(&sm);
 	AddToElemOp(0, 1, 1.0, &sm);
@@ -35,12 +35,12 @@ int main()
 	MultToProdSpace(hAtoms, &hTot);
 	MultToProdSpace(hField, &hTot);
 
-	CreateTOp(hAtoms, &inhomogeneousJz);
+	tensorOpCreate(hAtoms, &inhomogeneousJz);
 	for (int i = 0; i < nAtoms; ++i) {
-		AddScaledToTOp(omega(i), sz, i, inhomogeneousJz);
+		tensorOpAddScaledTo(omega(i), sz, i, inhomogeneousJz);
 	}
 
-	CreateTOp(hTot, &jMinus);
+	tensorOpCreate(hTot, &jMinus);
 
 	DestroyElemOp(&sm);
 	DestroyElemOp(&sp);
@@ -49,8 +49,8 @@ int main()
 	DestroyProdSpace(&hAtoms);
 	DestroyProdSpace(&hField);
 	DestroyProdSpace(&hTot);
-	DestroyTOp(&inhomogeneousJz);
-	DestroyTOp(&jMinus);
+	tensorOpDestroy(&inhomogeneousJz);
+	tensorOpDestroy(&jMinus);
 
 	return 0;
 }

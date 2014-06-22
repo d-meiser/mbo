@@ -8,7 +8,7 @@ extern "C" {
 #include "Amplitude.h"
 #include "ElemOp.h"
 #include "ProdSpace.h"
-#include "TensProdOp.h"
+#include "TensorOp.h"
 
 #ifdef __cplusplus
 }

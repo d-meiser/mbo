@@ -1,6 +1,7 @@
 #include <stdlib.h>
 
-#include "TensProdOp.h"
+#include "TensorOp.h"
+
 struct Embedding
 {
 	ElemOp op;
@@ -8,8 +9,7 @@ struct Embedding
 	struct Embedding *next;
 };
 
-struct Embedding *FindEmbedding(int i, struct Embedding *list);
-void MultiplyEmbeddings(int, struct Embedding *a, struct Embedding *b);
+static struct Embedding *FindEmbedding(int i, struct Embedding *list);
 
 /**
  * @brief A simple product of embeddings
@@ -22,14 +22,14 @@ struct SimpleTOp
 	struct SimpleTOp *next;
 };
 
-struct Embedding *GatherIthEmbedding(int, struct SimpleTOp *);
-void DestroySimpleTOp(struct SimpleTOp *term);
-void MultiplySimpleTOps(int, struct SimpleTOp *sa, struct SimpleTOp *sb);
+static struct Embedding *GatherIthEmbedding(int, struct SimpleTOp *);
+static void DestroySimpleTOp(struct SimpleTOp *term);
+static void MultiplySimpleTOps(int, struct SimpleTOp *sa, struct SimpleTOp *sb);
 
 /**
    Data structure for tensor product operators.
    */
-struct TOp
+struct TensorOp
 {
 	/* Product space on which the operator is defined. */
 	ProdSpace space;
@@ -39,15 +39,15 @@ struct TOp
 };
 
 
-void CreateTOp(ProdSpace h, TOp *op)
+void tensorOpCreate(ProdSpace h, TensorOp *op)
 {
-	TOp a = malloc(sizeof(*a));
+	TensorOp a = malloc(sizeof(*a));
 	a->space = h;
 	a->sum = 0;
 	*op = a;
 }
 
-void DestroyTOp(TOp *op)
+void tensorOpDestroy(TensorOp *op)
 {
 	struct SimpleTOp *nextTerm;
 
@@ -75,7 +75,7 @@ void DestroySimpleTOp(struct SimpleTOp *term)
 	free(term);
 }
 
-void AddToTOp(ElemOp a, int i, TOp op)
+void tensorOpAddTo(ElemOp a, int i, TensorOp op)
 {
 	struct Embedding *aEmbedded;
 	struct SimpleTOp *simpleTOp;
@@ -91,13 +91,13 @@ void AddToTOp(ElemOp a, int i, TOp op)
 	op->sum = simpleTOp;
 }
 
-void AddScaledToTOp(double alpha, ElemOp a, int i, TOp op)
+void tensorOpAddScaledTo(double alpha, ElemOp a, int i, TensorOp op)
 {
-	AddToTOp(a, i, op);
+	tensorOpAddTo(a, i, op);
 	ScaleElemOp(alpha, op->sum->embedding->op);
 }
 
-void MulTOp(TOp a, TOp *b)
+void tensorOpMul(TensorOp a, TensorOp *b)
 {
 	struct SimpleTOp* sa;
 	struct SimpleTOp* sb;
@@ -155,7 +155,7 @@ struct Embedding *FindEmbedding(int i, struct Embedding *emb)
 	return 0;
 }
 
-int tensProdOpCheck(TOp op)
+int tensorOpCheck(TensorOp op)
 {
 	return 0;
 }
@@ -168,21 +168,21 @@ int tensProdOpCheck(TOp op)
 
 #define EPS 1.0e-12
 
-int test_CreateTOp()
+int test_TensorOpCreate()
 {
 	int errs = 0;
-	TOp op;
-	CreateTOp(0, &op);
+	TensorOp op;
+	tensorOpCreate(0, &op);
 	CHK_EQUAL(op->space, 0, errs);
 	CHK_EQUAL(op->sum, 0, errs);
-	DestroyTOp(&op);
+	tensorOpDestroy(&op);
 	return errs;
 }
 
-int test_AddToTOp()
+int test_TensorOpAddTo()
 {
 	int errs = 0;
-	TOp op;
+	TensorOp op;
 	ElemOp eop;
 	ProdSpace h;
 	double matrixElement = -3.4;
@@ -192,22 +192,22 @@ int test_AddToTOp()
 	CreateElemOp(&eop);
 	AddToElemOp(14, 15, matrixElement, &eop);
 
-	CreateTOp(0, &op);
-	AddToTOp(eop, 0, op);
+	tensorOpCreate(0, &op);
+	tensorOpAddTo(eop, 0, op);
 	CHK_EQUAL(op->sum->embedding->i, 0, errs);
 	CHK_EQUAL(checkElemOp(op->sum->embedding->op), 0, errs);
 	CHK_EQUAL(op->sum->next, 0, errs);
 
-	DestroyTOp(&op);
+	tensorOpDestroy(&op);
 	DestroyElemOp(&eop);
 	DestroyProdSpace(&h);
 	return errs;
 }
 
-int test_AddScaledToTOp()
+int test_TensorOpAddScaledTo()
 {
 	int errs = 0;
-	TOp op;
+	TensorOp op;
 	ElemOp eop;
 	ProdSpace h;
 	double alpha = 2.1;
@@ -217,13 +217,13 @@ int test_AddScaledToTOp()
 	CreateElemOp(&eop);
 	AddToElemOp(14, 15, -3.4, &eop);
 
-	CreateTOp(0, &op);
-	AddScaledToTOp(alpha, eop, 0, op);
+	tensorOpCreate(0, &op);
+	tensorOpAddScaledTo(alpha, eop, 0, op);
 	CHK_EQUAL(op->sum->embedding->i, 0, errs);
 	CHK_EQUAL(checkElemOp(op->sum->embedding->op), 0, errs);
 	CHK_EQUAL(op->sum->next, 0, errs);
 
-	DestroyTOp(&op);
+	tensorOpDestroy(&op);
 	DestroyElemOp(&eop);
 	DestroyProdSpace(&h);
 	return errs;
@@ -234,7 +234,7 @@ int test_FindEmbedding()
 	int errs = 0;
 	int i;
 	int N = 10;
-	TOp op;
+	TensorOp op;
 	ElemOp eop;
 	ProdSpace h;
 	struct Embedding *emb;
@@ -249,9 +249,9 @@ int test_FindEmbedding()
 	AddToElemOp(1, 5, 2.0, &eop);
 	AddToElemOp(2, 3, 2.0, &eop);
 
-	CreateTOp(h, &op);
-	AddToTOp(eop, 0, op);
-	AddToTOp(eop, 3, op);
+	tensorOpCreate(h, &op);
+	tensorOpAddTo(eop, 0, op);
+	tensorOpAddTo(eop, 3, op);
 
 	emb = FindEmbedding(0, op->sum->next->embedding);
 	CHK_NOT_EQUAL(emb, 0, errs);
@@ -262,19 +262,19 @@ int test_FindEmbedding()
 	emb = FindEmbedding(1, op->sum->embedding);
 	CHK_EQUAL(emb, 0, errs);
 
-	DestroyTOp(&op);
+	tensorOpDestroy(&op);
 	DestroyElemOp(&eop);
 	DestroyProdSpace(&h);
 
 	return errs;
 }
 
-int test_MulTOp()
+int test_TensorOpMul()
 {
 	int errs = 0;
 	int i;
 	int N = 10;
-	TOp op1, op2;
+	TensorOp op1, op2;
 	ElemOp eop1, eop2;
 	ProdSpace h;
 
@@ -292,12 +292,12 @@ int test_MulTOp()
 	AddToElemOp(8, 3, -3.4, &eop2);
 	AddToElemOp(3, 4, 2.0, &eop2);
 
-	CreateTOp(h, &op1);
-	AddToTOp(eop1, 0, op1);
-	CreateTOp(h, &op2);
-	AddToTOp(eop2, 0, op2);
+	tensorOpCreate(h, &op1);
+	tensorOpAddTo(eop1, 0, op1);
+	tensorOpCreate(h, &op2);
+	tensorOpAddTo(eop2, 0, op2);
 
-	MulTOp(op1, &op2);
+	tensorOpMul(op1, &op2);
 
 	CHK_EQUAL(op1->sum->embedding->i, 0, errs);
 	CHK_EQUAL(op1->sum->next, 0, errs);
@@ -307,21 +307,21 @@ int test_MulTOp()
 	CHK_EQUAL(op2->sum->embedding->next, 0, errs);
 	CHK_EQUAL(checkElemOp(op2->sum->embedding->op), 0, errs);
 
-	DestroyTOp(&op1);
-	DestroyTOp(&op2);
+	tensorOpDestroy(&op1);
+	tensorOpDestroy(&op2);
 	DestroyElemOp(&eop1);
 	DestroyElemOp(&eop2);
 	DestroyProdSpace(&h);
 	return errs;
 }
 
-int tensProdOpTest()
+int tensorOpTest()
 {
 	int errs = 0;
-	errs += test_CreateTOp();
-	errs += test_AddToTOp();
-	errs += test_AddScaledToTOp();
+	errs += test_TensorOpCreate();
+	errs += test_TensorOpAddTo();
+	errs += test_TensorOpAddScaledTo();
 	errs += test_FindEmbedding();
-	errs += test_MulTOp();
+	errs += test_TensorOpMul();
 	return errs;
 }
