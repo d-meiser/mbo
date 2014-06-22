@@ -8,14 +8,14 @@ extern "C" {
 struct ElemOp;
 typedef struct ElemOp *ElemOp;
 
-void CreateElemOp(ElemOp *);
-void DestroyElemOp(ElemOp *);
-void AddToElemOp(int, int, double, ElemOp *);
-void ScaleElemOp(double, ElemOp);
-void PlusElemOp(ElemOp, ElemOp *);
-void MulElemOp(ElemOp, ElemOp *);
-int checkElemOp(ElemOp);
-int testElemOp();
+void elemOpCreate(ElemOp *);
+void elemOpDestroy(ElemOp *);
+void elemOpAddTo(int, int, double, ElemOp *);
+void elemOpScale(double, ElemOp);
+void elemOpPlus(ElemOp, ElemOp *);
+void elemOpMul(ElemOp, ElemOp *);
+int elemOpCheck(ElemOp);
+int elemOpTest();
 
 ElemOp sigmaPlus();
 ElemOp sigmaMinus();

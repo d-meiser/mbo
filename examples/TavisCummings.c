@@ -17,13 +17,13 @@ int main()
 	TensorOp inhomogeneousJz;
 	TensorOp jMinus;
 
-	CreateElemOp(&sm);
-	AddToElemOp(0, 1, 1.0, &sm);
-	CreateElemOp(&sp);
-	AddToElemOp(1, 0, 1.0, &sp);
-	CreateElemOp(&sz);
-	AddToElemOp(1, 1, 1.0, &sz);
-	AddToElemOp(0, 0, -1.0, &sz);
+	elemOpCreate(&sm);
+	elemOpAddTo(0, 1, 1.0, &sm);
+	elemOpCreate(&sp);
+	elemOpAddTo(1, 0, 1.0, &sp);
+	elemOpCreate(&sz);
+	elemOpAddTo(1, 1, 1.0, &sz);
+	elemOpAddTo(0, 0, -1.0, &sz);
 
 	hSingleAtom = CreateProdSpace(2);
 	hAtoms = CreateProdSpace(0);
@@ -42,9 +42,9 @@ int main()
 
 	tensorOpCreate(hTot, &jMinus);
 
-	DestroyElemOp(&sm);
-	DestroyElemOp(&sp);
-	DestroyElemOp(&sz);
+	elemOpDestroy(&sm);
+	elemOpDestroy(&sp);
+	elemOpDestroy(&sz);
 	DestroyProdSpace(&hSingleAtom);
 	DestroyProdSpace(&hAtoms);
 	DestroyProdSpace(&hField);

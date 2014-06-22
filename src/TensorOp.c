@@ -68,7 +68,7 @@ void DestroySimpleTOp(struct SimpleTOp *term)
 	if (term == 0) return;
 	while (term->embedding) {
 		nextEmbedding = term->embedding->next;
-		DestroyElemOp(&term->embedding->op);
+		elemOpDestroy(&term->embedding->op);
 		free(term->embedding);
 		term->embedding = nextEmbedding;
 	}
@@ -81,8 +81,8 @@ void tensorOpAddTo(ElemOp a, int i, TensorOp op)
 	struct SimpleTOp *simpleTOp;
 
 	aEmbedded = malloc(sizeof(*aEmbedded));
-	CreateElemOp(&aEmbedded->op);
-	PlusElemOp(a, &aEmbedded->op);
+	elemOpCreate(&aEmbedded->op);
+	elemOpPlus(a, &aEmbedded->op);
 	aEmbedded->i = i;
 	aEmbedded->next = 0;
 	simpleTOp = malloc(sizeof(*simpleTOp));
@@ -94,7 +94,7 @@ void tensorOpAddTo(ElemOp a, int i, TensorOp op)
 void tensorOpAddScaledTo(double alpha, ElemOp a, int i, TensorOp op)
 {
 	tensorOpAddTo(a, i, op);
-	ScaleElemOp(alpha, op->sum->embedding->op);
+	elemOpScale(alpha, op->sum->embedding->op);
 }
 
 void tensorOpMul(TensorOp a, TensorOp *b)
@@ -120,7 +120,7 @@ void MultiplySimpleTOps(int N, struct SimpleTOp *a, struct SimpleTOp *b)
 		ea = GatherIthEmbedding(i, a);
 		eb = GatherIthEmbedding(i, b);
 		if (ea != 0) {
-			MulElemOp(ea->op, &eb->op);
+			elemOpMul(ea->op, &eb->op);
 		} else {
 			/* Identity in ea, needn't do anything */
 		}
@@ -136,7 +136,7 @@ struct Embedding *GatherIthEmbedding(int i, struct SimpleTOp *sum)
 	next = prev->next;
 	while (next) {
 		if (next->i == i) {
-			PlusElemOp(next->op, &first->op);
+			elemOpPlus(next->op, &first->op);
 			prev->next = next->next;
 			free(next);
 		}
@@ -168,7 +168,7 @@ int tensorOpCheck(TensorOp op)
 
 #define EPS 1.0e-12
 
-int test_TensorOpCreate()
+static int testTensorOpCreate()
 {
 	int errs = 0;
 	TensorOp op;
@@ -179,7 +179,7 @@ int test_TensorOpCreate()
 	return errs;
 }
 
-int test_TensorOpAddTo()
+static int testTensorOpAddTo()
 {
 	int errs = 0;
 	TensorOp op;
@@ -189,22 +189,22 @@ int test_TensorOpAddTo()
 
 	h = CreateProdSpace(20);
 
-	CreateElemOp(&eop);
-	AddToElemOp(14, 15, matrixElement, &eop);
+	elemOpCreate(&eop);
+	elemOpAddTo(14, 15, matrixElement, &eop);
 
 	tensorOpCreate(0, &op);
 	tensorOpAddTo(eop, 0, op);
 	CHK_EQUAL(op->sum->embedding->i, 0, errs);
-	CHK_EQUAL(checkElemOp(op->sum->embedding->op), 0, errs);
+	CHK_EQUAL(elemOpCheck(op->sum->embedding->op), 0, errs);
 	CHK_EQUAL(op->sum->next, 0, errs);
 
 	tensorOpDestroy(&op);
-	DestroyElemOp(&eop);
+	elemOpDestroy(&eop);
 	DestroyProdSpace(&h);
 	return errs;
 }
 
-int test_TensorOpAddScaledTo()
+static int testTensorOpAddScaledTo()
 {
 	int errs = 0;
 	TensorOp op;
@@ -214,22 +214,22 @@ int test_TensorOpAddScaledTo()
 
 	h = CreateProdSpace(20);
 
-	CreateElemOp(&eop);
-	AddToElemOp(14, 15, -3.4, &eop);
+	elemOpCreate(&eop);
+	elemOpAddTo(14, 15, -3.4, &eop);
 
 	tensorOpCreate(0, &op);
 	tensorOpAddScaledTo(alpha, eop, 0, op);
 	CHK_EQUAL(op->sum->embedding->i, 0, errs);
-	CHK_EQUAL(checkElemOp(op->sum->embedding->op), 0, errs);
+	CHK_EQUAL(elemOpCheck(op->sum->embedding->op), 0, errs);
 	CHK_EQUAL(op->sum->next, 0, errs);
 
 	tensorOpDestroy(&op);
-	DestroyElemOp(&eop);
+	elemOpDestroy(&eop);
 	DestroyProdSpace(&h);
 	return errs;
 }
 
-int test_FindEmbedding()
+static int testFindEmbedding()
 {
 	int errs = 0;
 	int i;
@@ -244,10 +244,10 @@ int test_FindEmbedding()
 		MultToProdSpace(h, &h);
 	}
 
-	CreateElemOp(&eop);
-	AddToElemOp(14, 15, -3.4, &eop);
-	AddToElemOp(1, 5, 2.0, &eop);
-	AddToElemOp(2, 3, 2.0, &eop);
+	elemOpCreate(&eop);
+	elemOpAddTo(14, 15, -3.4, &eop);
+	elemOpAddTo(1, 5, 2.0, &eop);
+	elemOpAddTo(2, 3, 2.0, &eop);
 
 	tensorOpCreate(h, &op);
 	tensorOpAddTo(eop, 0, op);
@@ -263,13 +263,13 @@ int test_FindEmbedding()
 	CHK_EQUAL(emb, 0, errs);
 
 	tensorOpDestroy(&op);
-	DestroyElemOp(&eop);
+	elemOpDestroy(&eop);
 	DestroyProdSpace(&h);
 
 	return errs;
 }
 
-int test_TensorOpMul()
+static int testTensorOpMul()
 {
 	int errs = 0;
 	int i;
@@ -283,14 +283,14 @@ int test_TensorOpMul()
 		MultToProdSpace(h, &h);
 	}
 
-	CreateElemOp(&eop1);
-	AddToElemOp(14, 15, -3.4, &eop1);
-	AddToElemOp(1, 5, 2.0, &eop1);
-	AddToElemOp(2, 3, 2.0, &eop1);
+	elemOpCreate(&eop1);
+	elemOpAddTo(14, 15, -3.4, &eop1);
+	elemOpAddTo(1, 5, 2.0, &eop1);
+	elemOpAddTo(2, 3, 2.0, &eop1);
 
-	CreateElemOp(&eop2);
-	AddToElemOp(8, 3, -3.4, &eop2);
-	AddToElemOp(3, 4, 2.0, &eop2);
+	elemOpCreate(&eop2);
+	elemOpAddTo(8, 3, -3.4, &eop2);
+	elemOpAddTo(3, 4, 2.0, &eop2);
 
 	tensorOpCreate(h, &op1);
 	tensorOpAddTo(eop1, 0, op1);
@@ -301,16 +301,16 @@ int test_TensorOpMul()
 
 	CHK_EQUAL(op1->sum->embedding->i, 0, errs);
 	CHK_EQUAL(op1->sum->next, 0, errs);
-	CHK_EQUAL(checkElemOp(op1->sum->embedding->op), 0, errs);
+	CHK_EQUAL(elemOpCheck(op1->sum->embedding->op), 0, errs);
 
 	CHK_EQUAL(op2->sum->embedding->i, 0, errs);
 	CHK_EQUAL(op2->sum->embedding->next, 0, errs);
-	CHK_EQUAL(checkElemOp(op2->sum->embedding->op), 0, errs);
+	CHK_EQUAL(elemOpCheck(op2->sum->embedding->op), 0, errs);
 
 	tensorOpDestroy(&op1);
 	tensorOpDestroy(&op2);
-	DestroyElemOp(&eop1);
-	DestroyElemOp(&eop2);
+	elemOpDestroy(&eop1);
+	elemOpDestroy(&eop2);
 	DestroyProdSpace(&h);
 	return errs;
 }
@@ -318,10 +318,10 @@ int test_TensorOpMul()
 int tensorOpTest()
 {
 	int errs = 0;
-	errs += test_TensorOpCreate();
-	errs += test_TensorOpAddTo();
-	errs += test_TensorOpAddScaledTo();
-	errs += test_FindEmbedding();
-	errs += test_TensorOpMul();
+	errs += testTensorOpCreate();
+	errs += testTensorOpAddTo();
+	errs += testTensorOpAddScaledTo();
+	errs += testFindEmbedding();
+	errs += testTensorOpMul();
 	return errs;
 }

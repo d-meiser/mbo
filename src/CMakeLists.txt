@@ -5,7 +5,7 @@ include_directories(
 set(QUO_SRCS
   ElemOp.c
   ProdSpace.c
-  TensProdOp.c
+  TensorOp.c
   MboList.c
   )
 
@@ -19,7 +19,7 @@ endif()
 set(TESTS
   test_ElemOp
   test_ProdSpace
-  test_TensProdOp
+  test_TensorOp
   test_MboList
   )
 
