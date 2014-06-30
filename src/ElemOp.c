@@ -51,7 +51,7 @@ void elemOpPlus(ElemOp a, ElemOp *b)
 
 int elemOpCheck(ElemOp a)
 {
-	int errs;
+	int errs = 0;
 	while (a) {
 		if (a->op.m < 0) ++errs;
 		if (a->op.n < 0) ++errs;
