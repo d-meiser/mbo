@@ -159,7 +159,7 @@ struct Embedding *copyEmbedding(struct Embedding *e)
 		copy = malloc(sizeof(*copy));
 		copy->op = e->op;
 		copy->i = e->i;
-		copy->next = copyEmbedding(e);
+		copy->next = copyEmbedding(e->next);
 	}
 	return copy;
 }
