@@ -9,8 +9,8 @@ struct Embedding
 	struct Embedding *next;
 };
 
-static struct Embedding *FindEmbedding(int i, struct Embedding *list);
-static struct Embedding *CopyEmbedding(struct Embedding *e);
+static struct Embedding *findEmbedding(int i, struct Embedding *list);
+static struct Embedding *copyEmbedding(struct Embedding *e);
 
 /**
  * @brief A simple product of embeddings
@@ -23,10 +23,10 @@ struct SimpleTOp
 	struct SimpleTOp *next;
 };
 
-static struct Embedding *GatherIthEmbedding(int, struct SimpleTOp *);
-static void DestroySimpleTOp(struct SimpleTOp *term);
-static void MultiplySimpleTOps(int, struct SimpleTOp *sa, struct SimpleTOp *sb);
-static struct SimpleTOp *CopySimpleTOp(struct SimpleTOp *sa);
+static struct Embedding *gatherIthEmbedding(int, struct SimpleTOp *);
+static void destroySimpleTOp(struct SimpleTOp *term);
+static void multiplySimpleTOps(int, struct SimpleTOp *sa, struct SimpleTOp *sb);
+static struct SimpleTOp *copySimpleTOp(struct SimpleTOp *sa);
 
 /**
    Data structure for tensor product operators.
@@ -56,14 +56,14 @@ void tensorOpDestroy(TensorOp *op)
 	if (*op == 0) return;
 	while ((*op)->sum) {
 		nextTerm = (*op)->sum->next;
-		DestroySimpleTOp((*op)->sum);
+		destroySimpleTOp((*op)->sum);
 		(*op)->sum = nextTerm;
 	}
 	free(*op);
 	*op = 0;
 }
 
-void DestroySimpleTOp(struct SimpleTOp *term)
+void destroySimpleTOp(struct SimpleTOp *term)
 {
 	struct Embedding* nextEmbedding;
 
@@ -107,7 +107,7 @@ void tensorOpMul(TensorOp a, TensorOp *b)
 
 	for (sa = a->sum; sa != 0; sa = sa->next) {
 		for (sb = (*b)->sum; sb != 0; sb = sb->next) {
-			MultiplySimpleTOps(N, sa, sb);
+			multiplySimpleTOps(N, sa, sb);
 		}
 	}
 }
@@ -117,22 +117,22 @@ void tensorOpPlus(TensorOp a, TensorOp *b)
 	struct SimpleTOp *sa = a->sum, *sb;
 
 	while (sa) {
-		sb = CopySimpleTOp(sa);
+		sb = copySimpleTOp(sa);
 		sb->next = (*b)->sum;
 		(*b)->sum = sb;
 		sa = sa->next;
 	}
 }
 
-void MultiplySimpleTOps(int N, struct SimpleTOp *a, struct SimpleTOp *b)
+void multiplySimpleTOps(int N, struct SimpleTOp *a, struct SimpleTOp *b)
 {
 	int i;
 	struct Embedding *ea;
 	struct Embedding *eb;
 
 	for (i = 0; i < N; ++i) {
-		ea = GatherIthEmbedding(i, a);
-		eb = GatherIthEmbedding(i, b);
+		ea = gatherIthEmbedding(i, a);
+		eb = gatherIthEmbedding(i, b);
 		if (ea != 0) {
 			elemOpMul(ea->op, &eb->op);
 		} else {
@@ -141,33 +141,33 @@ void MultiplySimpleTOps(int N, struct SimpleTOp *a, struct SimpleTOp *b)
 	}
 }
 
-struct SimpleTOp *CopySimpleTOp(struct SimpleTOp *sa)
+struct SimpleTOp *copySimpleTOp(struct SimpleTOp *sa)
 {
 	struct SimpleTOp *copy = 0;
 	if (sa) {
 		copy = malloc(sizeof(*copy));
-		copy->embedding = CopyEmbedding(sa->embedding);
-		copy->next = CopySimpleTOp(sa->next);
+		copy->embedding = copyEmbedding(sa->embedding);
+		copy->next = copySimpleTOp(sa->next);
 	}
 	return copy;
 }
 
-struct Embedding *CopyEmbedding(struct Embedding *e)
+struct Embedding *copyEmbedding(struct Embedding *e)
 {
 	struct Embedding *copy = 0;
 	if (e) {
 		copy = malloc(sizeof(*copy));
 		copy->op = e->op;
 		copy->i = e->i;
-		copy->next = CopyEmbedding(e);
+		copy->next = copyEmbedding(e);
 	}
 	return copy;
 }
 
-struct Embedding *GatherIthEmbedding(int i, struct SimpleTOp *sum)
+struct Embedding *gatherIthEmbedding(int i, struct SimpleTOp *sum)
 {
 	struct Embedding *first, *prev, *next;
-	first = FindEmbedding(i, sum->embedding);
+	first = findEmbedding(i, sum->embedding);
 	if (first == 0) return first;
 	prev = first;
 	next = prev->next;
@@ -183,7 +183,7 @@ struct Embedding *GatherIthEmbedding(int i, struct SimpleTOp *sum)
 	return first;
 }
 
-struct Embedding *FindEmbedding(int i, struct Embedding *emb)
+struct Embedding *findEmbedding(int i, struct Embedding *emb)
 {
 	while (emb) {
 		if (emb->i == i) return emb;
@@ -290,13 +290,13 @@ static int testFindEmbedding()
 	tensorOpAddTo(eop, 0, op);
 	tensorOpAddTo(eop, 3, op);
 
-	emb = FindEmbedding(0, op->sum->next->embedding);
+	emb = findEmbedding(0, op->sum->next->embedding);
 	CHK_NOT_EQUAL(emb, 0, errs);
-	emb = FindEmbedding(1, op->sum->next->embedding);
+	emb = findEmbedding(1, op->sum->next->embedding);
 	CHK_EQUAL(emb, 0, errs);
-	emb = FindEmbedding(3, op->sum->embedding);
+	emb = findEmbedding(3, op->sum->embedding);
 	CHK_NOT_EQUAL(emb, 0, errs);
-	emb = FindEmbedding(1, op->sum->embedding);
+	emb = findEmbedding(1, op->sum->embedding);
 	CHK_EQUAL(emb, 0, errs);
 
 	tensorOpDestroy(&op);
