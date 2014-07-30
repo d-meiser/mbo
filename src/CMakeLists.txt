@@ -6,7 +6,6 @@ set(QUO_SRCS
   ElemOp.c
   ProdSpace.c
   TensorOp.c
-  MboList.c
   )
 
 add_library(QUO
@@ -20,7 +19,6 @@ set(TESTS
   test_ElemOp
   test_ProdSpace
   test_TensorOp
-  test_MboList
   )
 
 foreach(t ${TESTS})
