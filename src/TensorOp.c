@@ -10,6 +10,7 @@ struct Embedding
 };
 
 static struct Embedding *FindEmbedding(int i, struct Embedding *list);
+static struct Embedding *CopyEmbedding(struct Embedding *e);
 
 /**
  * @brief A simple product of embeddings
@@ -25,6 +26,7 @@ struct SimpleTOp
 static struct Embedding *GatherIthEmbedding(int, struct SimpleTOp *);
 static void DestroySimpleTOp(struct SimpleTOp *term);
 static void MultiplySimpleTOps(int, struct SimpleTOp *sa, struct SimpleTOp *sb);
+static struct SimpleTOp *CopySimpleTOp(struct SimpleTOp *sa);
 
 /**
    Data structure for tensor product operators.
@@ -110,6 +112,18 @@ void tensorOpMul(TensorOp a, TensorOp *b)
 	}
 }
 
+void tensorOpPlus(TensorOp a, TensorOp *b)
+{
+	struct SimpleTOp *sa = a->sum, *sb;
+
+	while (sa) {
+		sb = CopySimpleTOp(sa);
+		sb->next = (*b)->sum;
+		(*b)->sum = sb;
+		sa = sa->next;
+	}
+}
+
 void MultiplySimpleTOps(int N, struct SimpleTOp *a, struct SimpleTOp *b)
 {
 	int i;
@@ -125,6 +139,29 @@ void MultiplySimpleTOps(int N, struct SimpleTOp *a, struct SimpleTOp *b)
 			/* Identity in ea, needn't do anything */
 		}
 	}
+}
+
+struct SimpleTOp *CopySimpleTOp(struct SimpleTOp *sa)
+{
+	struct SimpleTOp *copy = 0;
+	if (sa) {
+		copy = malloc(sizeof(*copy));
+		copy->embedding = CopyEmbedding(sa->embedding);
+		copy->next = CopySimpleTOp(sa->next);
+	}
+	return copy;
+}
+
+struct Embedding *CopyEmbedding(struct Embedding *e)
+{
+	struct Embedding *copy = 0;
+	if (e) {
+		copy = malloc(sizeof(*copy));
+		copy->op = e->op;
+		copy->i = e->i;
+		copy->next = CopyEmbedding(e);
+	}
+	return copy;
 }
 
 struct Embedding *GatherIthEmbedding(int i, struct SimpleTOp *sum)
@@ -315,6 +352,50 @@ static int testTensorOpMul()
 	return errs;
 }
 
+static int testTensorOpPlus()
+{
+	int i, errs = 0, N = 5;
+	ProdSpace hTot, h1;
+	TensorOp op1, op2;
+	ElemOp sz, sp, sm;
+
+	hTot = prodSpaceCreate(0);
+	h1 = prodSpaceCreate(2);
+	for (i = 0; i < N; ++i) {
+		prodSpaceMul(h1, &hTot);
+	}
+
+	tensorOpCreate(hTot, &op1);
+	tensorOpCreate(hTot, &op2);
+	sz = sigmaZ();
+	sp = sigmaPlus();
+	sm = sigmaMinus();
+	tensorOpAddTo(sz, 0, op1);
+	tensorOpAddTo(sz, 1, op1);
+	tensorOpAddTo(sp, 0, op2);
+	tensorOpAddTo(sp, 2, op2);
+	tensorOpAddTo(sp, 3, op2);
+	tensorOpAddTo(sm, 3, op2);
+	tensorOpAddTo(sm, 2, op2);
+	CHK_EQUAL(0, tensorOpCheck(op1), errs);
+	CHK_EQUAL(0, tensorOpCheck(op2), errs);
+
+	tensorOpPlus(op1, &op2);
+	CHK_EQUAL(0, tensorOpCheck(op1), errs);
+
+	tensorOpPlus(op2, &op1);
+	CHK_EQUAL(0, tensorOpCheck(op1), errs);
+
+	elemOpDestroy(&sz);
+	elemOpDestroy(&sp);
+	elemOpDestroy(&sm);
+	tensorOpDestroy(&op1);
+	tensorOpDestroy(&op2);
+	prodSpaceDestroy(&hTot);
+	prodSpaceDestroy(&h1);
+	return errs;
+}
+
 int tensorOpTest()
 {
 	int errs = 0;
@@ -323,5 +404,6 @@ int tensorOpTest()
 	errs += testTensorOpAddScaledTo();
 	errs += testFindEmbedding();
 	errs += testTensorOpMul();
+	errs += testTensorOpPlus();
 	return errs;
 }
