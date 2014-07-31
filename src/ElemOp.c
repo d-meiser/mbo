@@ -8,19 +8,19 @@
 struct ElemOp
 {
 	int nOps;
-	struct NonZeroEntry *op;
+	struct NonZeroEntry *entries;
 };
 
 void elemOpCreate(ElemOp *eo)
 {
 	*eo = malloc(sizeof(struct ElemOp));
 	(*eo)->nOps = 0;
-	(*eo)->op = 0;
+	(*eo)->entries = 0;
 }
 
 void elemOpDestroy(ElemOp *eo)
 {
-	free((*eo)->op);
+	free((*eo)->entries);
 	free(*eo);
 	*eo = 0;
 }
@@ -28,10 +28,10 @@ void elemOpDestroy(ElemOp *eo)
 void elemOpAddTo(int m, int n, double val, ElemOp *eo)
 {
 	ElemOp a = *eo;
-	a->op = realloc(a->op, (a->nOps + 1) * sizeof(*a->op));
-	a->op[a->nOps].m = m;
-	a->op[a->nOps].n = n;
-	a->op[a->nOps].val = val;
+	a->entries = realloc(a->entries, (a->nOps + 1) * sizeof(*a->entries));
+	a->entries[a->nOps].m = m;
+	a->entries[a->nOps].n = n;
+	a->entries[a->nOps].val = val;
 	++a->nOps;
 }
 
@@ -39,15 +39,16 @@ void elemOpScale(double alpha, ElemOp eo)
 {
 	int i;
 	for (i = 0; i < eo->nOps; ++i) {
-		eo->op[i].val *= alpha;
+		eo->entries[i].val *= alpha;
 	}
 }
 
 void elemOpPlus(ElemOp a, ElemOp *b)
 {
-	(*b)->op =
-	    realloc((*b)->op, ((*b)->nOps + a->nOps) * sizeof(*(*b)->op));
-	memcpy((*b)->op + (*b)->nOps, a->op, a->nOps * sizeof(*a->op));
+	(*b)->entries = realloc((*b)->entries, ((*b)->nOps + a->nOps) *
+						   sizeof(*(*b)->entries));
+	memcpy((*b)->entries + (*b)->nOps, a->entries,
+	       a->nOps * sizeof(*a->entries));
 	(*b)->nOps += a->nOps;
 }
 
@@ -56,8 +57,8 @@ int elemOpCheck(ElemOp a)
 	int errs = 0;
 	int i;
 	for (i = 0; i < a->nOps; ++i) {
-		if (a->op[i].m < 0) ++errs;
-		if (a->op[i].n < 0) ++errs;
+		if (a->entries[i].m < 0) ++errs;
+		if (a->entries[i].n < 0) ++errs;
 	}
 	return errs;
 }
@@ -139,21 +140,21 @@ void elemOpMul(ElemOp a, ElemOp *b)
 	numOps = 0;
 	for (i = 0; i < a->nOps; ++i) {
 		for (j = 0; j < (*b)->nOps; ++j) {
-			if (a->op[i].n == (*b)->op[j].m) {
+			if (a->entries[i].n == (*b)->entries[j].m) {
 				++numOps;
 			}
 		}
 	}
-	prod->op = realloc(prod->op, numOps * sizeof(*prod->op));
+	prod->entries = realloc(prod->entries, numOps * sizeof(*prod->entries));
 	prod->nOps = numOps;
 	numOps = 0;
 	for (i = 0; i < a->nOps; ++i) {
 		for (j = 0; j < (*b)->nOps; ++j) {
-			if (a->op[i].n == (*b)->op[j].m) {
-				prod->op[numOps].m = a->op[i].m;
-				prod->op[numOps].n = (*b)->op[j].n;
-				prod->op[numOps].val =
-				    a->op[i].val * (*b)->op[j].val;
+			if (a->entries[i].n == (*b)->entries[j].m) {
+				prod->entries[numOps].m = a->entries[i].m;
+				prod->entries[numOps].n = (*b)->entries[j].n;
+				prod->entries[numOps].val =
+				    a->entries[i].val * (*b)->entries[j].val;
 				++numOps;
 			}
 		}
@@ -167,8 +168,9 @@ ElemOp elemOpCopy(ElemOp a)
 	ElemOp copy;
 	elemOpCreate(&copy);
 	copy->nOps = a->nOps;
-	copy->op = realloc(copy->op, a->nOps * sizeof(*copy->op));
-	memcpy(copy->op, a->op, a->nOps * sizeof(*copy->op));
+	copy->entries =
+	    realloc(copy->entries, a->nOps * sizeof(*copy->entries));
+	memcpy(copy->entries, a->entries, a->nOps * sizeof(*copy->entries));
 	return copy;
 }
 
@@ -186,7 +188,7 @@ static int testElemOpCreate()
 	elemOpCreate(&a);
 
 	CHK_EQUAL(0, a->nOps, errs);
-	CHK_EQUAL(0, a->op, errs);
+	CHK_EQUAL(0, a->entries, errs);
 
 	elemOpDestroy(&a);
 	return errs;
@@ -201,9 +203,9 @@ static int testElemOpAddTo()
 	elemOpAddTo(1, 2, 3.0, &a);
 
 	CHK_EQUAL(a->nOps, 1, errs);
-	CHK_EQUAL(a->op[0].m, 1, errs);
-	CHK_EQUAL(a->op[0].n, 2, errs);
-	CHK_EQUAL(a->op[0].val, 3.0, errs);
+	CHK_EQUAL(a->entries[0].m, 1, errs);
+	CHK_EQUAL(a->entries[0].n, 2, errs);
+	CHK_EQUAL(a->entries[0].val, 3.0, errs);
 
 	elemOpDestroy(&a);
 	return errs;
@@ -217,7 +219,7 @@ static int testElemOpScale()
 
 	elemOpAddTo(1, 2, 3.0, &a);
 	elemOpScale(3.4, a);
-	CHK_CLOSE(a->op[0].val, 3.0 * 3.4, EPS, errs);
+	CHK_CLOSE(a->entries[0].val, 3.0 * 3.4, EPS, errs);
 
 	elemOpDestroy(&a);
 	return errs;
@@ -233,12 +235,12 @@ static int testElemOpPlus()
 	elemOpCreate(&b);
 	elemOpAddTo(0, 1, 3.0, &a);
 	elemOpPlus(a, &b);
-	CHK_EQUAL(a->op[0].m, 0, errs);
-	CHK_EQUAL(a->op[0].n, 1, errs);
-	CHK_CLOSE(a->op[0].val, 3.0, EPS, errs);
-	CHK_EQUAL(b->op[0].m, 0, errs);
-	CHK_EQUAL(b->op[0].n, 1, errs);
-	CHK_CLOSE(b->op[0].val, 3.0, EPS, errs);
+	CHK_EQUAL(a->entries[0].m, 0, errs);
+	CHK_EQUAL(a->entries[0].n, 1, errs);
+	CHK_CLOSE(a->entries[0].val, 3.0, EPS, errs);
+	CHK_EQUAL(b->entries[0].m, 0, errs);
+	CHK_EQUAL(b->entries[0].n, 1, errs);
+	CHK_CLOSE(b->entries[0].val, 3.0, EPS, errs);
 	elemOpDestroy(&a);
 	elemOpDestroy(&b);
 
@@ -246,9 +248,9 @@ static int testElemOpPlus()
 	elemOpCreate(&b);
 	elemOpAddTo(0, 1, 3.0, &b);
 	elemOpPlus(a, &b);
-	CHK_EQUAL(b->op[0].m, 0, errs);
-	CHK_EQUAL(b->op[0].n, 1, errs);
-	CHK_CLOSE(b->op[0].val, 3.0, EPS, errs);
+	CHK_EQUAL(b->entries[0].m, 0, errs);
+	CHK_EQUAL(b->entries[0].n, 1, errs);
+	CHK_CLOSE(b->entries[0].val, 3.0, EPS, errs);
 	elemOpDestroy(&a);
 	elemOpDestroy(&b);
 
@@ -257,15 +259,15 @@ static int testElemOpPlus()
 	elemOpAddTo(0, 1, 3.0, &a);
 	elemOpAddTo(0, 1, 3.0, &b);
 	elemOpPlus(a, &b);
-	CHK_EQUAL(a->op[0].m, 0, errs);
-	CHK_EQUAL(a->op[0].n, 1, errs);
-	CHK_CLOSE(a->op[0].val, 3.0, EPS, errs);
-	CHK_EQUAL(b->op[0].m, 0, errs);
-	CHK_EQUAL(b->op[0].n, 1, errs);
-	CHK_CLOSE(b->op[0].val, 3.0, EPS, errs);
-	CHK_EQUAL(b->op[1].m, 0, errs);
-	CHK_EQUAL(b->op[1].n, 1, errs);
-	CHK_CLOSE(b->op[1].val, 3.0, EPS, errs);
+	CHK_EQUAL(a->entries[0].m, 0, errs);
+	CHK_EQUAL(a->entries[0].n, 1, errs);
+	CHK_CLOSE(a->entries[0].val, 3.0, EPS, errs);
+	CHK_EQUAL(b->entries[0].m, 0, errs);
+	CHK_EQUAL(b->entries[0].n, 1, errs);
+	CHK_CLOSE(b->entries[0].val, 3.0, EPS, errs);
+	CHK_EQUAL(b->entries[1].m, 0, errs);
+	CHK_EQUAL(b->entries[1].n, 1, errs);
+	CHK_CLOSE(b->entries[1].val, 3.0, EPS, errs);
 	elemOpDestroy(&a);
 	elemOpDestroy(&b);
 
@@ -274,15 +276,15 @@ static int testElemOpPlus()
 	elemOpAddTo(0, 1, 3.0, &a);
 	elemOpAddTo(5, 11, -2.0, &b);
 	elemOpPlus(a, &b);
-	CHK_EQUAL(a->op[0].m, 0, errs);
-	CHK_EQUAL(a->op[0].n, 1, errs);
-	CHK_CLOSE(a->op[0].val, 3.0, EPS, errs);
-	CHK_EQUAL(b->op[0].m, 5, errs);
-	CHK_EQUAL(b->op[0].n, 11, errs);
-	CHK_CLOSE(b->op[0].val, -2.0, EPS, errs);
-	CHK_EQUAL(b->op[1].m, 0, errs);
-	CHK_EQUAL(b->op[1].n, 1, errs);
-	CHK_CLOSE(b->op[1].val, 3.0, EPS, errs);
+	CHK_EQUAL(a->entries[0].m, 0, errs);
+	CHK_EQUAL(a->entries[0].n, 1, errs);
+	CHK_CLOSE(a->entries[0].val, 3.0, EPS, errs);
+	CHK_EQUAL(b->entries[0].m, 5, errs);
+	CHK_EQUAL(b->entries[0].n, 11, errs);
+	CHK_CLOSE(b->entries[0].val, -2.0, EPS, errs);
+	CHK_EQUAL(b->entries[1].m, 0, errs);
+	CHK_EQUAL(b->entries[1].n, 1, errs);
+	CHK_CLOSE(b->entries[1].val, 3.0, EPS, errs);
 	elemOpDestroy(&a);
 	elemOpDestroy(&b);
 	return errs;
@@ -300,9 +302,9 @@ static int testElemOpMul()
 	elemOpAddTo(0, 1, 3.0, &a);
 	elemOpMul(a, &b);
 	CHK_EQUAL(a->nOps, 1, errs);
-	CHK_EQUAL(a->op[0].m, 0, errs);
-	CHK_EQUAL(a->op[0].n, 1, errs);
-	CHK_CLOSE(a->op[0].val, 3.0, EPS, errs);
+	CHK_EQUAL(a->entries[0].m, 0, errs);
+	CHK_EQUAL(a->entries[0].n, 1, errs);
+	CHK_CLOSE(a->entries[0].val, 3.0, EPS, errs);
 	CHK_EQUAL(b->nOps, 0, errs);
 	elemOpDestroy(&a);
 	elemOpDestroy(&b);
@@ -324,9 +326,9 @@ static int testElemOpMul()
 	elemOpAddTo(0, 1, 3.0, &b);
 	elemOpMul(a, &b);
 	CHK_EQUAL(a->nOps, 1, errs);
-	CHK_EQUAL(a->op[0].m, 0, errs);
-	CHK_EQUAL(a->op[0].n, 1, errs);
-	CHK_CLOSE(a->op[0].val, 3.0, EPS, errs);
+	CHK_EQUAL(a->entries[0].m, 0, errs);
+	CHK_EQUAL(a->entries[0].n, 1, errs);
+	CHK_CLOSE(a->entries[0].val, 3.0, EPS, errs);
 	CHK_EQUAL(b->nOps, 0, errs);
 	elemOpDestroy(&a);
 	elemOpDestroy(&b);
@@ -338,13 +340,13 @@ static int testElemOpMul()
 	elemOpAddTo(1, 0, 3.0, &b);
 	elemOpMul(a, &b);
 	CHK_EQUAL(a->nOps, 1, errs);
-	CHK_EQUAL(a->op[0].m, 0, errs);
-	CHK_EQUAL(a->op[0].n, 1, errs);
-	CHK_CLOSE(a->op[0].val, 3.0, EPS, errs);
+	CHK_EQUAL(a->entries[0].m, 0, errs);
+	CHK_EQUAL(a->entries[0].n, 1, errs);
+	CHK_CLOSE(a->entries[0].val, 3.0, EPS, errs);
 	CHK_EQUAL(b->nOps, 1, errs);
-	CHK_EQUAL(b->op[0].m, 0, errs);
-	CHK_EQUAL(b->op[0].n, 0, errs);
-	CHK_CLOSE(b->op[0].val, 9.0, EPS, errs);
+	CHK_EQUAL(b->entries[0].m, 0, errs);
+	CHK_EQUAL(b->entries[0].n, 0, errs);
+	CHK_CLOSE(b->entries[0].val, 9.0, EPS, errs);
 	elemOpDestroy(&a);
 	elemOpDestroy(&b);
 
@@ -357,9 +359,9 @@ static int testSigmaPlus()
 	ElemOp sp;
 	sp = sigmaPlus();
 	CHK_EQUAL(sp->nOps, 1, errs);
-	CHK_EQUAL(sp->op[0].m, 1, errs);
-	CHK_EQUAL(sp->op[0].n, 0, errs);
-	CHK_CLOSE(sp->op[0].val, 1.0, EPS, errs);
+	CHK_EQUAL(sp->entries[0].m, 1, errs);
+	CHK_EQUAL(sp->entries[0].n, 0, errs);
+	CHK_CLOSE(sp->entries[0].val, 1.0, EPS, errs);
 	elemOpDestroy(&sp);
 	return errs;
 }
@@ -370,9 +372,9 @@ static int testSigmaMinus()
 	ElemOp sp;
 	sp = sigmaMinus();
 	CHK_EQUAL(sp->nOps, 1, errs);
-	CHK_EQUAL(sp->op[0].m, 0, errs);
-	CHK_EQUAL(sp->op[0].n, 1, errs);
-	CHK_CLOSE(sp->op[0].val, 1.0, EPS, errs);
+	CHK_EQUAL(sp->entries[0].m, 0, errs);
+	CHK_EQUAL(sp->entries[0].n, 1, errs);
+	CHK_CLOSE(sp->entries[0].val, 1.0, EPS, errs);
 	elemOpDestroy(&sp);
 	return errs;
 }
@@ -383,12 +385,12 @@ static int testSigmaZ()
 	ElemOp sz;
 	sz = sigmaZ();
 	CHK_EQUAL(sz->nOps, 2, errs);
-	CHK_EQUAL(sz->op[0].m, 1, errs);
-	CHK_EQUAL(sz->op[0].n, 1, errs);
-	CHK_CLOSE(sz->op[0].val, 1.0, EPS, errs);
-	CHK_EQUAL(sz->op[1].m, 0, errs);
-	CHK_EQUAL(sz->op[1].n, 0, errs);
-	CHK_CLOSE(sz->op[1].val, -1.0, EPS, errs);
+	CHK_EQUAL(sz->entries[0].m, 1, errs);
+	CHK_EQUAL(sz->entries[0].n, 1, errs);
+	CHK_CLOSE(sz->entries[0].val, 1.0, EPS, errs);
+	CHK_EQUAL(sz->entries[1].m, 0, errs);
+	CHK_EQUAL(sz->entries[1].n, 0, errs);
+	CHK_CLOSE(sz->entries[1].val, -1.0, EPS, errs);
 	elemOpDestroy(&sz);
 	return errs;
 }
@@ -401,9 +403,9 @@ static int testEye()
 	e = eye(5);
 	CHK_EQUAL(e->nOps, 5, errs);
 	for (i = 0; i < e->nOps; ++i) {
-		CHK_EQUAL(e->op[i].m, i, errs);
-		CHK_EQUAL(e->op[i].n, i, errs);
-		CHK_CLOSE(e->op[i].val, 1.0, EPS, errs);
+		CHK_EQUAL(e->entries[i].m, i, errs);
+		CHK_EQUAL(e->entries[i].n, i, errs);
+		CHK_CLOSE(e->entries[i].val, 1.0, EPS, errs);
 	}
 	elemOpDestroy(&e);
 	return errs;
@@ -417,9 +419,9 @@ static int testNumOp()
 	num = numOp(5);
 	CHK_EQUAL(num->nOps, 4, errs);
 	for (i = 0; i < num->nOps; ++i) {
-		CHK_EQUAL(num->op[i].m, i + 1, errs);
-		CHK_EQUAL(num->op[i].n, i + 1, errs);
-		CHK_CLOSE(num->op[i].val, i + 1.0, EPS, errs);
+		CHK_EQUAL(num->entries[i].m, i + 1, errs);
+		CHK_EQUAL(num->entries[i].n, i + 1, errs);
+		CHK_CLOSE(num->entries[i].val, i + 1.0, EPS, errs);
 	}
 	elemOpDestroy(&num);
 	return errs;
@@ -433,9 +435,9 @@ int testAnnihilationOp()
 	a = annihilationOp(5);
 	CHK_EQUAL(a->nOps, 4, errs);
 	for (i = 0; i < a->nOps; ++i) {
-		CHK_EQUAL(a->op[i].m, i, errs);
-		CHK_EQUAL(a->op[i].n, i + 1, errs);
-		CHK_CLOSE(a->op[i].val, sqrt(i + 1), EPS, errs);
+		CHK_EQUAL(a->entries[i].m, i, errs);
+		CHK_EQUAL(a->entries[i].n, i + 1, errs);
+		CHK_CLOSE(a->entries[i].val, sqrt(i + 1), EPS, errs);
 	}
 	elemOpDestroy(&a);
 	return errs;
@@ -449,9 +451,9 @@ static int testCreationOp()
 	ad = creationOp(5);
 	CHK_EQUAL(ad->nOps, 4, errs);
 	for (i = 0; i < ad->nOps; ++i) {
-		CHK_EQUAL(ad->op[i].m, i + 1, errs);
-		CHK_EQUAL(ad->op[i].n, i, errs);
-		CHK_CLOSE(ad->op[i].val, sqrt(i + 1), EPS, errs);
+		CHK_EQUAL(ad->entries[i].m, i + 1, errs);
+		CHK_EQUAL(ad->entries[i].n, i, errs);
+		CHK_CLOSE(ad->entries[i].val, sqrt(i + 1), EPS, errs);
 	}
 	elemOpDestroy(&ad);
 	return errs;
