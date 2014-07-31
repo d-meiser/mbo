@@ -20,7 +20,7 @@ static void report_error(const char* file, int line)
 
 #define CHK_CLOSE(lhs, rhs, eps, err)                                          \
 	do {                                                                   \
-		if (fabs(lhs - rhs) > eps) {                                   \
+		if (fabs((lhs) - (rhs)) > eps) {                               \
 			report_error(__FILE__, __LINE__);                      \
 			++err;                                                 \
 		}                                                              \
