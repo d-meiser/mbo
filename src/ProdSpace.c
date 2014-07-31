@@ -1,87 +1,78 @@
 #include <stdlib.h>
+#include <string.h>
 
 #include "ProdSpace.h"
 
 struct ProdSpace {
-	int dim;
-	struct ProdSpace *next;
+	int numSpaces;
+	int *dims;
 };
 
 ProdSpace prodSpaceCreate(int d)
 {
 	ProdSpace sp = malloc(sizeof(*sp));
-	sp->dim = d;
-	sp->next = 0;
+	if (d) {
+		sp->numSpaces = 1;
+		sp->dims = malloc(1 * sizeof(*sp->dims));
+		sp->dims[0] = d;
+	} else {
+		sp->numSpaces = 0;
+		sp->dims = 0;
+	}
 	return sp;
 }
 
 void prodSpaceDestroy(ProdSpace *sp)
 {
-	if (*sp == 0) return;
-	if ((*sp)->next) {
-		prodSpaceDestroy(&(*sp)->next);
-	}
+	free((*sp)->dims);
 	free(*sp);
 	*sp = 0;
 }
 
 void prodSpaceMul(ProdSpace a, ProdSpace *b)
 {
-	if (a->dim == 0) return;
-	if ((*b)->dim == 0) {
-		free(*b);
-		*b = 0;
-	}
-	ProdSpace aCopy = prodSpaceCopy(a);
-	ProdSpace last = aCopy;
-	while (last->next) {
-		last = last->next;
-	}
-	last->next = *b;
-	*b = aCopy;
+	(*b)->dims = realloc((*b)->dims, ((*b)->numSpaces + a->numSpaces) *
+					     sizeof(*(*b)->dims));
+	memmove((*b)->dims + a->numSpaces, (*b)->dims,
+		(*b)->numSpaces * sizeof(*(*b)->dims));
+	memcpy((*b)->dims, a->dims, a->numSpaces * sizeof(*(*b)->dims));
+	(*b)->numSpaces += a->numSpaces;
 }
 
 ProdSpace prodSpaceCopy(ProdSpace sp)
 {
-	ProdSpace copy = 0;
-	if (sp) {
-		copy = malloc(sizeof(*copy));
-		copy->dim = sp->dim;
-		copy->next = prodSpaceCopy(sp->next);
-	}
+	ProdSpace copy = malloc(sizeof(*copy));
+	copy->numSpaces = sp->numSpaces;
+	copy->dims = malloc(sp->numSpaces * sizeof(*copy->dims));
+	memcpy(copy->dims, sp->dims, sp->numSpaces * sizeof(*copy->dims));
 	return copy;
 }
 
-long long DimProdSpace(ProdSpace sp)
+long long prodSpaceDim(ProdSpace sp)
 {
 	long long dim = 1;
-	while (sp) {
-		dim *= sp->dim;
-		sp = sp->next;
+	int i;
+	for (i = 0; i < sp->numSpaces; ++i) {
+		dim *= (long long)sp->dims[i];
 	}
 	return dim;
 }
 
 int prodSpaceSize(ProdSpace h)
 {
-	int size = 0;
-	for (; h != 0; h = h->next) {
-		++size;
-	}
-	return size;
+	return h->numSpaces;
 }
 
 int prodSpaceCheck(ProdSpace h)
 {
-	int errs = 0;
-	while (h) {
-		if (h->dim < 0) ++errs;
-		h = h->next;
+	int errs = 0, i;
+	for (i = 0; i < h->numSpaces; ++i) {
+		if (h->dims[i] <= 0) ++errs;
 	}
 	return errs;
 }
 
-/* 
+/*
  * Tests
  * */
 #include "TestUtils.h"
@@ -100,7 +91,7 @@ int testprodSpaceDestroy()
 	int errs = 0;
 	ProdSpace sp;
 
-	sp = prodSpaceCreate(0);
+	sp = prodSpaceCreate(1);
 	prodSpaceDestroy(&sp);
 	return errs;
 }
@@ -114,11 +105,11 @@ int testprodSpaceMul()
 	sp1 = prodSpaceCreate(2);
 	sp2 = prodSpaceCreate(2);
 
-	CHK_EQUAL(DimProdSpace(sp1), 2, errs);
-	CHK_EQUAL(DimProdSpace(sp2), 2, errs);
+	CHK_EQUAL(prodSpaceDim(sp1), 2, errs);
+	CHK_EQUAL(prodSpaceDim(sp2), 2, errs);
 	prodSpaceMul(sp1, &sp2);
-	CHK_EQUAL(DimProdSpace(sp1), 2, errs);
-	CHK_EQUAL(DimProdSpace(sp2), 4, errs);
+	CHK_EQUAL(prodSpaceDim(sp1), 2, errs);
+	CHK_EQUAL(prodSpaceDim(sp2), 4, errs);
 
 	prodSpaceDestroy(&sp1);
 	prodSpaceDestroy(&sp2);
@@ -134,13 +125,13 @@ int testBuildSpace()
 	ProdSpace hTot;
 
 	h = prodSpaceCreate(2);
-	CHK_EQUAL(DimProdSpace(h), 2, errs);
+	CHK_EQUAL(prodSpaceDim(h), 2, errs);
 	hTot = prodSpaceCreate(0);
-	CHK_EQUAL(DimProdSpace(hTot), 0, errs);
+	CHK_EQUAL(prodSpaceDim(hTot), 1, errs);
 	for (i = 0; i < N; ++i) {
 		prodSpaceMul(h, &hTot);
 	}
-	CHK_EQUAL(DimProdSpace(hTot), 1 << N, errs);
+	CHK_EQUAL(prodSpaceDim(hTot), 1 << N, errs);
 
 	prodSpaceDestroy(&h);
 	prodSpaceDestroy(&hTot);
@@ -155,12 +146,12 @@ int testMultiplyWithSelf()
 	ProdSpace h;
 
 	h = prodSpaceCreate(2);
-        d = DimProdSpace(h);
-	CHK_EQUAL(DimProdSpace(h), 2, errs);
+        d = prodSpaceDim(h);
+	CHK_EQUAL(prodSpaceDim(h), 2, errs);
 	for (i = 0; i < 3; ++i) {
 		d *= d;
 		prodSpaceMul(h, &h);
-		CHK_EQUAL(DimProdSpace(h), d, errs);
+		CHK_EQUAL(prodSpaceDim(h), d, errs);
 	}
         prodSpaceDestroy(&h);
 	return errs;
@@ -178,7 +169,7 @@ int testMultiplyLargeDims()
 	h1 = prodSpaceCreate(d1);
 	h2 = prodSpaceCreate(d2);
 	prodSpaceMul(h1, &h2);
-	CHK_EQUAL(DimProdSpace(h2), d1 * d2, errs);
+	CHK_EQUAL(prodSpaceDim(h2), d1 * d2, errs);
 	prodSpaceDestroy(&h1);
         prodSpaceDestroy(&h2);
 
