@@ -214,23 +214,23 @@ static int testEqual()
 	h1 = prodSpaceCreate(2);
 	h2 = prodSpaceCopy(h1);
 	CHK_TRUE(prodSpaceEqual(h1, h2), errs);
-	destroyProdSpace(&h1);
-	destroyProdSpace(&h2);
+	prodSpaceDestroy(&h1);
+	prodSpaceDestroy(&h2);
 
 	h1 = prodSpaceCreate(2);
 	h2 = prodSpaceCopy(h1);
 	prodSpaceMul(h1, &h2);
 	CHK_FALSE(prodSpaceEqual(h1, h2), errs);
-	destroyProdSpace(&h1);
-	destroyProdSpace(&h2);
+	prodSpaceDestroy(&h1);
+	prodSpaceDestroy(&h2);
 
 	h1 = prodSpaceCreate(2);
 	h2 = prodSpaceCopy(h1);
 	prodSpaceMul(h1, &h2);
 	prodSpaceMul(h2, &h1);
 	CHK_FALSE(prodSpaceEqual(h1, h2), errs);
-	destroyProdSpace(&h1);
-	destroyProdSpace(&h2);
+	prodSpaceDestroy(&h1);
+	prodSpaceDestroy(&h2);
 
 	h1 = prodSpaceCreate(2);
 	h2 = prodSpaceCopy(h1);
@@ -240,9 +240,9 @@ static int testEqual()
 	prodSpaceMul(h1, &h3);
 	prodSpaceMul(h1, &h3);
 	CHK_TRUE(prodSpaceEqual(h2, h3), errs);
-	destroyProdSpace(&h1);
-	destroyProdSpace(&h2);
-	destroyProdSpace(&h3);
+	prodSpaceDestroy(&h1);
+	prodSpaceDestroy(&h2);
+	prodSpaceDestroy(&h3);
 
 	return errs;
 }
