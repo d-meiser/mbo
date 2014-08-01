@@ -14,6 +14,7 @@ void prodSpaceMul(ProdSpace, ProdSpace *);
 ProdSpace prodSpaceCopy(ProdSpace);
 long long prodSpaceDim(ProdSpace);
 int prodSpaceSize(ProdSpace);
+int prodSpaceEqual(ProdSpace, ProdSpace);
 int prodSpaceCheck(ProdSpace);
 int prodSpaceTest();
 

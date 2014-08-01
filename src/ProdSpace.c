@@ -63,6 +63,16 @@ int prodSpaceSize(ProdSpace h)
 	return h->numSpaces;
 }
 
+int prodSpaceEqual(ProdSpace h1, ProdSpace h2)
+{
+	int i;
+	if (prodSpaceSize(h1) != prodSpaceSize(h2)) return 0;
+	for (i = 0; i < prodSpaceSize(h1); ++i) {
+		if (h1->dims[i] != h2->dims[i]) return 0;
+	}
+	return 1;
+}
+
 int prodSpaceCheck(ProdSpace h)
 {
 	int errs = 0, i;
@@ -196,6 +206,47 @@ int testSize()
 	return errs;
 }
 
+int testEqual()
+{
+	ProdSpace h1, h2, h3;
+	int errs = 0;
+
+	h1 = prodSpaceCreate(2);
+	h2 = prodSpaceCopy(h1);
+	CHK_TRUE(prodSpaceEqual(h1, h2), errs);
+	destroyProdSpace(&h1);
+	destroyProdSpace(&h2);
+
+	h1 = prodSpaceCreate(2);
+	h2 = prodSpaceCopy(h1);
+	prodSpaceMul(h1, &h2);
+	CHK_FALSE(prodSpaceEqual(h1, h2), errs);
+	destroyProdSpace(&h1);
+	destroyProdSpace(&h2);
+
+	h1 = prodSpaceCreate(2);
+	h2 = prodSpaceCopy(h1);
+	prodSpaceMul(h1, &h2);
+	prodSpaceMul(h2, &h1);
+	CHK_FALSE(prodSpaceEqual(h1, h2), errs);
+	destroyProdSpace(&h1);
+	destroyProdSpace(&h2);
+
+	h1 = prodSpaceCreate(2);
+	h2 = prodSpaceCopy(h1);
+	h3 = prodSpaceCopy(h2);
+	prodSpaceMul(h1, &h2);
+	prodSpaceMul(h1, &h2);
+	prodSpaceMul(h1, &h3);
+	prodSpaceMul(h1, &h3);
+	CHK_TRUE(prodSpaceEqual(h2, h3), errs);
+	destroyProdSpace(&h1);
+	destroyProdSpace(&h2);
+	destroyProdSpace(&h3);
+
+	return errs;
+}
+
 int prodSpaceTest()
 {
 	int errs = 0;
@@ -206,5 +257,6 @@ int prodSpaceTest()
         errs += testMultiplyWithSelf();
         errs += testMultiplyLargeDims();
 	errs += testSize();
+	errs += testEqual();
 	return errs;
 }
