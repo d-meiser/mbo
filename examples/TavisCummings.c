@@ -45,10 +45,10 @@ int main()
 	elemOpDestroy(&sm);
 	elemOpDestroy(&sp);
 	elemOpDestroy(&sz);
-	prodSpaceDestroy(&hSingleAtom);
-	prodSpaceDestroy(&hAtoms);
-	prodSpaceDestroy(&hField);
-	prodSpaceDestroy(&hTot);
+	prodSpaceRelease(hSingleAtom);
+	prodSpaceRelease(hAtoms);
+	prodSpaceRelease(hField);
+	prodSpaceRelease(hTot);
 	tensorOpDestroy(&inhomogeneousJz);
 	tensorOpDestroy(&jMinus);
 

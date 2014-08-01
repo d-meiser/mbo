@@ -9,7 +9,8 @@ struct ProdSpace;
 typedef struct ProdSpace *ProdSpace;
 
 ProdSpace prodSpaceCreate(int);
-void prodSpaceDestroy(ProdSpace *);
+void prodSpaceRetain(ProdSpace);
+void prodSpaceRelease(ProdSpace);
 void prodSpaceMul(ProdSpace, ProdSpace *);
 ProdSpace prodSpaceCopy(ProdSpace);
 long long prodSpaceDim(ProdSpace);
