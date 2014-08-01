@@ -87,7 +87,7 @@ int prodSpaceCheck(ProdSpace h)
  * */
 #include "TestUtils.h"
 
-int testprodSpaceCreate()
+static int testprodSpaceCreate()
 {
 	int errs = 0;
 	ProdSpace sp;
@@ -96,7 +96,7 @@ int testprodSpaceCreate()
 	return errs;
 }
 
-int testprodSpaceDestroy()
+static int testprodSpaceDestroy()
 {
 	int errs = 0;
 	ProdSpace sp;
@@ -106,7 +106,7 @@ int testprodSpaceDestroy()
 	return errs;
 }
 
-int testprodSpaceMul()
+static int testprodSpaceMul()
 {
 	int errs = 0;
 	ProdSpace sp1;
@@ -126,7 +126,7 @@ int testprodSpaceMul()
 	return errs;
 }
 
-int testBuildSpace()
+static int testBuildSpace()
 {
 	int errs = 0;
 	int N = 20;
@@ -148,7 +148,7 @@ int testBuildSpace()
 	return errs;
 }
 
-int testMultiplyWithSelf()
+static int testMultiplyWithSelf()
 {
 	int errs = 0;
 	int i;
@@ -167,7 +167,7 @@ int testMultiplyWithSelf()
 	return errs;
 }
 
-int testMultiplyLargeDims()
+static int testMultiplyLargeDims()
 {
 	int errs = 0;
         long long d1, d2;
@@ -186,7 +186,7 @@ int testMultiplyLargeDims()
 	return errs;
 }
 
-int testSize()
+static int testSize()
 {
 	ProdSpace h, h2;
 	int s, errs = 0;
@@ -206,7 +206,7 @@ int testSize()
 	return errs;
 }
 
-int testEqual()
+static int testEqual()
 {
 	ProdSpace h1, h2, h3;
 	int errs = 0;
