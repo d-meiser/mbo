@@ -18,6 +18,21 @@ static void report_error(const char* file, int line)
 		}                                                              \
 	} while (0)
 
+#define CHK_TRUE(statement, err)                                               \
+	do {                                                                   \
+		if (!(statement)) {                                            \
+			report_error(__FILE__, __LINE__);                      \
+			++err;                                                 \
+		}                                                              \
+	} while (0)
+
+#define CHK_FALSE(statement, err)                                              \
+	do {                                                                   \
+		if (statement) {                                               \
+			report_error(__FILE__, __LINE__);                      \
+			++err;                                                 \
+		}                                                              \
+	} while (0)
 #define CHK_CLOSE(lhs, rhs, eps, err)                                          \
 	do {                                                                   \
 		if (fabs((lhs) - (rhs)) > eps) {                               \
