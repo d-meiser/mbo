@@ -5,7 +5,6 @@
 
 struct ProdSpace {
 	int numSpaces;
-	int numRefs;
 	int *dims;
 };
 
@@ -20,22 +19,14 @@ ProdSpace prodSpaceCreate(int d)
 		sp->numSpaces = 0;
 		sp->dims = 0;
 	}
-	sp->numRefs = 1;
 	return sp;
 }
 
-void prodSpaceRetain(ProdSpace sp)
+void prodSpaceDestroy(ProdSpace *sp)
 {
-	++sp->numRefs;
-}
-
-void prodSpaceRelease(ProdSpace sp)
-{
-	--sp->numRefs;
-	if (!sp->numRefs) {
-		free(sp->dims);
-		free(sp);
-	}
+	free((*sp)->dims);
+	free(*sp);
+	*sp = 0;
 }
 
 void prodSpaceMul(ProdSpace a, ProdSpace *b)
@@ -91,31 +82,17 @@ int testprodSpaceCreate()
 	int errs = 0;
 	ProdSpace sp;
 	sp = prodSpaceCreate(2);
-	prodSpaceRelease(sp);
+	prodSpaceDestroy(&sp);
 	return errs;
 }
 
-int testprodSpaceRetain()
+int testprodSpaceDestroy()
 {
 	int errs = 0;
 	ProdSpace sp;
 
 	sp = prodSpaceCreate(1);
-	prodSpaceRetain(sp);
-	prodSpaceRetain(sp);
-	prodSpaceRelease(sp);
-	prodSpaceRelease(sp);
-	prodSpaceRelease(sp);
-	return errs;
-}
-
-int testprodSpaceRelease()
-{
-	int errs = 0;
-	ProdSpace sp;
-
-	sp = prodSpaceCreate(1);
-	prodSpaceRelease(sp);
+	prodSpaceDestroy(&sp);
 	return errs;
 }
 
@@ -134,8 +111,8 @@ int testprodSpaceMul()
 	CHK_EQUAL(prodSpaceDim(sp1), 2, errs);
 	CHK_EQUAL(prodSpaceDim(sp2), 4, errs);
 
-	prodSpaceRelease(sp1);
-	prodSpaceRelease(sp2);
+	prodSpaceDestroy(&sp1);
+	prodSpaceDestroy(&sp2);
 	return errs;
 }
 
@@ -156,8 +133,8 @@ int testBuildSpace()
 	}
 	CHK_EQUAL(prodSpaceDim(hTot), 1 << N, errs);
 
-	prodSpaceRelease(h);
-	prodSpaceRelease(hTot);
+	prodSpaceDestroy(&h);
+	prodSpaceDestroy(&hTot);
 	return errs;
 }
 
@@ -176,7 +153,7 @@ int testMultiplyWithSelf()
 		prodSpaceMul(h, &h);
 		CHK_EQUAL(prodSpaceDim(h), d, errs);
 	}
-        prodSpaceRelease(h);
+        prodSpaceDestroy(&h);
 	return errs;
 }
 
@@ -193,8 +170,8 @@ int testMultiplyLargeDims()
 	h2 = prodSpaceCreate(d2);
 	prodSpaceMul(h1, &h2);
 	CHK_EQUAL(prodSpaceDim(h2), d1 * d2, errs);
-	prodSpaceRelease(h1);
-        prodSpaceRelease(h2);
+	prodSpaceDestroy(&h1);
+        prodSpaceDestroy(&h2);
 
 	return errs;
 }
@@ -214,8 +191,8 @@ int testSize()
 	s = prodSpaceSize(h);
 	CHK_EQUAL(s, 3, errs);
 
-	prodSpaceRelease(h);
-	prodSpaceRelease(h2);
+	prodSpaceDestroy(&h);
+	prodSpaceDestroy(&h2);
 	return errs;
 }
 
@@ -223,8 +200,7 @@ int prodSpaceTest()
 {
 	int errs = 0;
 	errs += testprodSpaceCreate();
-	errs += testprodSpaceRetain();
-	errs += testprodSpaceRelease();
+	errs += testprodSpaceDestroy();
 	errs += testprodSpaceMul();
 	errs += testBuildSpace();
         errs += testMultiplyWithSelf();
