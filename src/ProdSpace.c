@@ -255,6 +255,25 @@ static int testEqual()
 	return errs;
 }
 
+static int testCheck()
+{
+	ProdSpace h, h2;
+	int errs = 0;
+
+	h = prodSpaceCreate(2);
+  prodSpaceCheck(h);
+	h2 = prodSpaceCreate(0);
+  prodSpaceCheck(h2);
+
+	prodSpaceMul(h, &h2);
+	prodSpaceMul(h, &h2);
+  prodSpaceCheck(h2);
+
+	prodSpaceDestroy(&h);
+	prodSpaceDestroy(&h2);
+	return errs;
+}
+
 int prodSpaceTest()
 {
 	int errs = 0;
@@ -266,5 +285,6 @@ int prodSpaceTest()
         errs += testMultiplyLargeDims();
 	errs += testSize();
 	errs += testEqual();
+  errs += testCheck();
 	return errs;
 }
