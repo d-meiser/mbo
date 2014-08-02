@@ -16,7 +16,12 @@ void tensorOpDestroy(TensorOp *);
 void tensorOpAddTo(ElemOp, int, TensorOp);
 void tensorOpAddScaledTo(double, ElemOp, int, TensorOp);
 
-void tensorOpMul(TensorOp, TensorOp *);
+/*
+ * @ Multiply two operators and add result to third
+ *
+ * (*c) += a * b
+ * */
+void tensorOpMul(TensorOp a, TensorOp b, TensorOp *c);
 void tensorOpPlus(TensorOp, TensorOp *);
 void tensorOpScale(double alpha, TensorOp *);
 void tensorOpKron(TensorOp, TensorOp, TensorOp *);
