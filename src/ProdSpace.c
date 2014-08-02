@@ -31,6 +31,7 @@ void prodSpaceDestroy(ProdSpace *sp)
 
 void prodSpaceMul(ProdSpace a, ProdSpace *b)
 {
+	if (a->numSpaces == 0) return;
 	(*b)->dims = realloc((*b)->dims, ((*b)->numSpaces + a->numSpaces) *
 					     sizeof(*(*b)->dims));
 	memmove((*b)->dims + a->numSpaces, (*b)->dims,
@@ -129,17 +130,46 @@ static int testprodSpaceMul()
 	ProdSpace sp1;
 	ProdSpace sp2;
 
-	sp1 = prodSpaceCreate(2);
-	sp2 = prodSpaceCreate(2);
-
-	CHK_EQUAL(prodSpaceDim(sp1), 2, errs);
-	CHK_EQUAL(prodSpaceDim(sp2), 2, errs);
+	sp1 = prodSpaceCreate(0);
+	sp2 = prodSpaceCreate(0);
 	prodSpaceMul(sp1, &sp2);
-	CHK_EQUAL(prodSpaceDim(sp1), 2, errs);
-	CHK_EQUAL(prodSpaceDim(sp2), 4, errs);
-
+	CHK_EQUAL(prodSpaceDim(sp2), 1, errs);
+	CHK_EQUAL(sp2->numSpaces, 0, errs);
+	CHK_EQUAL(sp2->dims, 0, errs);
 	prodSpaceDestroy(&sp1);
 	prodSpaceDestroy(&sp2);
+
+	sp1 = prodSpaceCreate(3);
+	sp2 = prodSpaceCreate(2);
+	CHK_EQUAL(prodSpaceDim(sp1), 3, errs);
+	CHK_EQUAL(prodSpaceDim(sp2), 2, errs);
+	prodSpaceMul(sp1, &sp2);
+	CHK_EQUAL(prodSpaceDim(sp1), 3, errs);
+	CHK_EQUAL(prodSpaceDim(sp2), 6, errs);
+	CHK_EQUAL(sp2->numSpaces, 2, errs);
+	CHK_EQUAL(sp2->dims[0], 3, errs);
+	CHK_EQUAL(sp2->dims[1], 2, errs);
+	prodSpaceDestroy(&sp1);
+	prodSpaceDestroy(&sp2);
+
+	sp1 = prodSpaceCreate(0);
+	sp2 = prodSpaceCreate(2);
+	prodSpaceMul(sp1, &sp2);
+	CHK_EQUAL(prodSpaceDim(sp2), 2, errs);
+	CHK_EQUAL(sp2->numSpaces, 1, errs);
+	CHK_EQUAL(sp2->dims[0], 2, errs);
+	prodSpaceDestroy(&sp1);
+	prodSpaceDestroy(&sp2);
+
+	sp1 = prodSpaceCreate(5);
+	sp2 = prodSpaceCreate(0);
+	prodSpaceMul(sp1, &sp2);
+	CHK_EQUAL(prodSpaceDim(sp2), 5, errs);
+	CHK_EQUAL(sp2->numSpaces, 1, errs);
+	CHK_EQUAL(sp2->dims[0], 5, errs);
+	prodSpaceDestroy(&sp1);
+	prodSpaceDestroy(&sp2);
+
 	return errs;
 }
 
