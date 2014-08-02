@@ -627,20 +627,30 @@ static int testTensorOpScale()
 {
 	int errs = 0;
 	TensorOp a;
-	ProdSpace h = prodSpaceCreate(2);
+	ProdSpace h;
 	double alpha = 2.0;
 
+	h = prodSpaceCreate(0);
 	tensorOpNull(h, &a);
 	tensorOpScale(alpha, &a);
 	CHK_EQUAL(a->numTerms, 0, errs);
 	tensorOpDestroy(&a);
+	prodSpaceDestroy(&h);
 
+	h = prodSpaceCreate(2);
+	tensorOpNull(h, &a);
+	tensorOpScale(alpha, &a);
+	CHK_EQUAL(a->numTerms, 0, errs);
+	tensorOpDestroy(&a);
+	prodSpaceDestroy(&h);
+
+	h = prodSpaceCreate(2);
 	tensorOpIdentity(h, &a);
 	tensorOpScale(alpha, &a);
 	CHK_EQUAL(a->numTerms, 1, errs);
 	tensorOpDestroy(&a);
-
 	prodSpaceDestroy(&h);
+
 	return errs;
 }
 
