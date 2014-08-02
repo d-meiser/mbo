@@ -109,7 +109,7 @@ void tensorOpAddScaledTo(double alpha, ElemOp a, int i, TensorOp op)
 	struct Embedding *aEmbedded;
 
 	op->sum = realloc(op->sum, (op->numTerms + 1) * sizeof(*op->sum));
-	newTerm = op->sum;
+	newTerm = op->sum + op->numTerms;
 	newTerm->numFactors = 1;
 	newTerm->embeddings = malloc(sizeof(struct Embedding));
 	aEmbedded = newTerm->embeddings;
@@ -345,6 +345,9 @@ static int testTensorOpAddScaledTo()
 	CHK_EQUAL(op->sum[0].numFactors, 1, errs);
 	CHK_TRUE(op->sum[0].embeddings != 0, errs);
 	CHK_EQUAL(op->sum[0].embeddings[0].i, 0, errs);
+
+	tensorOpAddScaledTo(alpha, eop, 1, op);
+	CHK_EQUAL(op->numTerms, 2, errs);
 
 	tensorOpDestroy(&op);
 	elemOpDestroy(&eop);
