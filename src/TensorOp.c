@@ -636,6 +636,7 @@ static int testTensorOpScale()
 	tensorOpDestroy(&a);
 
 	tensorOpIdentity(h, &a);
+	tensorOpScale(alpha, &a);
 	CHK_EQUAL(a->numTerms, 1, errs);
 	tensorOpDestroy(&a);
 
