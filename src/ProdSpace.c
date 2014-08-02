@@ -92,7 +92,15 @@ static int testprodSpaceCreate()
 	int errs = 0;
 	ProdSpace sp;
 	sp = prodSpaceCreate(2);
+	CHK_EQUAL(sp->numSpaces, 1, errs);
+	CHK_TRUE(sp->dims != 0, errs);
 	prodSpaceDestroy(&sp);
+
+	sp = prodSpaceCreate(0);
+	CHK_EQUAL(sp->numSpaces, 0, errs);
+	CHK_EQUAL(sp->dims, 0, errs);
+	prodSpaceDestroy(&sp);
+
 	return errs;
 }
 
