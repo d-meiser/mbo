@@ -44,6 +44,7 @@ static int gatherIthEmbedding(int i, int *numEmbeddings,
 static void destroySimpleTOp(struct SimpleTOp *term);
 static void multiplySimpleTOps(int, struct SimpleTOp *sa, struct SimpleTOp *sb);
 static void copySimpleTOp(struct SimpleTOp *dest, struct SimpleTOp *src);
+static void scaleSimpleTOp(double alpha, ProdSpace h, struct SimpleTOp *op);
 
 /**
    Data structure for tensor product operators.
@@ -169,6 +170,14 @@ void tensorOpPlus(TensorOp a, TensorOp *b)
 	(*b)->numTerms += a->numTerms;
 }
 
+void tensorOpScale(double alpha, TensorOp *a)
+{
+	int i;
+	for (i = 0; i < (*a)->numTerms; ++i) {
+		scaleSimpleTOp(alpha, (*a)->space, (*a)->sum + i);
+	}
+}
+
 void multiplySimpleTOps(int N, struct SimpleTOp *a, struct SimpleTOp *b)
 {
 	int i, j, k;
@@ -209,6 +218,19 @@ void copySimpleTOp(struct SimpleTOp* dest, struct SimpleTOp *src)
 		elemOpCreate(&dest->embeddings[i].op);
 		copyEmbedding(dest->embeddings + i, src->embeddings + i);
 	}
+}
+void scaleSimpleTOp(double alpha, ProdSpace h, struct SimpleTOp *op)
+{
+	int d;
+	if (prodSpaceSize(h) == 0) return;
+	if (op->numFactors == 0) {
+		op->embeddings = malloc(sizeof(*op->embeddings));
+		op->embeddings[0].i = 0;
+		prodSpaceGetDims(h, 1, &d);
+		op->embeddings[0].op = eye(d);
+		op->numFactors += 1;
+	}
+	elemOpScale(alpha, op->embeddings[0].op);
 }
 
 void copyEmbedding(struct Embedding *dest, struct Embedding *src)
@@ -601,16 +623,37 @@ static int testTensorOpPlus()
 	return errs;
 }
 
+static int testTensorOpScale()
+{
+	int errs = 0;
+	TensorOp a;
+	ProdSpace h = prodSpaceCreate(2);
+	double alpha = 2.0;
+
+	tensorOpNull(h, &a);
+	tensorOpScale(alpha, &a);
+	CHK_EQUAL(a->numTerms, 0, errs);
+	tensorOpDestroy(&a);
+
+	tensorOpIdentity(h, &a);
+	CHK_EQUAL(a->numTerms, 1, errs);
+	tensorOpDestroy(&a);
+
+	prodSpaceDestroy(&h);
+	return errs;
+}
+
 int tensorOpTest()
 {
 	int errs = 0;
 	errs += testTensorOpNull();
-  errs += testTensorOpIdentity();
+	errs += testTensorOpIdentity();
 	errs += testTensorOpAddTo();
 	errs += testTensorOpAddScaledTo();
 	errs += testFindEmbedding();
 	errs += testGatherIthEmbedding();
 	errs += testTensorOpMul();
 	errs += testTensorOpPlus();
+	errs += testTensorOpScale();
 	return errs;
 }

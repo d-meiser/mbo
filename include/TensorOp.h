@@ -63,7 +63,11 @@ void tensorOpMul(TensorOp a, TensorOp b, TensorOp *c);
  *      (*b) += a
  * */
 void tensorOpPlus(TensorOp a, TensorOp *b);
-void tensorOpScale(double alpha, TensorOp *);
+
+/** @brief Scale operator
+ * Schematically:   *a *= alpha;
+ * */
+void tensorOpScale(double alpha, TensorOp *a);
 void tensorOpKron(TensorOp, TensorOp, TensorOp *);
 int tensorOpCheck(TensorOp);
 int tensorOpTest();
