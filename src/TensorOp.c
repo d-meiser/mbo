@@ -693,9 +693,9 @@ static int testTensorOpScale()
 	double alpha = 2.0;
 
 	h = prodSpaceCreate(0);
-	tensorOpNull(h, &a);
+	tensorOpIdentity(h, &a);
 	tensorOpScale(alpha, &a);
-	CHK_EQUAL(a->numTerms, 0, errs);
+	CHK_EQUAL(a->numTerms, 1, errs);
 	CHK_EQUAL(tensorOpCheck(a), 0, errs);
 	tensorOpDestroy(&a);
 	prodSpaceDestroy(&h);
