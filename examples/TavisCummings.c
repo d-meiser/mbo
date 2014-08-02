@@ -35,12 +35,12 @@ int main()
 	prodSpaceMul(hAtoms, &hTot);
 	prodSpaceMul(hField, &hTot);
 
-	tensorOpCreate(hAtoms, &inhomogeneousJz);
+	tensorOpNull(hAtoms, &inhomogeneousJz);
 	for (int i = 0; i < nAtoms; ++i) {
 		tensorOpAddScaledTo(omega(i), sz, i, inhomogeneousJz);
 	}
 
-	tensorOpCreate(hTot, &jMinus);
+	tensorOpNull(hTot, &jMinus);
 
 	elemOpDestroy(&sm);
 	elemOpDestroy(&sp);

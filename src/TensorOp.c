@@ -58,12 +58,23 @@ struct TensorOp
 	struct SimpleTOp *sum;
 };
 
-void tensorOpCreate(ProdSpace h, TensorOp *op)
+void tensorOpNull(ProdSpace h, TensorOp *op)
 {
 	TensorOp a = malloc(sizeof(*a));
 	a->space = prodSpaceCopy(h);
 	a->numTerms = 0;
 	a->sum = 0;
+	*op = a;
+}
+
+void tensorOpIdentity(ProdSpace h, TensorOp *op)
+{
+	TensorOp a = malloc(sizeof(*a));
+	a->space = prodSpaceCopy(h);
+	a->numTerms = 1;
+	a->sum = malloc(sizeof(*a->sum));
+	a->sum[0].numFactors = 0;
+	a->sum[0].embeddings = 0;
 	*op = a;
 }
 
@@ -283,14 +294,27 @@ int tensorOpCheck(TensorOp op)
 
 #define EPS 1.0e-12
 
-static int testTensorOpCreate()
+static int testTensorOpNull()
 {
 	int errs = 0;
 	TensorOp op;
 	ProdSpace h = prodSpaceCreate(1);
-	tensorOpCreate(h, &op);
+	tensorOpNull(h, &op);
 	CHK_TRUE(prodSpaceEqual(op->space, h), errs);
-	CHK_EQUAL(op->sum, 0, errs);
+	CHK_EQUAL(op->numTerms, 0, errs);
+	tensorOpDestroy(&op);
+	prodSpaceDestroy(&h);
+	return errs;
+}
+
+static int testTensorOpIdentity()
+{
+	int errs = 0;
+	TensorOp op;
+	ProdSpace h = prodSpaceCreate(1);
+	tensorOpIdentity(h, &op);
+	CHK_TRUE(prodSpaceEqual(op->space, h), errs);
+	CHK_EQUAL(op->numTerms, 1, errs);
 	tensorOpDestroy(&op);
 	prodSpaceDestroy(&h);
 	return errs;
@@ -309,7 +333,7 @@ static int testTensorOpAddTo()
 	elemOpCreate(&eop);
 	elemOpAddTo(14, 15, matrixElement, &eop);
 
-	tensorOpCreate(h, &op);
+	tensorOpNull(h, &op);
 	tensorOpAddTo(eop, 0, op);
 	CHK_EQUAL(op->numTerms, 1, errs);
 	CHK_TRUE(prodSpaceEqual(op->space, h), errs);
@@ -337,7 +361,7 @@ static int testTensorOpAddScaledTo()
 	elemOpCreate(&eop);
 	elemOpAddTo(14, 15, -3.4, &eop);
 
-	tensorOpCreate(h, &op);
+	tensorOpNull(h, &op);
 	tensorOpAddScaledTo(alpha, eop, 0, op);
 	CHK_EQUAL(op->numTerms, 1, errs);
 	CHK_TRUE(prodSpaceEqual(op->space, h), errs);
@@ -440,40 +464,40 @@ static int testTensorOpMul()
 	elemOpAddTo(8, 3, -3.4, &eop2);
 	elemOpAddTo(3, 4, 2.0, &eop2);
 
-	tensorOpCreate(h2, &op1);
-	tensorOpCreate(h2, &op2);
-	tensorOpCreate(h2, &op3);
+	tensorOpNull(h2, &op1);
+	tensorOpNull(h2, &op2);
+	tensorOpNull(h2, &op3);
 	tensorOpMul(op1, op2, &op3);
 	CHK_EQUAL(op3->numTerms, 0, errs);
 	tensorOpDestroy(&op1);
 	tensorOpDestroy(&op2);
 	tensorOpDestroy(&op3);
 
-	tensorOpCreate(h2, &op1);
+	tensorOpNull(h2, &op1);
 	tensorOpAddTo(eop1, 0, op1);
-	tensorOpCreate(h2, &op2);
-	tensorOpCreate(h2, &op3);
+	tensorOpNull(h2, &op2);
+	tensorOpNull(h2, &op3);
 	tensorOpMul(op1, op2, &op3);
 	CHK_EQUAL(op3->numTerms, 0, errs);
 	tensorOpDestroy(&op1);
 	tensorOpDestroy(&op2);
 	tensorOpDestroy(&op3);
 
-	tensorOpCreate(h2, &op1);
-	tensorOpCreate(h2, &op2);
+	tensorOpNull(h2, &op1);
+	tensorOpNull(h2, &op2);
 	tensorOpAddTo(eop1, 0, op2);
-	tensorOpCreate(h2, &op3);
+	tensorOpNull(h2, &op3);
 	tensorOpMul(op1, op2, &op3);
 	CHK_EQUAL(op3->numTerms, 0, errs);
 	tensorOpDestroy(&op1);
 	tensorOpDestroy(&op2);
 	tensorOpDestroy(&op3);
 
-	tensorOpCreate(h2, &op1);
+	tensorOpNull(h2, &op1);
 	tensorOpAddTo(eop1, 0, op1);
-	tensorOpCreate(h2, &op2);
+	tensorOpNull(h2, &op2);
 	tensorOpAddTo(eop2, 0, op2);
-	tensorOpCreate(h2, &op3);
+	tensorOpNull(h2, &op3);
 	tensorOpMul(op1, op2, &op3);
 	CHK_EQUAL(op3->numTerms, 1, errs);
 	CHK_EQUAL(op3->sum[0].numFactors, 1, errs);
@@ -482,11 +506,11 @@ static int testTensorOpMul()
 	tensorOpDestroy(&op2);
 	tensorOpDestroy(&op3);
 
-	tensorOpCreate(h2, &op1);
+	tensorOpNull(h2, &op1);
 	tensorOpAddTo(eop1, 0, op1);
-	tensorOpCreate(h2, &op2);
+	tensorOpNull(h2, &op2);
 	tensorOpAddTo(eop2, 1, op2);
-	tensorOpCreate(h2, &op3);
+	tensorOpNull(h2, &op3);
 	tensorOpMul(op1, op2, &op3);
 	CHK_EQUAL(op3->numTerms, 1, errs);
 	CHK_EQUAL(op3->sum[0].numFactors, 2, errs);
@@ -494,13 +518,13 @@ static int testTensorOpMul()
 	tensorOpDestroy(&op2);
 	tensorOpDestroy(&op3);
 
-	tensorOpCreate(h2, &op1);
+	tensorOpNull(h2, &op1);
 	tensorOpAddTo(eop1, 0, op1);
 	tensorOpAddTo(eop1, 1, op1);
-	tensorOpCreate(h2, &op2);
+	tensorOpNull(h2, &op2);
 	tensorOpAddTo(eop2, 1, op2);
 	tensorOpAddTo(eop2, 2, op2);
-	tensorOpCreate(h2, &op3);
+	tensorOpNull(h2, &op3);
 	tensorOpMul(op1, op2, &op3);
 	CHK_EQUAL(op3->numTerms, 4, errs);
 	tensorOpDestroy(&op1);
@@ -531,31 +555,31 @@ static int testTensorOpPlus()
 	sp = sigmaPlus();
 	sm = sigmaMinus();
 
-	tensorOpCreate(hTot, &op1);
-	tensorOpCreate(hTot, &op2);
+	tensorOpNull(hTot, &op1);
+	tensorOpNull(hTot, &op2);
 	tensorOpPlus(op1, &op2);
 	CHK_EQUAL(op2->numTerms, 0, errs);
 	tensorOpDestroy(&op1);
 	tensorOpDestroy(&op2);
 
-	tensorOpCreate(hTot, &op1);
-	tensorOpCreate(hTot, &op2);
+	tensorOpNull(hTot, &op1);
+	tensorOpNull(hTot, &op2);
 	tensorOpAddTo(sz, 1, op2);
 	tensorOpPlus(op1, &op2);
 	CHK_EQUAL(op2->numTerms, 1, errs);
 	tensorOpDestroy(&op1);
 	tensorOpDestroy(&op2);
 
-	tensorOpCreate(hTot, &op1);
+	tensorOpNull(hTot, &op1);
 	tensorOpAddTo(sz, 1, op1);
-	tensorOpCreate(hTot, &op2);
+	tensorOpNull(hTot, &op2);
 	tensorOpPlus(op1, &op2);
 	CHK_EQUAL(op2->numTerms, 1, errs);
 	tensorOpDestroy(&op1);
 	tensorOpDestroy(&op2);
 
-	tensorOpCreate(hTot, &op1);
-	tensorOpCreate(hTot, &op2);
+	tensorOpNull(hTot, &op1);
+	tensorOpNull(hTot, &op2);
 	tensorOpAddTo(sz, 0, op1);
 	tensorOpAddTo(sz, 1, op1);
 	tensorOpAddTo(sp, 0, op2);
@@ -580,7 +604,8 @@ static int testTensorOpPlus()
 int tensorOpTest()
 {
 	int errs = 0;
-	errs += testTensorOpCreate();
+	errs += testTensorOpNull();
+  errs += testTensorOpIdentity();
 	errs += testTensorOpAddTo();
 	errs += testTensorOpAddScaledTo();
 	errs += testFindEmbedding();
