@@ -43,6 +43,8 @@ static int gatherIthEmbedding(int i, int *numEmbeddings,
 			      struct Embedding **embeddings);
 static void destroySimpleTOp(struct SimpleTOp *term);
 static void multiplySimpleTOps(int, struct SimpleTOp *sa, struct SimpleTOp *sb);
+static void kronSimpleTOps(struct SimpleTOp *a, int numSpacesInA,
+			   struct SimpleTOp *b, struct SimpleTOp *c);
 static void copySimpleTOp(struct SimpleTOp *dest, struct SimpleTOp *src);
 static void scaleSimpleTOp(double alpha, ProdSpace h, struct SimpleTOp *op);
 static int checkSimpleTOp(struct SimpleTOp *sa);
@@ -179,6 +181,47 @@ void tensorOpScale(double alpha, TensorOp *a)
 	}
 }
 
+void tensorOpKron(TensorOp a, TensorOp b, TensorOp *c)
+{
+	int i, j, numNewTerms = a->numTerms * b->numTerms;
+	struct SimpleTOp *cFillPtr;
+	(*c)->sum = realloc((*c)->sum, ((*c)->numTerms + numNewTerms) *
+					   sizeof(*(*c)->sum));
+	cFillPtr = (*c)->sum + (*c)->numTerms;
+	for (i = 0; i < a->numTerms; ++i) {
+		for (j = 0; j < b->numTerms; ++j) {
+			cFillPtr->numFactors = 0;
+			cFillPtr->embeddings = 0;
+			kronSimpleTOps(a->sum + i, prodSpaceSize(a->space),
+				       b->sum + j, cFillPtr);
+			++cFillPtr;
+		}
+	}
+	(*c)->numTerms += numNewTerms;
+}
+
+void kronSimpleTOps(struct SimpleTOp *a, int numSpacesInA, struct SimpleTOp *b,
+		    struct SimpleTOp *c)
+{
+	int i;
+	struct Embedding *cFillPtr;
+	c->embeddings = realloc(
+	    c->embeddings, (c->numFactors + a->numFactors + b->numFactors) *
+			       sizeof(*c->embeddings));
+	cFillPtr = c->embeddings + c->numFactors;
+	for (i = 0; i < a->numFactors + b->numFactors; ++i) {
+		elemOpCreate(&cFillPtr[i].op);
+	}
+	for (i = 0; i < a->numFactors; ++i) {
+		copyEmbedding(cFillPtr + i, a->embeddings + i);
+	}
+	for (i = 0; i < b->numFactors; ++i) {
+		copyEmbedding(cFillPtr + i + a->numFactors, b->embeddings + i);
+		cFillPtr[a->numFactors + i].i += numSpacesInA;
+	}
+	c->numFactors += a->numFactors + b->numFactors;
+}
+
 void multiplySimpleTOps(int N, struct SimpleTOp *a, struct SimpleTOp *b)
 {
 	int i, j, k;
@@ -220,6 +263,7 @@ void copySimpleTOp(struct SimpleTOp* dest, struct SimpleTOp *src)
 		copyEmbedding(dest->embeddings + i, src->embeddings + i);
 	}
 }
+
 void scaleSimpleTOp(double alpha, ProdSpace h, struct SimpleTOp *op)
 {
 	int d;
@@ -678,14 +722,15 @@ static int testTensorOpScale()
 static int testTensorOpCheck()
 {
 	int errs = 0;
-	return errs;
-}
-
-static int testTensorOpKron()
-{
-	int errs = 0;
 	TensorOp a;
 	ProdSpace h;
+
+	h = prodSpaceCreate(0);
+	tensorOpNull(h, &a);
+	a->numTerms = -1;
+	CHK_TRUE(tensorOpCheck(a) != 0, errs);
+	tensorOpDestroy(&a);
+	prodSpaceDestroy(&h);
 
 	h = prodSpaceCreate(0);
 	tensorOpNull(h, &a);
@@ -708,6 +753,178 @@ static int testTensorOpKron()
 	return errs;
 }
 
+static int testTensorOpKron()
+{
+	int errs = 0;
+	ProdSpace h1, h2, h3;
+	TensorOp a, b, c;
+	ElemOp sz;
+	ElemOp sp;
+
+	h1 = prodSpaceCreate(0);
+	h2 = prodSpaceCreate(0);
+	h3 = prodSpaceCreate(0);
+	prodSpaceMul(h1, &h3);
+	prodSpaceMul(h2, &h3);
+	tensorOpNull(h1, &a);
+	tensorOpNull(h2, &b);
+	tensorOpNull(h3, &c);
+	tensorOpKron(a, b, &c);
+	CHK_EQUAL(tensorOpCheck(c), 0, errs);
+	CHK_EQUAL(c->numTerms, 0, errs);
+	tensorOpDestroy(&a);
+	tensorOpDestroy(&b);
+	tensorOpDestroy(&c);
+	prodSpaceDestroy(&h1);
+	prodSpaceDestroy(&h2);
+	prodSpaceDestroy(&h3);
+
+	h1 = prodSpaceCreate(0);
+	h2 = prodSpaceCreate(0);
+	h3 = prodSpaceCreate(0);
+	prodSpaceMul(h1, &h3);
+	prodSpaceMul(h2, &h3);
+	tensorOpIdentity(h1, &a);
+	tensorOpIdentity(h2, &b);
+	tensorOpNull(h3, &c);
+	tensorOpKron(a, b, &c);
+	CHK_EQUAL(tensorOpCheck(c), 0, errs);
+	CHK_EQUAL(c->numTerms, 1, errs);
+	tensorOpDestroy(&a);
+	tensorOpDestroy(&b);
+	tensorOpDestroy(&c);
+	prodSpaceDestroy(&h1);
+	prodSpaceDestroy(&h2);
+	prodSpaceDestroy(&h3);
+
+	h1 = prodSpaceCreate(0);
+	h2 = prodSpaceCreate(0);
+	h3 = prodSpaceCreate(0);
+	prodSpaceMul(h1, &h3);
+	prodSpaceMul(h2, &h3);
+	tensorOpIdentity(h1, &a);
+	tensorOpIdentity(h2, &b);
+	tensorOpIdentity(h3, &c);
+	tensorOpKron(a, b, &c);
+	CHK_EQUAL(tensorOpCheck(c), 0, errs);
+	CHK_EQUAL(c->numTerms, 2, errs);
+	tensorOpDestroy(&a);
+	tensorOpDestroy(&b);
+	tensorOpDestroy(&c);
+	prodSpaceDestroy(&h1);
+	prodSpaceDestroy(&h2);
+	prodSpaceDestroy(&h3);
+
+	h1 = prodSpaceCreate(2);
+	h2 = prodSpaceCreate(2);
+	h3 = prodSpaceCreate(0);
+	prodSpaceMul(h1, &h3);
+	prodSpaceMul(h2, &h3);
+	tensorOpIdentity(h1, &a);
+	tensorOpIdentity(h2, &b);
+	tensorOpIdentity(h3, &c);
+	tensorOpKron(a, b, &c);
+	CHK_EQUAL(tensorOpCheck(c), 0, errs);
+	CHK_EQUAL(c->numTerms, 2, errs);
+	tensorOpDestroy(&a);
+	tensorOpDestroy(&b);
+	tensorOpDestroy(&c);
+	prodSpaceDestroy(&h1);
+	prodSpaceDestroy(&h2);
+	prodSpaceDestroy(&h3);
+
+	h1 = prodSpaceCreate(2);
+	h2 = prodSpaceCreate(2);
+	h3 = prodSpaceCreate(0);
+	prodSpaceMul(h1, &h3);
+	prodSpaceMul(h2, &h3);
+	tensorOpIdentity(h1, &a);
+	sz = sigmaZ();
+	tensorOpAddTo(sz, 0, a);
+	tensorOpIdentity(h2, &b);
+	sp = sigmaPlus();
+	tensorOpAddTo(sp, 0, b);
+	tensorOpIdentity(h3, &c);
+	tensorOpKron(a, b, &c);
+	CHK_EQUAL(tensorOpCheck(c), 0, errs);
+	CHK_EQUAL(c->numTerms, 5, errs);
+	elemOpDestroy(&sz);
+	elemOpDestroy(&sp);
+	tensorOpDestroy(&a);
+	tensorOpDestroy(&b);
+	tensorOpDestroy(&c);
+	prodSpaceDestroy(&h1);
+	prodSpaceDestroy(&h2);
+	prodSpaceDestroy(&h3);
+
+	return errs;
+}
+
+static int testKronSimpleTOps()
+{
+	int errs = 0;
+	struct SimpleTOp a, b, c;
+
+	a.numFactors = 0;
+	a.embeddings = 0;
+	b.numFactors = 0;
+	b.embeddings = 0;
+	c.numFactors = 0;
+	c.embeddings = 0;
+	kronSimpleTOps(&a, 0, &b, &c);
+	CHK_EQUAL(c.numFactors, 0, errs);
+	destroySimpleTOp(&a);
+	destroySimpleTOp(&b);
+	destroySimpleTOp(&c);
+
+	a.numFactors = 0;
+	a.embeddings = 0;
+	b.numFactors = 0;
+	b.embeddings = 0;
+	c.numFactors = 1;
+	c.embeddings = malloc(sizeof(*c.embeddings));
+	c.embeddings[0].i = 0;
+	elemOpCreate(&c.embeddings[0].op);
+	kronSimpleTOps(&a, 0, &b, &c);
+	CHK_EQUAL(c.numFactors, 1, errs);
+	destroySimpleTOp(&a);
+	destroySimpleTOp(&b);
+	destroySimpleTOp(&c);
+
+	a.numFactors = 1;
+	a.embeddings = malloc(sizeof(*a.embeddings));
+	a.embeddings[0].i = 0;
+	elemOpCreate(&a.embeddings[0].op);
+	b.numFactors = 0;
+	b.embeddings = 0;
+	c.numFactors = 0;
+	c.embeddings = 0;
+	kronSimpleTOps(&a, 1, &b, &c);
+	CHK_EQUAL(c.numFactors, 1, errs);
+	destroySimpleTOp(&a);
+	destroySimpleTOp(&b);
+	destroySimpleTOp(&c);
+
+	a.numFactors = 1;
+	a.embeddings = malloc(sizeof(*a.embeddings));
+	a.embeddings[0].i = 0;
+	elemOpCreate(&a.embeddings[0].op);
+	b.numFactors = 1;
+	b.embeddings = malloc(sizeof(*b.embeddings));;
+	b.embeddings[0].i = 0;
+	elemOpCreate(&b.embeddings[0].op);
+	c.numFactors = 0;
+	c.embeddings = 0;
+	kronSimpleTOps(&a, 1, &b, &c);
+	CHK_EQUAL(c.numFactors, 2, errs);
+	CHK_EQUAL(c.embeddings[0].i, 0, errs);
+	CHK_EQUAL(c.embeddings[1].i, 1, errs);
+	destroySimpleTOp(&a);
+	destroySimpleTOp(&b);
+	destroySimpleTOp(&c);
+	return errs;
+}
+
 int tensorOpTest()
 {
 	int errs = 0;
@@ -722,5 +939,6 @@ int tensorOpTest()
 	errs += testTensorOpScale();
 	errs += testTensorOpCheck();
 	errs += testTensorOpKron();
+	errs += testKronSimpleTOps();
 	return errs;
 }
