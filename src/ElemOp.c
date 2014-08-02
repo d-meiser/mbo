@@ -353,6 +353,22 @@ static int testElemOpMul()
 	return errs;
 }
 
+static int testElemOpCheck()
+{
+	int errs = 0;
+	ElemOp o;
+
+	elemOpCreate(&o);
+	elemOpCheck(o);
+	elemOpDestroy(&o);
+
+	o = sigmaZ();
+	elemOpCheck(o);
+	elemOpDestroy(&o);
+
+	return errs;
+}
+
 static int testSigmaPlus()
 {
 	int errs = 0;
@@ -467,6 +483,7 @@ int elemOpTest()
 	errs += testElemOpScale();
 	errs += testElemOpPlus();
 	errs += testElemOpMul();
+  errs += testElemOpCheck();
 	errs += testSigmaPlus();
 	errs += testSigmaMinus();
 	errs += testSigmaZ();
