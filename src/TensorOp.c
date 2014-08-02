@@ -45,6 +45,7 @@ static void destroySimpleTOp(struct SimpleTOp *term);
 static void multiplySimpleTOps(int, struct SimpleTOp *sa, struct SimpleTOp *sb);
 static void copySimpleTOp(struct SimpleTOp *dest, struct SimpleTOp *src);
 static void scaleSimpleTOp(double alpha, ProdSpace h, struct SimpleTOp *op);
+static int checkSimpleTOp(struct SimpleTOp *sa);
 
 /**
    Data structure for tensor product operators.
@@ -306,7 +307,24 @@ int findEmbedding(int i, int numEmbeddings, struct Embedding *emb)
 
 int tensorOpCheck(TensorOp op)
 {
-	return 0;
+	int i, errs = 0;
+	if (op->numTerms < 0) ++errs;
+	errs += prodSpaceCheck(op->space);
+	for (i = 0; i < op->numTerms; ++i) {
+		errs += checkSimpleTOp(op->sum + i);
+	}
+	return errs;
+}
+
+int checkSimpleTOp(struct SimpleTOp *sa)
+{
+	int i, errs = 0;
+	if (sa->numFactors < 0) ++errs;
+	for (i = 0; i < sa->numFactors; ++i) {
+		if (sa->embeddings[i].i < 0) ++errs;
+		errs += elemOpCheck(sa->embeddings[i].op);
+	}
+	return errs;
 }
 
 /*
@@ -634,6 +652,7 @@ static int testTensorOpScale()
 	tensorOpNull(h, &a);
 	tensorOpScale(alpha, &a);
 	CHK_EQUAL(a->numTerms, 0, errs);
+	CHK_EQUAL(tensorOpCheck(a), 0, errs);
 	tensorOpDestroy(&a);
 	prodSpaceDestroy(&h);
 
@@ -641,6 +660,7 @@ static int testTensorOpScale()
 	tensorOpNull(h, &a);
 	tensorOpScale(alpha, &a);
 	CHK_EQUAL(a->numTerms, 0, errs);
+	CHK_EQUAL(tensorOpCheck(a), 0, errs);
 	tensorOpDestroy(&a);
 	prodSpaceDestroy(&h);
 
@@ -648,6 +668,40 @@ static int testTensorOpScale()
 	tensorOpIdentity(h, &a);
 	tensorOpScale(alpha, &a);
 	CHK_EQUAL(a->numTerms, 1, errs);
+	CHK_EQUAL(tensorOpCheck(a), 0, errs);
+	tensorOpDestroy(&a);
+	prodSpaceDestroy(&h);
+
+	return errs;
+}
+
+static int testTensorOpCheck()
+{
+	int errs = 0;
+	return errs;
+}
+
+static int testTensorOpKron()
+{
+	int errs = 0;
+	TensorOp a;
+	ProdSpace h;
+
+	h = prodSpaceCreate(0);
+	tensorOpNull(h, &a);
+	CHK_EQUAL(tensorOpCheck(a), 0, errs);
+	tensorOpDestroy(&a);
+	tensorOpIdentity(h, &a);
+	CHK_EQUAL(tensorOpCheck(a), 0, errs);
+	tensorOpDestroy(&a);
+	prodSpaceDestroy(&h);
+
+	h = prodSpaceCreate(30);
+	tensorOpNull(h, &a);
+	CHK_EQUAL(tensorOpCheck(a), 0, errs);
+	tensorOpDestroy(&a);
+	tensorOpIdentity(h, &a);
+	CHK_EQUAL(tensorOpCheck(a), 0, errs);
 	tensorOpDestroy(&a);
 	prodSpaceDestroy(&h);
 
@@ -666,5 +720,7 @@ int tensorOpTest()
 	errs += testTensorOpMul();
 	errs += testTensorOpPlus();
 	errs += testTensorOpScale();
+	errs += testTensorOpCheck();
+	errs += testTensorOpKron();
 	return errs;
 }
