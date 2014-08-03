@@ -13,7 +13,7 @@ script:
   - make -j8
   - ctest
 after_success:
-  - lcov -d tests -d src -base-directory .. -c -o coverage.info
+  - lcov -d tests -d src -d examples -base-directory .. -c -o coverage.info
   - lcov --remove coverage.info '/usr/*' -o coverage.info
   - cd ..
   - coveralls-lcov build/coverage.info
