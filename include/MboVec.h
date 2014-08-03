@@ -43,12 +43,28 @@ MBO_STATUS mboVecGetViewR(MboVec v, struct MboAmplitude **array);
 /** @brief Release a view of the vector data. */
 MBO_STATUS mboVecReleaseView(MboVec v, struct MboAmplitude **array);
 
-/** @brief y <- a * x + y 
+/** @brief y <- a * x + y
  * */
-MBO_STATUS mboVecAXPY(struct MboAmplitude* a, MboVec x, MboVec y);
+MBO_STATUS mboVecAXPY(struct MboAmplitude *a, MboVec x, MboVec y);
 
 /** @brief set vector to a constant */
-MBO_STATUS mboVecSet(struct MboAmplitude* a, MboVec x);
+MBO_STATUS mboVecSet(struct MboAmplitude *a, MboVec x);
+
+/** @brief Add outer product of vectors
+ * @param n    Number of arrays.  n can be obtained from an MboProdSpace
+ *             object by means of mboProdSpaceSize.
+ * @param dims Length of each array. This array has to be at least of
+ *             length n.  dims can be obtained from an MboProdSpace
+ *             object by means of mboProdSpaceGetDims.
+ * @param vecs Array of arrays of vectors the outer product of which is
+ *             taken.  Has to contain at least n
+ *             arrays and vecs[i] has to be at least of length
+ *             dims[i].
+ * @param x    The vector to which the result of the outer product is to
+ *             be added.
+ * @see mboProdSpaceSize, mboProdSpaceGetDims
+ * */
+MBO_STATUS mboVecKron(int n, int *dims, struct MboAmplitude **vecs, MboVec x);
 
 /** @brief Check integrity of MboVec
  * Returns the number of errors enountered. */
