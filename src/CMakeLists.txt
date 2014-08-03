@@ -15,3 +15,4 @@ if(UNIX)
   target_link_libraries(QUO m)
 endif()
 
+install(TARGETS QUO DESTINATION lib)

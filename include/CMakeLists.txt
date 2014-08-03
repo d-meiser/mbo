@@ -1,10 +1,11 @@
 set(QUO_HEADERS
-    ElemOp.h
     MboAmplitude.h
+    MboElemOp.h
     MboErrors.h
-    ProdSpace.h
-    Quo.h
-    TensProdOp.h
+    MboProdSpace.h
+    MboTensorOp.h
+    MboVec.h
+    Mbo.h
    )
 
 install(FILES ${QUO_HEADERS} DESTINATION include)
