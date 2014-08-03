@@ -76,7 +76,13 @@ void mboTensorOpScale(struct MboAmplitude *alpha, MboTensorOp *a);
  *      *c += a x b
  * */
 void mboTensorOpKron(MboTensorOp a, MboTensorOp b, MboTensorOp *c);
+
+/** @brief Check integrity of tensor operator. 
+ * Returns the number of errors.*/
 int mboTensorOpCheck(MboTensorOp);
+
+/** @brief Run tensor operator test suite.
+ * Returns the number of errors. */
 int mboTensorOpTest();
 
 #ifdef __cplusplus
