@@ -3,7 +3,10 @@
 
 #include <MboProdSpace.h>
 #include <MboElemOp.h>
+#include <MboErrors.h>
 
+struct MboVec;
+typedef struct MboVec *MboVec;
 
 #ifdef __cplusplus
 extern "C" {
@@ -76,6 +79,12 @@ void mboTensorOpScale(struct MboAmplitude *alpha, MboTensorOp *a);
  *      *c += a x b
  * */
 void mboTensorOpKron(MboTensorOp a, MboTensorOp b, MboTensorOp *c);
+
+/**
+ * y <- alpha * a * x + beta * y
+ * */
+MBO_STATUS mboTensorOpMatVec(struct MboAmplitude *alpha, MboTensorOp a,
+			     MboVec x, struct MboAmplitude *beta, MboVec y);
 
 /** @brief Check integrity of tensor operator. 
  * Returns the number of errors.*/

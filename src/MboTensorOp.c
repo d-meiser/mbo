@@ -373,6 +373,12 @@ int checkSimpleTOp(struct SimpleTOp *sa)
 	return errs;
 }
 
+MBO_STATUS mboTensorOpMatVec(struct MboAmplitude *alpha, MboTensorOp a,
+			     MboVec x, struct MboAmplitude *beta, MboVec y)
+{
+}
+
+
 /*
  * Tests
  * */
@@ -943,6 +949,12 @@ static int testKronSimpleTOps()
 	return errs;
 }
 
+static int testMboTensorOpMatVec()
+{
+	int errs = 0;
+	return errs;
+}
+
 int mboTensorOpTest()
 {
 	int errs = 0;
@@ -958,5 +970,6 @@ int mboTensorOpTest()
 	errs += testMboTensorOpCheck();
 	errs += testMboTensorOpKron();
 	errs += testKronSimpleTOps();
+	errs += testMboTensorOpMatVec();
 	return errs;
 }
