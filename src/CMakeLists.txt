@@ -14,6 +14,9 @@ add_library(MBO
     )
 if(UNIX)
   target_link_libraries(MBO m)
+  if(MBO_ENABLE_COVERAGE)
+  target_link_libraries(MBO gcov)
+  endif()
 endif()
 
 install(TARGETS MBO DESTINATION lib)
