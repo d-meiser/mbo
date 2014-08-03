@@ -10,9 +10,8 @@ script:
   - mkdir -p build
   - cd build
   - cmake -DCMAKE_BUILD_TYPE=Debug -DMBO_ENABLE_COVERAGE=ON ..
-  - make VERBOSE=1
+  - make -j8
   - ctest -j4
-  - cat Testing/Temporary/LastTest.log
 after_success:
   - lcov -d tests -d src -d examples -base-directory .. -c -o coverage.info
   - lcov --remove coverage.info '/usr/*' -o coverage.info
