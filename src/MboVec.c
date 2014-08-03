@@ -15,29 +15,39 @@ struct MboVec {
 	struct MboAmplitude *array;
 };
 
-void mboVecCreate(long dim, MboVec *v)
+MBO_STATUS mboVecCreate(long dim, MboVec *v)
 {
 	*v = malloc(sizeof(**v));
+	if (*v == 0) return MBO_OUT_OF_MEMORY;
 	(*v)->dim = dim;
 	(*v)->mapped = MBO_VEC_MAPPING_STATUS_UNMAPPED;
 	(*v)->array = malloc(dim * sizeof(*(*v)->array));
+	if ((*v)->array == 0) {
+		free(*v);
+		*v = 0;
+		return MBO_OUT_OF_MEMORY;
+	}
+	return MBO_SUCCESS;
 }
 
-void mboVecDestroy(MboVec *v)
+MBO_STATUS mboVecDestroy(MboVec *v)
 {
 	free((*v)->array);
 	free(*v);
 	*v = 0;
+	return MBO_SUCCESS;
 }
 
 int mboVecCheck(MboVec v)
 {
 	int errs = 0;
+	if (v->dim < 0) ++errs;
+	if (v->mapped > MBO_VEC_MAPPING_STATUS_MAPPED_RW) ++errs;
 	return errs;
 }
 
-static int mboVecGetView(MboVec v, struct MboAmplitude **array,
-			 enum MBO_VEC_MAPPING_STATUS mapping)
+static MBO_STATUS mboVecGetView(MboVec v, struct MboAmplitude **array,
+				enum MBO_VEC_MAPPING_STATUS mapping)
 {
 	if (v->mapped) {
 		*array = 0;
@@ -48,24 +58,24 @@ static int mboVecGetView(MboVec v, struct MboAmplitude **array,
 	return MBO_SUCCESS;
 }
 
-int mboVecGetViewRW(MboVec v, struct MboAmplitude **array)
+MBO_STATUS mboVecGetViewRW(MboVec v, struct MboAmplitude **array)
 {
 	return mboVecGetView(v, array, MBO_VEC_MAPPING_STATUS_MAPPED_RW);
 }
 
-int mboVecGetViewR(MboVec v, struct MboAmplitude **array)
+MBO_STATUS mboVecGetViewR(MboVec v, struct MboAmplitude **array)
 {
 	return mboVecGetView(v, array, MBO_VEC_MAPPING_STATUS_MAPPED_R);
 }
 
-int mboVecReleaseView(MboVec v, struct MboAmplitude **array)
+MBO_STATUS mboVecReleaseView(MboVec v, struct MboAmplitude **array)
 {
 	v->mapped = MBO_VEC_MAPPING_STATUS_UNMAPPED;
 	*array = 0;
 	return MBO_SUCCESS;
 }
 
-int mboVecAXPY(struct MboAmplitude* a, MboVec x, MboVec y)
+MBO_STATUS mboVecAXPY(struct MboAmplitude* a, MboVec x, MboVec y)
 {
 	long i;
 	struct MboAmplitude tmp;
@@ -78,6 +88,16 @@ int mboVecAXPY(struct MboAmplitude* a, MboVec x, MboVec y)
 		tmp.im = a->re * x->array[i].im + a->im * x->array[i].re;
 		y->array[i].re += tmp.re;
 		y->array[i].im += tmp.im;
+	}
+	return MBO_SUCCESS;
+}
+
+MBO_STATUS mboVecSet(struct MboAmplitude* a, MboVec x)
+{
+	int i;
+	if (x->mapped) return MBO_VEC_IN_USE;
+	for (i = 0; i < x->dim; ++i) {
+		x->array[i] = *a;
 	}
 	return MBO_SUCCESS;
 }
@@ -197,6 +217,31 @@ static int testMboVecAXPY()
 	return errs;
 }
 
+static int testMboVecSet()
+{
+	int errs = 0, d = 2;
+	MboVec x;
+	struct MboAmplitude a, *arr;
+	MBO_STATUS err;
+
+	a.re = 3.7;
+	a.im = 2.0;
+
+	err = mboVecCreate(d, &x);
+	CHK_EQUAL(err, MBO_SUCCESS, errs);
+	err = mboVecSet(&a, x);
+	CHK_EQUAL(err, MBO_SUCCESS, errs);
+	err = mboVecGetViewR(x, &arr);
+	err = mboVecSet(&a, x);
+	CHK_EQUAL(err, MBO_VEC_IN_USE, errs);
+	err = mboVecReleaseView(x, &arr);
+	CHK_EQUAL(err, MBO_SUCCESS, errs);
+	err = mboVecDestroy(&x);
+	CHK_EQUAL(err, MBO_SUCCESS, errs);
+
+	return errs;
+}
+
 int mboVecTest()
 {
 	int errs = 0;
@@ -206,6 +251,7 @@ int mboVecTest()
 	errs += testMboVecGetViewRW();
 	errs += testMboVecGetViewR();
 	errs += testMboVecAXPY();
+	errs += testMboVecSet();
 	return errs;
 }
 

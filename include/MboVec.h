@@ -1,6 +1,8 @@
 #ifndef MBO_VEC_H
 #define MBO_VEC_H
 
+#include <MboErrors.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -12,10 +14,10 @@ typedef struct MboVec *MboVec;
 
 
 /** @brief Create MboVec of dimension dim */
-void mboVecCreate(long dim, MboVec *v);
+MBO_STATUS mboVecCreate(long dim, MboVec *v);
 
 /** @brief Release all resources of a MboVec */
-void mboVecDestroy(MboVec *v);
+MBO_STATUS mboVecDestroy(MboVec *v);
 
 /** @brief Obtain a read-write view of the vector data
  *
@@ -26,7 +28,7 @@ void mboVecDestroy(MboVec *v);
  *
  * @see mboVecReleaseView, mboVecGetViewR
  * */
-int mboVecGetViewRW(MboVec v, struct MboAmplitude **array);
+MBO_STATUS mboVecGetViewRW(MboVec v, struct MboAmplitude **array);
 
 /** @brief Obtain a read-only view of vector data
  *
@@ -36,19 +38,24 @@ int mboVecGetViewRW(MboVec v, struct MboAmplitude **array);
  *
  * @see mboVecReleaseView, mboVecGetViewRW
  * */
-int mboVecGetViewR(MboVec v, struct MboAmplitude **array);
+MBO_STATUS mboVecGetViewR(MboVec v, struct MboAmplitude **array);
 
 /** @brief Release a view of the vector data. */
-int mboVecReleaseView(MboVec v, struct MboAmplitude **array);
+MBO_STATUS mboVecReleaseView(MboVec v, struct MboAmplitude **array);
 
 /** @brief y <- a * x + y 
  * */
-int mboVecAXPY(struct MboAmplitude* a, MboVec x, MboVec y);
+MBO_STATUS mboVecAXPY(struct MboAmplitude* a, MboVec x, MboVec y);
 
-/** @brief Check integrity of MboVec */
+/** @brief set vector to a constant */
+MBO_STATUS mboVecSet(struct MboAmplitude* a, MboVec x);
+
+/** @brief Check integrity of MboVec
+ * Returns the number of errors enountered. */
 int mboVecCheck();
 
-/** @brief Run MboVec tests */
+/** @brief Run MboVec tests
+ * Returns the total number of failures encountered. */
 int mboVecTest();
 
 #ifdef __cplusplus
