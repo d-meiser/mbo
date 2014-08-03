@@ -4,12 +4,12 @@
 #include <MboProdSpace.h>
 #include <MboElemOp.h>
 
-struct MboAmplitude;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+struct MboAmplitude;
 struct MboTensorOp;
 /** Data type for representing tensor operators. */
 typedef struct MboTensorOp *MboTensorOp;
