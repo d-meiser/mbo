@@ -1,8 +1,10 @@
 #ifndef TENSOR_OP_H
 #define TENSOR_OP_H
 
-#include "ProdSpace.h"
-#include "ElemOp.h"
+#include <ProdSpace.h>
+#include <ElemOp.h>
+
+struct Amplitude;
 
 #ifdef __cplusplus
 extern "C" {
@@ -52,7 +54,8 @@ void tensorOpAddTo(ElemOp elemop, int i, TensorOp top);
 /** @brief Adds scaled version of embedded operator to tensor operator.
  * @see tensorOpAddTo
  * */
-void tensorOpAddScaledTo(double alpha, ElemOp elemop, int i, TensorOp top);
+void tensorOpAddScaledTo(struct Amplitude *alpha, ElemOp elemop, int i,
+			 TensorOp top);
 
 /** @brief Multiply two operators and add result to third
  *      (*c) += a * b
@@ -67,7 +70,7 @@ void tensorOpPlus(TensorOp a, TensorOp *b);
 /** @brief Scale operator
  * Schematically:   *a *= alpha;
  * */
-void tensorOpScale(double alpha, TensorOp *a);
+void tensorOpScale(struct Amplitude *alpha, TensorOp *a);
 
 /** @brief Tensor product of two operators.
  *      *c += a x b

@@ -8,10 +8,12 @@ extern "C" {
 struct ElemOp;
 typedef struct ElemOp *ElemOp;
 
+struct Amplitude;
+
 void elemOpCreate(ElemOp *);
 void elemOpDestroy(ElemOp *);
-void elemOpAddTo(int, int, double, ElemOp *);
-void elemOpScale(double, ElemOp);
+void elemOpAddTo(int, int, struct Amplitude*, ElemOp *);
+void elemOpScale(struct Amplitude*, ElemOp);
 void elemOpPlus(ElemOp, ElemOp *);
 void elemOpMul(ElemOp, ElemOp *);
 ElemOp elemOpCopy(ElemOp);

@@ -16,14 +16,18 @@ int main()
 	const int nPhotons = 30;
 	TensorOp inhomogeneousJz;
 	TensorOp jMinus;
+  struct Amplitude tmp;
 
 	elemOpCreate(&sm);
-	elemOpAddTo(0, 1, 1.0, &sm);
+  tmp.re = 1.0;
+  tmp.im = 0.0;
+	elemOpAddTo(0, 1, &tmp, &sm);
 	elemOpCreate(&sp);
-	elemOpAddTo(1, 0, 1.0, &sp);
+	elemOpAddTo(1, 0, &tmp, &sp);
 	elemOpCreate(&sz);
-	elemOpAddTo(1, 1, 1.0, &sz);
-	elemOpAddTo(0, 0, -1.0, &sz);
+	elemOpAddTo(1, 1, &tmp, &sz);
+  tmp.re = -1.0;
+	elemOpAddTo(0, 0, &tmp, &sz);
 
 	hSingleAtom = prodSpaceCreate(2);
 	hAtoms = prodSpaceCreate(0);
@@ -37,7 +41,8 @@ int main()
 
 	tensorOpNull(hAtoms, &inhomogeneousJz);
 	for (int i = 0; i < nAtoms; ++i) {
-		tensorOpAddScaledTo(omega(i), sz, i, inhomogeneousJz);
+    tmp.re = omega(i);
+		tensorOpAddScaledTo(&tmp, sz, i, inhomogeneousJz);
 	}
 
 	tensorOpNull(hTot, &jMinus);

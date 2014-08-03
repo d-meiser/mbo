@@ -5,7 +5,10 @@
 extern "C" {
 #endif
 
-typedef double Amplitude;
+struct Amplitude {
+	double re;
+	double im;
+};
 
 #ifdef __cplusplus
 }

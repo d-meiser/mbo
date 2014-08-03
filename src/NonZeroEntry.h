@@ -10,7 +10,7 @@
 struct NonZeroEntry {
 	int m;
 	int n;
-	Amplitude val;
+	struct Amplitude val;
 };
 
 #endif

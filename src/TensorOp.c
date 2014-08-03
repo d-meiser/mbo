@@ -1,6 +1,7 @@
 #include <stdlib.h>
 
-#include "TensorOp.h"
+#include <TensorOp.h>
+#include <Amplitude.h>
 
 /**
  * @brief Elementary embedding of an operator into a product space.
@@ -46,7 +47,8 @@ static void multiplySimpleTOps(int, struct SimpleTOp *sa, struct SimpleTOp *sb);
 static void kronSimpleTOps(struct SimpleTOp *a, int numSpacesInA,
 			   struct SimpleTOp *b, struct SimpleTOp *c);
 static void copySimpleTOp(struct SimpleTOp *dest, struct SimpleTOp *src);
-static void scaleSimpleTOp(double alpha, ProdSpace h, struct SimpleTOp *op);
+static void scaleSimpleTOp(struct Amplitude *alpha, ProdSpace h,
+			   struct SimpleTOp *op);
 static int checkSimpleTOp(struct SimpleTOp *sa);
 
 /**
@@ -118,7 +120,7 @@ void tensorOpAddTo(ElemOp a, int i, TensorOp op)
 	++op->numTerms;
 }
 
-void tensorOpAddScaledTo(double alpha, ElemOp a, int i, TensorOp op)
+void tensorOpAddScaledTo(struct Amplitude *alpha, ElemOp a, int i, TensorOp op)
 {
 	struct SimpleTOp *newTerm;
 	struct Embedding *aEmbedded;
@@ -173,7 +175,7 @@ void tensorOpPlus(TensorOp a, TensorOp *b)
 	(*b)->numTerms += a->numTerms;
 }
 
-void tensorOpScale(double alpha, TensorOp *a)
+void tensorOpScale(struct Amplitude *alpha, TensorOp *a)
 {
 	int i;
 	for (i = 0; i < (*a)->numTerms; ++i) {
@@ -264,7 +266,7 @@ void copySimpleTOp(struct SimpleTOp* dest, struct SimpleTOp *src)
 	}
 }
 
-void scaleSimpleTOp(double alpha, ProdSpace h, struct SimpleTOp *op)
+void scaleSimpleTOp(struct Amplitude *alpha, ProdSpace h, struct SimpleTOp *op)
 {
 	int d;
 	if (prodSpaceSize(h) == 0) return;
@@ -410,12 +412,14 @@ static int testTensorOpAddTo()
 	TensorOp op;
 	ElemOp eop;
 	ProdSpace h;
-	double matrixElement = -3.4;
+	struct Amplitude alpha;
 
 	h = prodSpaceCreate(20);
 
 	elemOpCreate(&eop);
-	elemOpAddTo(14, 15, matrixElement, &eop);
+	alpha.re = 5.4;
+	alpha.im = 2.9;
+	elemOpAddTo(14, 15, &alpha, &eop);
 
 	tensorOpNull(h, &op);
 	tensorOpAddTo(eop, 0, op);
@@ -438,15 +442,20 @@ static int testTensorOpAddScaledTo()
 	TensorOp op;
 	ElemOp eop;
 	ProdSpace h;
-	double alpha = 2.1;
+	struct Amplitude alpha, beta;
+
+	alpha.re = 20;
+	alpha.im = 30;
+	beta.re = 15;
+	beta.im = -19;
 
 	h = prodSpaceCreate(20);
 
 	elemOpCreate(&eop);
-	elemOpAddTo(14, 15, -3.4, &eop);
+	elemOpAddTo(14, 15, &alpha, &eop);
 
 	tensorOpNull(h, &op);
-	tensorOpAddScaledTo(alpha, eop, 0, op);
+	tensorOpAddScaledTo(&alpha, eop, 0, op);
 	CHK_EQUAL(op->numTerms, 1, errs);
 	CHK_TRUE(prodSpaceEqual(op->space, h), errs);
 	CHK_TRUE(op->sum != 0, errs);
@@ -454,7 +463,7 @@ static int testTensorOpAddScaledTo()
 	CHK_TRUE(op->sum[0].embeddings != 0, errs);
 	CHK_EQUAL(op->sum[0].embeddings[0].i, 0, errs);
 
-	tensorOpAddScaledTo(alpha, eop, 1, op);
+	tensorOpAddScaledTo(&beta, eop, 1, op);
 	CHK_EQUAL(op->numTerms, 2, errs);
 
 	tensorOpDestroy(&op);
@@ -532,6 +541,12 @@ static int testTensorOpMul()
 	TensorOp op1, op2, op3;
 	ElemOp eop1, eop2;
 	ProdSpace h1, h2;
+	struct Amplitude alpha, beta;
+
+	alpha.re = 20;
+	alpha.im = 30;
+	beta.re = 15;
+	beta.im = -19;
 
 	h1 = prodSpaceCreate(5);
 	h2 = prodSpaceCreate(0);
@@ -540,13 +555,13 @@ static int testTensorOpMul()
 	}
 
 	elemOpCreate(&eop1);
-	elemOpAddTo(14, 15, -3.4, &eop1);
-	elemOpAddTo(1, 5, 2.0, &eop1);
-	elemOpAddTo(2, 3, 2.0, &eop1);
+	elemOpAddTo(14, 15, &alpha, &eop1);
+	elemOpAddTo(1, 5, &beta, &eop1);
+	elemOpAddTo(2, 3, &beta, &eop1);
 
 	elemOpCreate(&eop2);
-	elemOpAddTo(8, 3, -3.4, &eop2);
-	elemOpAddTo(3, 4, 2.0, &eop2);
+	elemOpAddTo(8, 3, &beta, &eop2);
+	elemOpAddTo(3, 4, &alpha, &eop2);
 
 	tensorOpNull(h2, &op1);
 	tensorOpNull(h2, &op2);
@@ -690,11 +705,14 @@ static int testTensorOpScale()
 	int errs = 0;
 	TensorOp a;
 	ProdSpace h;
-	double alpha = 2.0;
+	struct Amplitude alpha;
+
+	alpha.re = 2.0;
+	alpha.im = -55.55;
 
 	h = prodSpaceCreate(0);
 	tensorOpIdentity(h, &a);
-	tensorOpScale(alpha, &a);
+	tensorOpScale(&alpha, &a);
 	CHK_EQUAL(a->numTerms, 1, errs);
 	CHK_EQUAL(tensorOpCheck(a), 0, errs);
 	tensorOpDestroy(&a);
@@ -702,7 +720,7 @@ static int testTensorOpScale()
 
 	h = prodSpaceCreate(2);
 	tensorOpNull(h, &a);
-	tensorOpScale(alpha, &a);
+	tensorOpScale(&alpha, &a);
 	CHK_EQUAL(a->numTerms, 0, errs);
 	CHK_EQUAL(tensorOpCheck(a), 0, errs);
 	tensorOpDestroy(&a);
@@ -710,7 +728,7 @@ static int testTensorOpScale()
 
 	h = prodSpaceCreate(2);
 	tensorOpIdentity(h, &a);
-	tensorOpScale(alpha, &a);
+	tensorOpScale(&alpha, &a);
 	CHK_EQUAL(a->numTerms, 1, errs);
 	CHK_EQUAL(tensorOpCheck(a), 0, errs);
 	tensorOpDestroy(&a);
