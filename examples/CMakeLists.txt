@@ -1,5 +1,6 @@
 set(EXAMPLES
     TavisCummings
+    Vectors
    )
 
 include_directories(

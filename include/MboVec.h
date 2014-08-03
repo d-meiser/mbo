@@ -41,6 +41,10 @@ int mboVecGetViewR(MboVec v, struct MboAmplitude **array);
 /** @brief Release a view of the vector data. */
 int mboVecReleaseView(MboVec v, struct MboAmplitude **array);
 
+/** @brief y <- a * x + y 
+ * */
+int mboVecAXPY(struct MboAmplitude* a, MboVec x, MboVec y);
+
 /** @brief Check integrity of MboVec */
 int mboVecCheck();
 

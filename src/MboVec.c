@@ -65,6 +65,23 @@ int mboVecReleaseView(MboVec v, struct MboAmplitude **array)
 	return MBO_SUCCESS;
 }
 
+int mboVecAXPY(struct MboAmplitude* a, MboVec x, MboVec y)
+{
+	long i;
+	struct MboAmplitude tmp;
+	if (x->dim != y->dim) return MBO_DIMENSIONS_MISMATCH;
+	if (x->mapped || y->mapped) return MBO_VEC_IN_USE;
+	for (i = 0; i < x->dim; ++i) {
+		/* By using a temporary this code works also in the case
+		 * where x  == y */
+		tmp.re = a->re * x->array[i].re - a->im * x->array[i].im;
+		tmp.im = a->re * x->array[i].im + a->im * x->array[i].re;
+		y->array[i].re += tmp.re;
+		y->array[i].im += tmp.im;
+	}
+	return MBO_SUCCESS;
+}
+
 #include "TestUtils.h"
 #define EPS 1.0e-12
 
@@ -162,6 +179,24 @@ static int testMboVecGetViewR()
 	return errs;
 }
 
+static int testMboVecAXPY()
+{
+	int errs = 0, d = 2;
+	MboVec x, y;
+	struct MboAmplitude a;
+
+	a.re = 3.7;
+	a.im = 2.0;
+
+	mboVecCreate(d, &x);
+	mboVecCreate(d, &y);
+	mboVecAXPY(&a, x, y);
+	mboVecDestroy(&x);
+	mboVecDestroy(&y);
+
+	return errs;
+}
+
 int mboVecTest()
 {
 	int errs = 0;
@@ -170,6 +205,7 @@ int mboVecTest()
 	errs += testMboVecCheck();
 	errs += testMboVecGetViewRW();
 	errs += testMboVecGetViewR();
+	errs += testMboVecAXPY();
 	return errs;
 }
 
