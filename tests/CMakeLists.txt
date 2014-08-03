@@ -1,9 +1,10 @@
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../include)
 
 set(TESTS
-  test_ElemOp
-  test_ProdSpace
-  test_TensorOp
+  test_MboElemOp
+  test_MboProdSpace
+  test_MboTensorOp
+  test_MboVec
   )
 
 if(CMAKE_COMPILER_IS_GNUCC)
