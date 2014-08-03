@@ -1,9 +1,0 @@
-- Function Naming: TypeOperation
-
-- Return types: Return error codes
-
-- Add TOp arithmetic.
-
-- Haskell camel case: functions start with lower case
-
-
