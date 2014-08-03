@@ -2,18 +2,18 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/../include
     ${CMAKE_CURRENT_SOURCE_DIR}
     )
-set(QUO_SRCS
+set(MBO_SRCS
   MboElemOp.c
   MboProdSpace.c
   MboTensorOp.c
   MboVec.c
   )
 
-add_library(QUO
-    ${QUO_SRCS}
+add_library(MBO
+    ${MBO_SRCS}
     )
 if(UNIX)
-  target_link_libraries(QUO m)
+  target_link_libraries(MBO m)
 endif()
 
-install(TARGETS QUO DESTINATION lib)
+install(TARGETS MBO DESTINATION lib)

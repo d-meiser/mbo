@@ -9,7 +9,7 @@ set(TESTS
 
 foreach(t ${TESTS})
   add_executable(${t} ${t}.c)
-  target_link_libraries(${t} QUO)
+  target_link_libraries(${t} MBO)
   add_test(${t} ${t})
 endforeach()
 
