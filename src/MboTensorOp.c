@@ -376,6 +376,7 @@ int checkSimpleTOp(struct SimpleTOp *sa)
 MBO_STATUS mboTensorOpMatVec(struct MboAmplitude *alpha, MboTensorOp a,
 			     MboVec x, struct MboAmplitude *beta, MboVec y)
 {
+	return MBO_SUCCESS;
 }
 
 
