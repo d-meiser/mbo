@@ -3,14 +3,14 @@
 int main()
 {
 	double alpha[2] = {2.0, 3.0};
-	long d = 10000000l;
+	long d = 10l;
 	int i;
 	MboVec x;
 	MboVec y;
 	mboVecCreate(d, &x);
 	mboVecCreate(d, &y);
 
-	for (i = 0; i < 100; ++i) {
+	for (i = 0; i < 10; ++i) {
 		mboVecAXPY(alpha, x, y);
 	}
 
