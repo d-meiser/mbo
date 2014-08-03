@@ -203,7 +203,7 @@ static int testMboVecAXPY()
 {
 	int errs = 0, d = 2;
 	MboVec x, y;
-	struct MboAmplitude a;
+	struct MboAmplitude a, *arr;
 	MBO_STATUS err;
 
 	a.re = 3.7;
@@ -214,7 +214,18 @@ static int testMboVecAXPY()
 	err = mboVecAXPY(&a, x, y);
 	CHK_EQUAL(err, MBO_SUCCESS, errs);
 	mboVecDestroy(&x);
+	mboVecDestroy(&y);
+
+	err = mboVecCreate(d, &x);
+	err = mboVecCreate(d, &y);
+  err = mboVecGetViewR(x, &arr);
+	err = mboVecAXPY(&a, x, y);
+	CHK_EQUAL(err, MBO_VEC_IN_USE, errs);
+	mboVecDestroy(&x);
+	mboVecDestroy(&y);
+
 	mboVecCreate(d + 1, &x);
+	err = mboVecCreate(d, &y);
 	err = mboVecAXPY(&a, x, y);
 	CHK_EQUAL(err, MBO_DIMENSIONS_MISMATCH, errs);
 	mboVecDestroy(&x);
