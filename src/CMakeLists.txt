@@ -6,6 +6,7 @@ set(QUO_SRCS
   MboElemOp.c
   MboProdSpace.c
   MboTensorOp.c
+  MboVec.c
   )
 
 add_library(QUO
