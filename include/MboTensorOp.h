@@ -1,41 +1,41 @@
-#ifndef TENSOR_OP_H
-#define TENSOR_OP_H
+#ifndef MBO_TENSOR_OP_H
+#define MBO_TENSOR_OP_H
 
-#include <ProdSpace.h>
-#include <ElemOp.h>
+#include <MboProdSpace.h>
+#include <MboElemOp.h>
 
-struct Amplitude;
+struct MboAmplitude;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-struct TensorOp;
+struct MboTensorOp;
 /** Data type for representing tensor operators. */
-typedef struct TensorOp *TensorOp;
+typedef struct MboTensorOp *MboTensorOp;
 
 /** @brief Create a tensor operator corresponding to the Null operator
  * The resources used by the object have to be release with
- * tensorOpDestroy.
+ * mboTensorOpDestroy.
  * @param h   Underlying product space for the operator.
  * @param top The operator produced.
- * @see tensorOpDestroy, tensorOpIdentity
+ * @see mboTensorOpDestroy, mboTensorOpIdentity
  * */
-void tensorOpNull(ProdSpace h, TensorOp *top);
+void mboTensorOpNull(MboProdSpace h, MboTensorOp *top);
 
 /** @brief Create a tensor operator corresponding to the Identity operator
  * The resources used by the object have to be release with
- * tensorOpDestroy.
+ * mboTensorOpDestroy.
  * @param h   Underlying product space for the operator.
  * @param top The operator produced.
- * @see tensorOpDestroy, tensorOpNull
+ * @see mboTensorOpDestroy, mboTensorOpNull
  * */
-void tensorOpIdentity(ProdSpace h, TensorOp *top);
+void mboTensorOpIdentity(MboProdSpace h, MboTensorOp *top);
 
 /** @brief Destroy a tensor operator object.
- * @see tensorOpCreate, tensorOpCreateIdentity
+ * @see mboTensorOpCreate, mboTensorOpCreateIdentity
 */
-void tensorOpDestroy(TensorOp *top);
+void mboTensorOpDestroy(MboTensorOp *top);
 
 /** @brief Add an embedding to a tensor operator
  * Takes the elementary operator and embeds it into the product space of
@@ -49,35 +49,35 @@ void tensorOpDestroy(TensorOp *top);
  *               operators product space.
  * @param top    Tensor operator to which to add the result.
  * */
-void tensorOpAddTo(ElemOp elemop, int i, TensorOp top);
+void mboTensorOpAddTo(MboElemOp elemop, int i, MboTensorOp top);
 
 /** @brief Adds scaled version of embedded operator to tensor operator.
- * @see tensorOpAddTo
+ * @see mboTensorOpAddTo
  * */
-void tensorOpAddScaledTo(struct Amplitude *alpha, ElemOp elemop, int i,
-			 TensorOp top);
+void mboTensorOpAddScaledTo(struct MboAmplitude *alpha, MboElemOp elemop, int i,
+			    MboTensorOp top);
 
 /** @brief Multiply two operators and add result to third
  *      (*c) += a * b
  * */
-void tensorOpMul(TensorOp a, TensorOp b, TensorOp *c);
+void mboTensorOpMul(MboTensorOp a, MboTensorOp b, MboTensorOp *c);
 
 /** @brief Add a tensor operator to another operator
  *      (*b) += a
  * */
-void tensorOpPlus(TensorOp a, TensorOp *b);
+void mboTensorOpPlus(MboTensorOp a, MboTensorOp *b);
 
 /** @brief Scale operator
  * Schematically:   *a *= alpha;
  * */
-void tensorOpScale(struct Amplitude *alpha, TensorOp *a);
+void mboTensorOpScale(struct MboAmplitude *alpha, MboTensorOp *a);
 
 /** @brief Tensor product of two operators.
  *      *c += a x b
  * */
-void tensorOpKron(TensorOp a, TensorOp b, TensorOp *c);
-int tensorOpCheck(TensorOp);
-int tensorOpTest();
+void mboTensorOpKron(MboTensorOp a, MboTensorOp b, MboTensorOp *c);
+int mboTensorOpCheck(MboTensorOp);
+int mboTensorOpTest();
 
 #ifdef __cplusplus
 }

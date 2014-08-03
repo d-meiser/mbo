@@ -1,0 +1,10 @@
+#ifndef MBO_ERRORS_H
+#define MBO_ERRORS_H
+
+enum MBO_ERROR {
+	MBO_SUCCESS = 0,
+	MBO_OUT_OF_MEMORY,
+	MBO_SPACE_MISMATCH,
+};
+
+#endif

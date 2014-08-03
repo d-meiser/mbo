@@ -5,10 +5,10 @@
 extern "C" {
 #endif
 
-#include <Amplitude.h>
-#include <ElemOp.h>
-#include <ProdSpace.h>
-#include <TensorOp.h>
+#include <MboAmplitude.h>
+#include <MboElemOp.h>
+#include <MboProdSpace.h>
+#include <MboTensorOp.h>
 
 #ifdef __cplusplus
 }

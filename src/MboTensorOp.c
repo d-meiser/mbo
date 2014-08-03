@@ -1,7 +1,7 @@
 #include <stdlib.h>
 
-#include <TensorOp.h>
-#include <Amplitude.h>
+#include <MboTensorOp.h>
+#include <MboAmplitude.h>
 
 /**
  * @brief Elementary embedding of an operator into a product space.
@@ -9,7 +9,7 @@
 struct Embedding
 {
 	int i;
-	ElemOp op;
+	MboElemOp op;
 };
 
 /**
@@ -47,36 +47,36 @@ static void multiplySimpleTOps(int, struct SimpleTOp *sa, struct SimpleTOp *sb);
 static void kronSimpleTOps(struct SimpleTOp *a, int numSpacesInA,
 			   struct SimpleTOp *b, struct SimpleTOp *c);
 static void copySimpleTOp(struct SimpleTOp *dest, struct SimpleTOp *src);
-static void scaleSimpleTOp(struct Amplitude *alpha, ProdSpace h,
+static void scaleSimpleTOp(struct MboAmplitude *alpha, MboProdSpace h,
 			   struct SimpleTOp *op);
 static int checkSimpleTOp(struct SimpleTOp *sa);
 
 /**
    Data structure for tensor product operators.
    */
-struct TensorOp
+struct MboTensorOp
 {
 	/* Product space on which the operator is defined. */
-	ProdSpace space;
+	MboProdSpace space;
 	/* Number of terms (SimpleTOp's) making up the operator */
 	int numTerms;
 	/* Array of terms in sum */
 	struct SimpleTOp *sum;
 };
 
-void tensorOpNull(ProdSpace h, TensorOp *op)
+void mboTensorOpNull(MboProdSpace h, MboTensorOp *op)
 {
-	TensorOp a = malloc(sizeof(*a));
-	a->space = prodSpaceCopy(h);
+	MboTensorOp a = malloc(sizeof(*a));
+	a->space = mboProdSpaceCopy(h);
 	a->numTerms = 0;
 	a->sum = 0;
 	*op = a;
 }
 
-void tensorOpIdentity(ProdSpace h, TensorOp *op)
+void mboTensorOpIdentity(MboProdSpace h, MboTensorOp *op)
 {
-	TensorOp a = malloc(sizeof(*a));
-	a->space = prodSpaceCopy(h);
+	MboTensorOp a = malloc(sizeof(*a));
+	a->space = mboProdSpaceCopy(h);
 	a->numTerms = 1;
 	a->sum = malloc(sizeof(*a->sum));
 	a->sum[0].numFactors = 0;
@@ -84,14 +84,14 @@ void tensorOpIdentity(ProdSpace h, TensorOp *op)
 	*op = a;
 }
 
-void tensorOpDestroy(TensorOp *op)
+void mboTensorOpDestroy(MboTensorOp *op)
 {
 	int i;
 	for (i = 0; i < (*op)->numTerms; ++i) {
 		destroySimpleTOp(&(*op)->sum[i]);
 	}
 	free((*op)->sum);
-	prodSpaceDestroy(&(*op)->space);
+	mboProdSpaceDestroy(&(*op)->space);
 	free(*op);
 	*op = 0;
 }
@@ -105,7 +105,7 @@ void destroySimpleTOp(struct SimpleTOp *term)
 	free(term->embeddings);
 }
 
-void tensorOpAddTo(ElemOp a, int i, TensorOp op)
+void mboTensorOpAddTo(MboElemOp a, int i, MboTensorOp op)
 {
 	struct SimpleTOp *newTerm;
 	struct Embedding *aEmbedded;
@@ -116,11 +116,11 @@ void tensorOpAddTo(ElemOp a, int i, TensorOp op)
 	newTerm->embeddings = malloc(sizeof(struct Embedding));
 	aEmbedded = newTerm->embeddings;
 	aEmbedded->i = i;
-	aEmbedded->op = elemOpCopy(a);
+	aEmbedded->op = mboElemOpCopy(a);
 	++op->numTerms;
 }
 
-void tensorOpAddScaledTo(struct Amplitude *alpha, ElemOp a, int i, TensorOp op)
+void mboTensorOpAddScaledTo(struct MboAmplitude *alpha, MboElemOp a, int i, MboTensorOp op)
 {
 	struct SimpleTOp *newTerm;
 	struct Embedding *aEmbedded;
@@ -131,12 +131,12 @@ void tensorOpAddScaledTo(struct Amplitude *alpha, ElemOp a, int i, TensorOp op)
 	newTerm->embeddings = malloc(sizeof(struct Embedding));
 	aEmbedded = newTerm->embeddings;
 	aEmbedded->i = i;
-	aEmbedded->op = elemOpCopy(a);
-	elemOpScale(alpha, aEmbedded->op);
+	aEmbedded->op = mboElemOpCopy(a);
+	mboElemOpScale(alpha, aEmbedded->op);
 	++op->numTerms;
 }
 
-void tensorOpMul(TensorOp a, TensorOp b, TensorOp *c)
+void mboTensorOpMul(MboTensorOp a, MboTensorOp b, MboTensorOp *c)
 {
 	int i, j;
 	int N;
@@ -148,7 +148,7 @@ void tensorOpMul(TensorOp a, TensorOp b, TensorOp *c)
 						   (sizeof(*(*c)->sum)));
 	}
 
-	N = prodSpaceSize(b->space);
+	N = mboProdSpaceSize(b->space);
 	cFillPtr = (*c)->sum + (*c)->numTerms;
 	for (i = 0; i < a->numTerms; ++i) {
 		for (j = 0; j < b->numTerms; ++j) {
@@ -162,7 +162,7 @@ void tensorOpMul(TensorOp a, TensorOp b, TensorOp *c)
 	(*c)->numTerms += numNewTerms;
 }
 
-void tensorOpPlus(TensorOp a, TensorOp *b)
+void mboTensorOpPlus(MboTensorOp a, MboTensorOp *b)
 {
 	int i;
 	(*b)->sum = realloc((*b)->sum, ((*b)->numTerms + a->numTerms) *
@@ -175,7 +175,7 @@ void tensorOpPlus(TensorOp a, TensorOp *b)
 	(*b)->numTerms += a->numTerms;
 }
 
-void tensorOpScale(struct Amplitude *alpha, TensorOp *a)
+void mboTensorOpScale(struct MboAmplitude *alpha, MboTensorOp *a)
 {
 	int i;
 	for (i = 0; i < (*a)->numTerms; ++i) {
@@ -183,7 +183,7 @@ void tensorOpScale(struct Amplitude *alpha, TensorOp *a)
 	}
 }
 
-void tensorOpKron(TensorOp a, TensorOp b, TensorOp *c)
+void mboTensorOpKron(MboTensorOp a, MboTensorOp b, MboTensorOp *c)
 {
 	int i, j, numNewTerms = a->numTerms * b->numTerms;
 	struct SimpleTOp *cFillPtr;
@@ -194,7 +194,7 @@ void tensorOpKron(TensorOp a, TensorOp b, TensorOp *c)
 		for (j = 0; j < b->numTerms; ++j) {
 			cFillPtr->numFactors = 0;
 			cFillPtr->embeddings = 0;
-			kronSimpleTOps(a->sum + i, prodSpaceSize(a->space),
+			kronSimpleTOps(a->sum + i, mboProdSpaceSize(a->space),
 				       b->sum + j, cFillPtr);
 			++cFillPtr;
 		}
@@ -212,7 +212,7 @@ void kronSimpleTOps(struct SimpleTOp *a, int numSpacesInA, struct SimpleTOp *b,
 			       sizeof(*c->embeddings));
 	cFillPtr = c->embeddings + c->numFactors;
 	for (i = 0; i < a->numFactors + b->numFactors; ++i) {
-		elemOpCreate(&cFillPtr[i].op);
+		mboElemOpCreate(&cFillPtr[i].op);
 	}
 	for (i = 0; i < a->numFactors; ++i) {
 		copyEmbedding(cFillPtr + i, a->embeddings + i);
@@ -240,14 +240,14 @@ void multiplySimpleTOps(int N, struct SimpleTOp *a, struct SimpleTOp *b)
 				    realloc(b->embeddings,
 					    (b->numFactors + 1) *
 						sizeof(struct Embedding));
-				elemOpCreate(&b->embeddings[b->numFactors].op);
+				mboElemOpCreate(&b->embeddings[b->numFactors].op);
 				copyEmbedding(b->embeddings + b->numFactors,
 						a->embeddings + j);
 				++b->numFactors;
 			} else {
 				/* Non-trivial operators in both slots; just
 				   multiply them together. */
-				elemOpMul(a->embeddings[j].op,
+				mboElemOpMul(a->embeddings[j].op,
 						&(b->embeddings[k].op));
 			}
 		}
@@ -261,37 +261,37 @@ void copySimpleTOp(struct SimpleTOp* dest, struct SimpleTOp *src)
 	dest->embeddings = realloc(
 	    dest->embeddings, dest->numFactors * sizeof(*dest->embeddings));
 	for (i = 0; i < src->numFactors; ++i) {
-		elemOpCreate(&dest->embeddings[i].op);
+		mboElemOpCreate(&dest->embeddings[i].op);
 		copyEmbedding(dest->embeddings + i, src->embeddings + i);
 	}
 }
 
-void scaleSimpleTOp(struct Amplitude *alpha, ProdSpace h, struct SimpleTOp *op)
+void scaleSimpleTOp(struct MboAmplitude *alpha, MboProdSpace h, struct SimpleTOp *op)
 {
 	int d;
-	if (prodSpaceSize(h) == 0) return;
+	if (mboProdSpaceSize(h) == 0) return;
 	if (op->numFactors == 0) {
 		op->embeddings = malloc(sizeof(*op->embeddings));
 		op->embeddings[0].i = 0;
-		prodSpaceGetDims(h, 1, &d);
-		op->embeddings[0].op = eye(d);
+		mboProdSpaceGetDims(h, 1, &d);
+		op->embeddings[0].op = mboEye(d);
 		op->numFactors += 1;
 	}
-	elemOpScale(alpha, op->embeddings[0].op);
+	mboElemOpScale(alpha, op->embeddings[0].op);
 }
 
 void copyEmbedding(struct Embedding *dest, struct Embedding *src)
 {
 	dest->i = src->i;
 	if (dest->op) {
-		elemOpDestroy(&dest->op);
+		mboElemOpDestroy(&dest->op);
 	}
-	dest->op = elemOpCopy(src->op);
+	dest->op = mboElemOpCopy(src->op);
 }
 
 void destroyEmbedding(struct Embedding *e)
 {
-	elemOpDestroy(&e->op);
+	mboElemOpDestroy(&e->op);
 }
 
 int gatherIthEmbedding(int i, int *numEmbeddings, struct Embedding **embeddings)
@@ -309,7 +309,7 @@ int gatherIthEmbedding(int i, int *numEmbeddings, struct Embedding **embeddings)
 				     *embeddings + current);
 		if (next > 0) {
 			next += current;
-			elemOpPlus((*embeddings)[next].op,
+			mboElemOpPlus((*embeddings)[next].op,
 				   &(*embeddings)[first].op);
 			(*embeddings)[next].i = -1;
 		}
@@ -351,11 +351,11 @@ int findEmbedding(int i, int numEmbeddings, struct Embedding *emb)
 	return -1;
 }
 
-int tensorOpCheck(TensorOp op)
+int mboTensorOpCheck(MboTensorOp op)
 {
 	int i, errs = 0;
 	if (op->numTerms < 0) ++errs;
-	errs += prodSpaceCheck(op->space);
+	errs += mboProdSpaceCheck(op->space);
 	for (i = 0; i < op->numTerms; ++i) {
 		errs += checkSimpleTOp(op->sum + i);
 	}
@@ -368,7 +368,7 @@ int checkSimpleTOp(struct SimpleTOp *sa)
 	if (sa->numFactors < 0) ++errs;
 	for (i = 0; i < sa->numFactors; ++i) {
 		if (sa->embeddings[i].i < 0) ++errs;
-		errs += elemOpCheck(sa->embeddings[i].op);
+		errs += mboElemOpCheck(sa->embeddings[i].op);
 	}
 	return errs;
 }
@@ -380,95 +380,95 @@ int checkSimpleTOp(struct SimpleTOp *sa)
 
 #define EPS 1.0e-12
 
-static int testTensorOpNull()
+static int testMboTensorOpNull()
 {
 	int errs = 0;
-	TensorOp op;
-	ProdSpace h = prodSpaceCreate(1);
-	tensorOpNull(h, &op);
-	CHK_TRUE(prodSpaceEqual(op->space, h), errs);
+	MboTensorOp op;
+	MboProdSpace h = mboProdSpaceCreate(1);
+	mboTensorOpNull(h, &op);
+	CHK_TRUE(mboProdSpaceEqual(op->space, h), errs);
 	CHK_EQUAL(op->numTerms, 0, errs);
-	tensorOpDestroy(&op);
-	prodSpaceDestroy(&h);
+	mboTensorOpDestroy(&op);
+	mboProdSpaceDestroy(&h);
 	return errs;
 }
 
-static int testTensorOpIdentity()
+static int testMboTensorOpIdentity()
 {
 	int errs = 0;
-	TensorOp op;
-	ProdSpace h = prodSpaceCreate(1);
-	tensorOpIdentity(h, &op);
-	CHK_TRUE(prodSpaceEqual(op->space, h), errs);
+	MboTensorOp op;
+	MboProdSpace h = mboProdSpaceCreate(1);
+	mboTensorOpIdentity(h, &op);
+	CHK_TRUE(mboProdSpaceEqual(op->space, h), errs);
 	CHK_EQUAL(op->numTerms, 1, errs);
-	tensorOpDestroy(&op);
-	prodSpaceDestroy(&h);
+	mboTensorOpDestroy(&op);
+	mboProdSpaceDestroy(&h);
 	return errs;
 }
 
-static int testTensorOpAddTo()
+static int testMboTensorOpAddTo()
 {
 	int errs = 0;
-	TensorOp op;
-	ElemOp eop;
-	ProdSpace h;
-	struct Amplitude alpha;
+	MboTensorOp op;
+	MboElemOp eop;
+	MboProdSpace h;
+	struct MboAmplitude alpha;
 
-	h = prodSpaceCreate(20);
+	h = mboProdSpaceCreate(20);
 
-	elemOpCreate(&eop);
+	mboElemOpCreate(&eop);
 	alpha.re = 5.4;
 	alpha.im = 2.9;
-	elemOpAddTo(14, 15, &alpha, &eop);
+	mboElemOpAddTo(14, 15, &alpha, &eop);
 
-	tensorOpNull(h, &op);
-	tensorOpAddTo(eop, 0, op);
+	mboTensorOpNull(h, &op);
+	mboTensorOpAddTo(eop, 0, op);
 	CHK_EQUAL(op->numTerms, 1, errs);
-	CHK_TRUE(prodSpaceEqual(op->space, h), errs);
+	CHK_TRUE(mboProdSpaceEqual(op->space, h), errs);
 	CHK_TRUE(op->sum != 0, errs);
 	CHK_EQUAL(op->sum[0].numFactors, 1, errs);
 	CHK_TRUE(op->sum[0].embeddings != 0, errs);
 	CHK_EQUAL(op->sum[0].embeddings[0].i, 0, errs);
 
-	tensorOpDestroy(&op);
-	elemOpDestroy(&eop);
-	prodSpaceDestroy(&h);
+	mboTensorOpDestroy(&op);
+	mboElemOpDestroy(&eop);
+	mboProdSpaceDestroy(&h);
 	return errs;
 }
 
-static int testTensorOpAddScaledTo()
+static int testMboTensorOpAddScaledTo()
 {
 	int errs = 0;
-	TensorOp op;
-	ElemOp eop;
-	ProdSpace h;
-	struct Amplitude alpha, beta;
+	MboTensorOp op;
+	MboElemOp eop;
+	MboProdSpace h;
+	struct MboAmplitude alpha, beta;
 
 	alpha.re = 20;
 	alpha.im = 30;
 	beta.re = 15;
 	beta.im = -19;
 
-	h = prodSpaceCreate(20);
+	h = mboProdSpaceCreate(20);
 
-	elemOpCreate(&eop);
-	elemOpAddTo(14, 15, &alpha, &eop);
+	mboElemOpCreate(&eop);
+	mboElemOpAddTo(14, 15, &alpha, &eop);
 
-	tensorOpNull(h, &op);
-	tensorOpAddScaledTo(&alpha, eop, 0, op);
+	mboTensorOpNull(h, &op);
+	mboTensorOpAddScaledTo(&alpha, eop, 0, op);
 	CHK_EQUAL(op->numTerms, 1, errs);
-	CHK_TRUE(prodSpaceEqual(op->space, h), errs);
+	CHK_TRUE(mboProdSpaceEqual(op->space, h), errs);
 	CHK_TRUE(op->sum != 0, errs);
 	CHK_EQUAL(op->sum[0].numFactors, 1, errs);
 	CHK_TRUE(op->sum[0].embeddings != 0, errs);
 	CHK_EQUAL(op->sum[0].embeddings[0].i, 0, errs);
 
-	tensorOpAddScaledTo(&beta, eop, 1, op);
+	mboTensorOpAddScaledTo(&beta, eop, 1, op);
 	CHK_EQUAL(op->numTerms, 2, errs);
 
-	tensorOpDestroy(&op);
-	elemOpDestroy(&eop);
-	prodSpaceDestroy(&h);
+	mboTensorOpDestroy(&op);
+	mboElemOpDestroy(&eop);
+	mboProdSpaceDestroy(&h);
 	return errs;
 }
 
@@ -502,15 +502,15 @@ static int testGatherIthEmbedding()
 	struct Embedding *embeddings = malloc(n * sizeof(*embeddings));
 
 	embeddings[0].i = 3;
-	elemOpCreate(&embeddings[0].op);
+	mboElemOpCreate(&embeddings[0].op);
 	embeddings[1].i = 4;
-	elemOpCreate(&embeddings[1].op);
+	mboElemOpCreate(&embeddings[1].op);
 	embeddings[2].i = 0;
-	elemOpCreate(&embeddings[2].op);
+	mboElemOpCreate(&embeddings[2].op);
 	embeddings[3].i = 3;
-	elemOpCreate(&embeddings[3].op);
+	mboElemOpCreate(&embeddings[3].op);
 	embeddings[4].i = 0;
-	elemOpCreate(&embeddings[4].op);
+	mboElemOpCreate(&embeddings[4].op);
 
 	i = gatherIthEmbedding(0, &n, &embeddings);
 	CHK_EQUAL(i, 2, errs);
@@ -525,7 +525,7 @@ static int testGatherIthEmbedding()
 	CHK_EQUAL(n, 3, errs);
 
 	for (i = 0; i < n; ++i) {
-		elemOpDestroy(&embeddings[i].op);
+		mboElemOpDestroy(&embeddings[i].op);
 	}
 
 	free(embeddings);
@@ -533,347 +533,347 @@ static int testGatherIthEmbedding()
 	return errs;
 }
 
-static int testTensorOpMul()
+static int testMboTensorOpMul()
 {
 	int errs = 0;
 	int i;
 	int N = 10;
-	TensorOp op1, op2, op3;
-	ElemOp eop1, eop2;
-	ProdSpace h1, h2;
-	struct Amplitude alpha, beta;
+	MboTensorOp op1, op2, op3;
+	MboElemOp eop1, eop2;
+	MboProdSpace h1, h2;
+	struct MboAmplitude alpha, beta;
 
 	alpha.re = 20;
 	alpha.im = 30;
 	beta.re = 15;
 	beta.im = -19;
 
-	h1 = prodSpaceCreate(5);
-	h2 = prodSpaceCreate(0);
+	h1 = mboProdSpaceCreate(5);
+	h2 = mboProdSpaceCreate(0);
 	for (i = 0; i < N; ++i) {
-		prodSpaceMul(h1, &h2);
+		mboProdSpaceMul(h1, &h2);
 	}
 
-	elemOpCreate(&eop1);
-	elemOpAddTo(14, 15, &alpha, &eop1);
-	elemOpAddTo(1, 5, &beta, &eop1);
-	elemOpAddTo(2, 3, &beta, &eop1);
+	mboElemOpCreate(&eop1);
+	mboElemOpAddTo(14, 15, &alpha, &eop1);
+	mboElemOpAddTo(1, 5, &beta, &eop1);
+	mboElemOpAddTo(2, 3, &beta, &eop1);
 
-	elemOpCreate(&eop2);
-	elemOpAddTo(8, 3, &beta, &eop2);
-	elemOpAddTo(3, 4, &alpha, &eop2);
+	mboElemOpCreate(&eop2);
+	mboElemOpAddTo(8, 3, &beta, &eop2);
+	mboElemOpAddTo(3, 4, &alpha, &eop2);
 
-	tensorOpNull(h2, &op1);
-	tensorOpNull(h2, &op2);
-	tensorOpNull(h2, &op3);
-	tensorOpMul(op1, op2, &op3);
+	mboTensorOpNull(h2, &op1);
+	mboTensorOpNull(h2, &op2);
+	mboTensorOpNull(h2, &op3);
+	mboTensorOpMul(op1, op2, &op3);
 	CHK_EQUAL(op3->numTerms, 0, errs);
-	tensorOpDestroy(&op1);
-	tensorOpDestroy(&op2);
-	tensorOpDestroy(&op3);
+	mboTensorOpDestroy(&op1);
+	mboTensorOpDestroy(&op2);
+	mboTensorOpDestroy(&op3);
 
-	tensorOpNull(h2, &op1);
-	tensorOpAddTo(eop1, 0, op1);
-	tensorOpNull(h2, &op2);
-	tensorOpNull(h2, &op3);
-	tensorOpMul(op1, op2, &op3);
+	mboTensorOpNull(h2, &op1);
+	mboTensorOpAddTo(eop1, 0, op1);
+	mboTensorOpNull(h2, &op2);
+	mboTensorOpNull(h2, &op3);
+	mboTensorOpMul(op1, op2, &op3);
 	CHK_EQUAL(op3->numTerms, 0, errs);
-	tensorOpDestroy(&op1);
-	tensorOpDestroy(&op2);
-	tensorOpDestroy(&op3);
+	mboTensorOpDestroy(&op1);
+	mboTensorOpDestroy(&op2);
+	mboTensorOpDestroy(&op3);
 
-	tensorOpNull(h2, &op1);
-	tensorOpNull(h2, &op2);
-	tensorOpAddTo(eop1, 0, op2);
-	tensorOpNull(h2, &op3);
-	tensorOpMul(op1, op2, &op3);
+	mboTensorOpNull(h2, &op1);
+	mboTensorOpNull(h2, &op2);
+	mboTensorOpAddTo(eop1, 0, op2);
+	mboTensorOpNull(h2, &op3);
+	mboTensorOpMul(op1, op2, &op3);
 	CHK_EQUAL(op3->numTerms, 0, errs);
-	tensorOpDestroy(&op1);
-	tensorOpDestroy(&op2);
-	tensorOpDestroy(&op3);
+	mboTensorOpDestroy(&op1);
+	mboTensorOpDestroy(&op2);
+	mboTensorOpDestroy(&op3);
 
-	tensorOpNull(h2, &op1);
-	tensorOpAddTo(eop1, 0, op1);
-	tensorOpNull(h2, &op2);
-	tensorOpAddTo(eop2, 0, op2);
-	tensorOpNull(h2, &op3);
-	tensorOpMul(op1, op2, &op3);
+	mboTensorOpNull(h2, &op1);
+	mboTensorOpAddTo(eop1, 0, op1);
+	mboTensorOpNull(h2, &op2);
+	mboTensorOpAddTo(eop2, 0, op2);
+	mboTensorOpNull(h2, &op3);
+	mboTensorOpMul(op1, op2, &op3);
 	CHK_EQUAL(op3->numTerms, 1, errs);
 	CHK_EQUAL(op3->sum[0].numFactors, 1, errs);
 	CHK_EQUAL(op3->sum[0].embeddings[0].i, 0, errs);
-	tensorOpDestroy(&op1);
-	tensorOpDestroy(&op2);
-	tensorOpDestroy(&op3);
+	mboTensorOpDestroy(&op1);
+	mboTensorOpDestroy(&op2);
+	mboTensorOpDestroy(&op3);
 
-	tensorOpNull(h2, &op1);
-	tensorOpAddTo(eop1, 0, op1);
-	tensorOpNull(h2, &op2);
-	tensorOpAddTo(eop2, 1, op2);
-	tensorOpNull(h2, &op3);
-	tensorOpMul(op1, op2, &op3);
+	mboTensorOpNull(h2, &op1);
+	mboTensorOpAddTo(eop1, 0, op1);
+	mboTensorOpNull(h2, &op2);
+	mboTensorOpAddTo(eop2, 1, op2);
+	mboTensorOpNull(h2, &op3);
+	mboTensorOpMul(op1, op2, &op3);
 	CHK_EQUAL(op3->numTerms, 1, errs);
 	CHK_EQUAL(op3->sum[0].numFactors, 2, errs);
-	tensorOpDestroy(&op1);
-	tensorOpDestroy(&op2);
-	tensorOpDestroy(&op3);
+	mboTensorOpDestroy(&op1);
+	mboTensorOpDestroy(&op2);
+	mboTensorOpDestroy(&op3);
 
-	tensorOpNull(h2, &op1);
-	tensorOpAddTo(eop1, 0, op1);
-	tensorOpAddTo(eop1, 1, op1);
-	tensorOpNull(h2, &op2);
-	tensorOpAddTo(eop2, 1, op2);
-	tensorOpAddTo(eop2, 2, op2);
-	tensorOpNull(h2, &op3);
-	tensorOpMul(op1, op2, &op3);
+	mboTensorOpNull(h2, &op1);
+	mboTensorOpAddTo(eop1, 0, op1);
+	mboTensorOpAddTo(eop1, 1, op1);
+	mboTensorOpNull(h2, &op2);
+	mboTensorOpAddTo(eop2, 1, op2);
+	mboTensorOpAddTo(eop2, 2, op2);
+	mboTensorOpNull(h2, &op3);
+	mboTensorOpMul(op1, op2, &op3);
 	CHK_EQUAL(op3->numTerms, 4, errs);
-	tensorOpDestroy(&op1);
-	tensorOpDestroy(&op2);
-	tensorOpDestroy(&op3);
+	mboTensorOpDestroy(&op1);
+	mboTensorOpDestroy(&op2);
+	mboTensorOpDestroy(&op3);
 
-	elemOpDestroy(&eop1);
-	elemOpDestroy(&eop2);
-	prodSpaceDestroy(&h1);
-	prodSpaceDestroy(&h2);
+	mboElemOpDestroy(&eop1);
+	mboElemOpDestroy(&eop2);
+	mboProdSpaceDestroy(&h1);
+	mboProdSpaceDestroy(&h2);
 	return errs;
 }
 
-static int testTensorOpPlus()
+static int testMboTensorOpPlus()
 {
 	int i, errs = 0, N = 5;
-	ProdSpace hTot, h1;
-	TensorOp op1, op2;
-	ElemOp sz, sp, sm;
+	MboProdSpace hTot, h1;
+	MboTensorOp op1, op2;
+	MboElemOp sz, sp, sm;
 
-	hTot = prodSpaceCreate(0);
-	h1 = prodSpaceCreate(2);
+	hTot = mboProdSpaceCreate(0);
+	h1 = mboProdSpaceCreate(2);
 	for (i = 0; i < N; ++i) {
-		prodSpaceMul(h1, &hTot);
+		mboProdSpaceMul(h1, &hTot);
 	}
 
-	sz = sigmaZ();
-	sp = sigmaPlus();
-	sm = sigmaMinus();
+	sz = mboSigmaZ();
+	sp = mboSigmaPlus();
+	sm = mboSigmaMinus();
 
-	tensorOpNull(hTot, &op1);
-	tensorOpNull(hTot, &op2);
-	tensorOpPlus(op1, &op2);
+	mboTensorOpNull(hTot, &op1);
+	mboTensorOpNull(hTot, &op2);
+	mboTensorOpPlus(op1, &op2);
 	CHK_EQUAL(op2->numTerms, 0, errs);
-	tensorOpDestroy(&op1);
-	tensorOpDestroy(&op2);
+	mboTensorOpDestroy(&op1);
+	mboTensorOpDestroy(&op2);
 
-	tensorOpNull(hTot, &op1);
-	tensorOpNull(hTot, &op2);
-	tensorOpAddTo(sz, 1, op2);
-	tensorOpPlus(op1, &op2);
+	mboTensorOpNull(hTot, &op1);
+	mboTensorOpNull(hTot, &op2);
+	mboTensorOpAddTo(sz, 1, op2);
+	mboTensorOpPlus(op1, &op2);
 	CHK_EQUAL(op2->numTerms, 1, errs);
-	tensorOpDestroy(&op1);
-	tensorOpDestroy(&op2);
+	mboTensorOpDestroy(&op1);
+	mboTensorOpDestroy(&op2);
 
-	tensorOpNull(hTot, &op1);
-	tensorOpAddTo(sz, 1, op1);
-	tensorOpNull(hTot, &op2);
-	tensorOpPlus(op1, &op2);
+	mboTensorOpNull(hTot, &op1);
+	mboTensorOpAddTo(sz, 1, op1);
+	mboTensorOpNull(hTot, &op2);
+	mboTensorOpPlus(op1, &op2);
 	CHK_EQUAL(op2->numTerms, 1, errs);
-	tensorOpDestroy(&op1);
-	tensorOpDestroy(&op2);
+	mboTensorOpDestroy(&op1);
+	mboTensorOpDestroy(&op2);
 
-	tensorOpNull(hTot, &op1);
-	tensorOpNull(hTot, &op2);
-	tensorOpAddTo(sz, 0, op1);
-	tensorOpAddTo(sz, 1, op1);
-	tensorOpAddTo(sp, 0, op2);
-	tensorOpAddTo(sp, 2, op2);
-	tensorOpAddTo(sp, 3, op2);
-	tensorOpAddTo(sm, 3, op2);
-	tensorOpAddTo(sm, 2, op2);
-	CHK_EQUAL(0, tensorOpCheck(op1), errs);
-	CHK_EQUAL(0, tensorOpCheck(op2), errs);
+	mboTensorOpNull(hTot, &op1);
+	mboTensorOpNull(hTot, &op2);
+	mboTensorOpAddTo(sz, 0, op1);
+	mboTensorOpAddTo(sz, 1, op1);
+	mboTensorOpAddTo(sp, 0, op2);
+	mboTensorOpAddTo(sp, 2, op2);
+	mboTensorOpAddTo(sp, 3, op2);
+	mboTensorOpAddTo(sm, 3, op2);
+	mboTensorOpAddTo(sm, 2, op2);
+	CHK_EQUAL(0, mboTensorOpCheck(op1), errs);
+	CHK_EQUAL(0, mboTensorOpCheck(op2), errs);
 
 
-	elemOpDestroy(&sz);
-	elemOpDestroy(&sp);
-	elemOpDestroy(&sm);
-	tensorOpDestroy(&op1);
-	tensorOpDestroy(&op2);
-	prodSpaceDestroy(&hTot);
-	prodSpaceDestroy(&h1);
+	mboElemOpDestroy(&sz);
+	mboElemOpDestroy(&sp);
+	mboElemOpDestroy(&sm);
+	mboTensorOpDestroy(&op1);
+	mboTensorOpDestroy(&op2);
+	mboProdSpaceDestroy(&hTot);
+	mboProdSpaceDestroy(&h1);
 	return errs;
 }
 
-static int testTensorOpScale()
+static int testMboTensorOpScale()
 {
 	int errs = 0;
-	TensorOp a;
-	ProdSpace h;
-	struct Amplitude alpha;
+	MboTensorOp a;
+	MboProdSpace h;
+	struct MboAmplitude alpha;
 
 	alpha.re = 2.0;
 	alpha.im = -55.55;
 
-	h = prodSpaceCreate(0);
-	tensorOpIdentity(h, &a);
-	tensorOpScale(&alpha, &a);
+	h = mboProdSpaceCreate(0);
+	mboTensorOpIdentity(h, &a);
+	mboTensorOpScale(&alpha, &a);
 	CHK_EQUAL(a->numTerms, 1, errs);
-	CHK_EQUAL(tensorOpCheck(a), 0, errs);
-	tensorOpDestroy(&a);
-	prodSpaceDestroy(&h);
+	CHK_EQUAL(mboTensorOpCheck(a), 0, errs);
+	mboTensorOpDestroy(&a);
+	mboProdSpaceDestroy(&h);
 
-	h = prodSpaceCreate(2);
-	tensorOpNull(h, &a);
-	tensorOpScale(&alpha, &a);
+	h = mboProdSpaceCreate(2);
+	mboTensorOpNull(h, &a);
+	mboTensorOpScale(&alpha, &a);
 	CHK_EQUAL(a->numTerms, 0, errs);
-	CHK_EQUAL(tensorOpCheck(a), 0, errs);
-	tensorOpDestroy(&a);
-	prodSpaceDestroy(&h);
+	CHK_EQUAL(mboTensorOpCheck(a), 0, errs);
+	mboTensorOpDestroy(&a);
+	mboProdSpaceDestroy(&h);
 
-	h = prodSpaceCreate(2);
-	tensorOpIdentity(h, &a);
-	tensorOpScale(&alpha, &a);
+	h = mboProdSpaceCreate(2);
+	mboTensorOpIdentity(h, &a);
+	mboTensorOpScale(&alpha, &a);
 	CHK_EQUAL(a->numTerms, 1, errs);
-	CHK_EQUAL(tensorOpCheck(a), 0, errs);
-	tensorOpDestroy(&a);
-	prodSpaceDestroy(&h);
+	CHK_EQUAL(mboTensorOpCheck(a), 0, errs);
+	mboTensorOpDestroy(&a);
+	mboProdSpaceDestroy(&h);
 
 	return errs;
 }
 
-static int testTensorOpCheck()
+static int testMboTensorOpCheck()
 {
 	int errs = 0;
-	TensorOp a;
-	ProdSpace h;
+	MboTensorOp a;
+	MboProdSpace h;
 
-	h = prodSpaceCreate(0);
-	tensorOpNull(h, &a);
+	h = mboProdSpaceCreate(0);
+	mboTensorOpNull(h, &a);
 	a->numTerms = -1;
-	CHK_TRUE(tensorOpCheck(a) != 0, errs);
-	tensorOpDestroy(&a);
-	prodSpaceDestroy(&h);
+	CHK_TRUE(mboTensorOpCheck(a) != 0, errs);
+	mboTensorOpDestroy(&a);
+	mboProdSpaceDestroy(&h);
 
-	h = prodSpaceCreate(0);
-	tensorOpNull(h, &a);
-	CHK_EQUAL(tensorOpCheck(a), 0, errs);
-	tensorOpDestroy(&a);
-	tensorOpIdentity(h, &a);
-	CHK_EQUAL(tensorOpCheck(a), 0, errs);
-	tensorOpDestroy(&a);
-	prodSpaceDestroy(&h);
+	h = mboProdSpaceCreate(0);
+	mboTensorOpNull(h, &a);
+	CHK_EQUAL(mboTensorOpCheck(a), 0, errs);
+	mboTensorOpDestroy(&a);
+	mboTensorOpIdentity(h, &a);
+	CHK_EQUAL(mboTensorOpCheck(a), 0, errs);
+	mboTensorOpDestroy(&a);
+	mboProdSpaceDestroy(&h);
 
-	h = prodSpaceCreate(30);
-	tensorOpNull(h, &a);
-	CHK_EQUAL(tensorOpCheck(a), 0, errs);
-	tensorOpDestroy(&a);
-	tensorOpIdentity(h, &a);
-	CHK_EQUAL(tensorOpCheck(a), 0, errs);
-	tensorOpDestroy(&a);
-	prodSpaceDestroy(&h);
+	h = mboProdSpaceCreate(30);
+	mboTensorOpNull(h, &a);
+	CHK_EQUAL(mboTensorOpCheck(a), 0, errs);
+	mboTensorOpDestroy(&a);
+	mboTensorOpIdentity(h, &a);
+	CHK_EQUAL(mboTensorOpCheck(a), 0, errs);
+	mboTensorOpDestroy(&a);
+	mboProdSpaceDestroy(&h);
 
 	return errs;
 }
 
-static int testTensorOpKron()
+static int testMboTensorOpKron()
 {
 	int errs = 0;
-	ProdSpace h1, h2, h3;
-	TensorOp a, b, c;
-	ElemOp sz;
-	ElemOp sp;
+	MboProdSpace h1, h2, h3;
+	MboTensorOp a, b, c;
+	MboElemOp sz;
+	MboElemOp sp;
 
-	h1 = prodSpaceCreate(0);
-	h2 = prodSpaceCreate(0);
-	h3 = prodSpaceCreate(0);
-	prodSpaceMul(h1, &h3);
-	prodSpaceMul(h2, &h3);
-	tensorOpNull(h1, &a);
-	tensorOpNull(h2, &b);
-	tensorOpNull(h3, &c);
-	tensorOpKron(a, b, &c);
-	CHK_EQUAL(tensorOpCheck(c), 0, errs);
+	h1 = mboProdSpaceCreate(0);
+	h2 = mboProdSpaceCreate(0);
+	h3 = mboProdSpaceCreate(0);
+	mboProdSpaceMul(h1, &h3);
+	mboProdSpaceMul(h2, &h3);
+	mboTensorOpNull(h1, &a);
+	mboTensorOpNull(h2, &b);
+	mboTensorOpNull(h3, &c);
+	mboTensorOpKron(a, b, &c);
+	CHK_EQUAL(mboTensorOpCheck(c), 0, errs);
 	CHK_EQUAL(c->numTerms, 0, errs);
-	tensorOpDestroy(&a);
-	tensorOpDestroy(&b);
-	tensorOpDestroy(&c);
-	prodSpaceDestroy(&h1);
-	prodSpaceDestroy(&h2);
-	prodSpaceDestroy(&h3);
+	mboTensorOpDestroy(&a);
+	mboTensorOpDestroy(&b);
+	mboTensorOpDestroy(&c);
+	mboProdSpaceDestroy(&h1);
+	mboProdSpaceDestroy(&h2);
+	mboProdSpaceDestroy(&h3);
 
-	h1 = prodSpaceCreate(0);
-	h2 = prodSpaceCreate(0);
-	h3 = prodSpaceCreate(0);
-	prodSpaceMul(h1, &h3);
-	prodSpaceMul(h2, &h3);
-	tensorOpIdentity(h1, &a);
-	tensorOpIdentity(h2, &b);
-	tensorOpNull(h3, &c);
-	tensorOpKron(a, b, &c);
-	CHK_EQUAL(tensorOpCheck(c), 0, errs);
+	h1 = mboProdSpaceCreate(0);
+	h2 = mboProdSpaceCreate(0);
+	h3 = mboProdSpaceCreate(0);
+	mboProdSpaceMul(h1, &h3);
+	mboProdSpaceMul(h2, &h3);
+	mboTensorOpIdentity(h1, &a);
+	mboTensorOpIdentity(h2, &b);
+	mboTensorOpNull(h3, &c);
+	mboTensorOpKron(a, b, &c);
+	CHK_EQUAL(mboTensorOpCheck(c), 0, errs);
 	CHK_EQUAL(c->numTerms, 1, errs);
-	tensorOpDestroy(&a);
-	tensorOpDestroy(&b);
-	tensorOpDestroy(&c);
-	prodSpaceDestroy(&h1);
-	prodSpaceDestroy(&h2);
-	prodSpaceDestroy(&h3);
+	mboTensorOpDestroy(&a);
+	mboTensorOpDestroy(&b);
+	mboTensorOpDestroy(&c);
+	mboProdSpaceDestroy(&h1);
+	mboProdSpaceDestroy(&h2);
+	mboProdSpaceDestroy(&h3);
 
-	h1 = prodSpaceCreate(0);
-	h2 = prodSpaceCreate(0);
-	h3 = prodSpaceCreate(0);
-	prodSpaceMul(h1, &h3);
-	prodSpaceMul(h2, &h3);
-	tensorOpIdentity(h1, &a);
-	tensorOpIdentity(h2, &b);
-	tensorOpIdentity(h3, &c);
-	tensorOpKron(a, b, &c);
-	CHK_EQUAL(tensorOpCheck(c), 0, errs);
+	h1 = mboProdSpaceCreate(0);
+	h2 = mboProdSpaceCreate(0);
+	h3 = mboProdSpaceCreate(0);
+	mboProdSpaceMul(h1, &h3);
+	mboProdSpaceMul(h2, &h3);
+	mboTensorOpIdentity(h1, &a);
+	mboTensorOpIdentity(h2, &b);
+	mboTensorOpIdentity(h3, &c);
+	mboTensorOpKron(a, b, &c);
+	CHK_EQUAL(mboTensorOpCheck(c), 0, errs);
 	CHK_EQUAL(c->numTerms, 2, errs);
-	tensorOpDestroy(&a);
-	tensorOpDestroy(&b);
-	tensorOpDestroy(&c);
-	prodSpaceDestroy(&h1);
-	prodSpaceDestroy(&h2);
-	prodSpaceDestroy(&h3);
+	mboTensorOpDestroy(&a);
+	mboTensorOpDestroy(&b);
+	mboTensorOpDestroy(&c);
+	mboProdSpaceDestroy(&h1);
+	mboProdSpaceDestroy(&h2);
+	mboProdSpaceDestroy(&h3);
 
-	h1 = prodSpaceCreate(2);
-	h2 = prodSpaceCreate(2);
-	h3 = prodSpaceCreate(0);
-	prodSpaceMul(h1, &h3);
-	prodSpaceMul(h2, &h3);
-	tensorOpIdentity(h1, &a);
-	tensorOpIdentity(h2, &b);
-	tensorOpIdentity(h3, &c);
-	tensorOpKron(a, b, &c);
-	CHK_EQUAL(tensorOpCheck(c), 0, errs);
+	h1 = mboProdSpaceCreate(2);
+	h2 = mboProdSpaceCreate(2);
+	h3 = mboProdSpaceCreate(0);
+	mboProdSpaceMul(h1, &h3);
+	mboProdSpaceMul(h2, &h3);
+	mboTensorOpIdentity(h1, &a);
+	mboTensorOpIdentity(h2, &b);
+	mboTensorOpIdentity(h3, &c);
+	mboTensorOpKron(a, b, &c);
+	CHK_EQUAL(mboTensorOpCheck(c), 0, errs);
 	CHK_EQUAL(c->numTerms, 2, errs);
-	tensorOpDestroy(&a);
-	tensorOpDestroy(&b);
-	tensorOpDestroy(&c);
-	prodSpaceDestroy(&h1);
-	prodSpaceDestroy(&h2);
-	prodSpaceDestroy(&h3);
+	mboTensorOpDestroy(&a);
+	mboTensorOpDestroy(&b);
+	mboTensorOpDestroy(&c);
+	mboProdSpaceDestroy(&h1);
+	mboProdSpaceDestroy(&h2);
+	mboProdSpaceDestroy(&h3);
 
-	h1 = prodSpaceCreate(2);
-	h2 = prodSpaceCreate(2);
-	h3 = prodSpaceCreate(0);
-	prodSpaceMul(h1, &h3);
-	prodSpaceMul(h2, &h3);
-	tensorOpIdentity(h1, &a);
-	sz = sigmaZ();
-	tensorOpAddTo(sz, 0, a);
-	tensorOpIdentity(h2, &b);
-	sp = sigmaPlus();
-	tensorOpAddTo(sp, 0, b);
-	tensorOpIdentity(h3, &c);
-	tensorOpKron(a, b, &c);
-	CHK_EQUAL(tensorOpCheck(c), 0, errs);
+	h1 = mboProdSpaceCreate(2);
+	h2 = mboProdSpaceCreate(2);
+	h3 = mboProdSpaceCreate(0);
+	mboProdSpaceMul(h1, &h3);
+	mboProdSpaceMul(h2, &h3);
+	mboTensorOpIdentity(h1, &a);
+	sz = mboSigmaZ();
+	mboTensorOpAddTo(sz, 0, a);
+	mboTensorOpIdentity(h2, &b);
+	sp = mboSigmaPlus();
+	mboTensorOpAddTo(sp, 0, b);
+	mboTensorOpIdentity(h3, &c);
+	mboTensorOpKron(a, b, &c);
+	CHK_EQUAL(mboTensorOpCheck(c), 0, errs);
 	CHK_EQUAL(c->numTerms, 5, errs);
-	elemOpDestroy(&sz);
-	elemOpDestroy(&sp);
-	tensorOpDestroy(&a);
-	tensorOpDestroy(&b);
-	tensorOpDestroy(&c);
-	prodSpaceDestroy(&h1);
-	prodSpaceDestroy(&h2);
-	prodSpaceDestroy(&h3);
+	mboElemOpDestroy(&sz);
+	mboElemOpDestroy(&sp);
+	mboTensorOpDestroy(&a);
+	mboTensorOpDestroy(&b);
+	mboTensorOpDestroy(&c);
+	mboProdSpaceDestroy(&h1);
+	mboProdSpaceDestroy(&h2);
+	mboProdSpaceDestroy(&h3);
 
 	return errs;
 }
@@ -902,7 +902,7 @@ static int testKronSimpleTOps()
 	c.numFactors = 1;
 	c.embeddings = malloc(sizeof(*c.embeddings));
 	c.embeddings[0].i = 0;
-	elemOpCreate(&c.embeddings[0].op);
+	mboElemOpCreate(&c.embeddings[0].op);
 	kronSimpleTOps(&a, 0, &b, &c);
 	CHK_EQUAL(c.numFactors, 1, errs);
 	destroySimpleTOp(&a);
@@ -912,7 +912,7 @@ static int testKronSimpleTOps()
 	a.numFactors = 1;
 	a.embeddings = malloc(sizeof(*a.embeddings));
 	a.embeddings[0].i = 0;
-	elemOpCreate(&a.embeddings[0].op);
+	mboElemOpCreate(&a.embeddings[0].op);
 	b.numFactors = 0;
 	b.embeddings = 0;
 	c.numFactors = 0;
@@ -926,11 +926,11 @@ static int testKronSimpleTOps()
 	a.numFactors = 1;
 	a.embeddings = malloc(sizeof(*a.embeddings));
 	a.embeddings[0].i = 0;
-	elemOpCreate(&a.embeddings[0].op);
+	mboElemOpCreate(&a.embeddings[0].op);
 	b.numFactors = 1;
 	b.embeddings = malloc(sizeof(*b.embeddings));;
 	b.embeddings[0].i = 0;
-	elemOpCreate(&b.embeddings[0].op);
+	mboElemOpCreate(&b.embeddings[0].op);
 	c.numFactors = 0;
 	c.embeddings = 0;
 	kronSimpleTOps(&a, 1, &b, &c);
@@ -943,20 +943,20 @@ static int testKronSimpleTOps()
 	return errs;
 }
 
-int tensorOpTest()
+int mboTensorOpTest()
 {
 	int errs = 0;
-	errs += testTensorOpNull();
-	errs += testTensorOpIdentity();
-	errs += testTensorOpAddTo();
-	errs += testTensorOpAddScaledTo();
+	errs += testMboTensorOpNull();
+	errs += testMboTensorOpIdentity();
+	errs += testMboTensorOpAddTo();
+	errs += testMboTensorOpAddScaledTo();
 	errs += testFindEmbedding();
 	errs += testGatherIthEmbedding();
-	errs += testTensorOpMul();
-	errs += testTensorOpPlus();
-	errs += testTensorOpScale();
-	errs += testTensorOpCheck();
-	errs += testTensorOpKron();
+	errs += testMboTensorOpMul();
+	errs += testMboTensorOpPlus();
+	errs += testMboTensorOpScale();
+	errs += testMboTensorOpCheck();
+	errs += testMboTensorOpKron();
 	errs += testKronSimpleTOps();
 	return errs;
 }

@@ -2,32 +2,32 @@
 #include <string.h>
 #include <math.h>
 
-#include "ElemOp.h"
-#include "NonZeroEntry.h"
+#include <MboElemOp.h>
+#include <NonZeroEntry.h>
 
-struct ElemOp
+struct MboElemOp
 {
 	int nOps;
 	struct NonZeroEntry *entries;
 };
 
-void elemOpCreate(ElemOp *eo)
+void mboElemOpCreate(MboElemOp *eo)
 {
-	*eo = malloc(sizeof(struct ElemOp));
+	*eo = malloc(sizeof(struct MboElemOp));
 	(*eo)->nOps = 0;
 	(*eo)->entries = 0;
 }
 
-void elemOpDestroy(ElemOp *eo)
+void mboElemOpDestroy(MboElemOp *eo)
 {
 	free((*eo)->entries);
 	free(*eo);
 	*eo = 0;
 }
 
-void elemOpAddTo(int m, int n, struct Amplitude *val, ElemOp *eo)
+void mboElemOpAddTo(int m, int n, struct MboAmplitude *val, MboElemOp *eo)
 {
-	ElemOp a = *eo;
+	MboElemOp a = *eo;
 	a->entries = realloc(a->entries, (a->nOps + 1) * sizeof(*a->entries));
 	a->entries[a->nOps].m = m;
 	a->entries[a->nOps].n = n;
@@ -36,10 +36,10 @@ void elemOpAddTo(int m, int n, struct Amplitude *val, ElemOp *eo)
 	++a->nOps;
 }
 
-void elemOpScale(struct Amplitude *alpha, ElemOp eo)
+void mboElemOpScale(struct MboAmplitude *alpha, MboElemOp eo)
 {
 	int i;
-	struct Amplitude tmp;
+	struct MboAmplitude tmp;
 	for (i = 0; i < eo->nOps; ++i) {
 		tmp.re = eo->entries[i].val.re * alpha->re -
 			 eo->entries[i].val.im * alpha->im;
@@ -49,7 +49,7 @@ void elemOpScale(struct Amplitude *alpha, ElemOp eo)
 	}
 }
 
-void elemOpPlus(ElemOp a, ElemOp *b)
+void mboElemOpPlus(MboElemOp a, MboElemOp *b)
 {
 	(*b)->entries = realloc((*b)->entries, ((*b)->nOps + a->nOps) *
 						   sizeof(*(*b)->entries));
@@ -58,7 +58,7 @@ void elemOpPlus(ElemOp a, ElemOp *b)
 	(*b)->nOps += a->nOps;
 }
 
-int elemOpCheck(ElemOp a)
+int mboElemOpCheck(MboElemOp a)
 {
 	int errs = 0;
 	int i;
@@ -70,110 +70,110 @@ int elemOpCheck(ElemOp a)
 	return errs;
 }
 
-ElemOp sigmaPlus()
+MboElemOp mboSigmaPlus()
 {
-	ElemOp sp;
-	struct Amplitude one;
+	MboElemOp sp;
+	struct MboAmplitude one;
 
 	one.re = 1.0;
 	one.im = 0.0;
-	elemOpCreate(&sp);
-	elemOpAddTo(1, 0, &one, &sp);
+	mboElemOpCreate(&sp);
+	mboElemOpAddTo(1, 0, &one, &sp);
 	return sp;
 }
 
-ElemOp sigmaMinus()
+MboElemOp mboSigmaMinus()
 {
-	ElemOp sm;
-	struct Amplitude one;
+	MboElemOp sm;
+	struct MboAmplitude one;
 
 	one.re = 1.0;
 	one.im = 0.0;
-	elemOpCreate(&sm);
-	elemOpAddTo(0, 1, &one, &sm);
+	mboElemOpCreate(&sm);
+	mboElemOpAddTo(0, 1, &one, &sm);
 	return sm;
 }
 
-ElemOp sigmaZ()
+MboElemOp mboSigmaZ()
 {
-	ElemOp sz;
-	struct Amplitude tmp;
+	MboElemOp sz;
+	struct MboAmplitude tmp;
 
-	elemOpCreate(&sz);
+	mboElemOpCreate(&sz);
 	tmp.re = 1.0;
 	tmp.im = 0.0;
-	elemOpAddTo(1, 1, &tmp, &sz);
+	mboElemOpAddTo(1, 1, &tmp, &sz);
 	tmp.re = -1.0;
-	elemOpAddTo(0, 0, &tmp, &sz);
+	mboElemOpAddTo(0, 0, &tmp, &sz);
 	return sz;
 }
 
-ElemOp eye(int d)
+MboElemOp mboEye(int d)
 {
-	ElemOp e;
+	MboElemOp e;
 	int i;
-	struct Amplitude tmp;
+	struct MboAmplitude tmp;
 
-	elemOpCreate(&e);
+	mboElemOpCreate(&e);
 	tmp.re = 1.0;
 	tmp.im = 0;
 	for (i = 0; i < d; ++i) {
-		elemOpAddTo(i, i, &tmp, &e);
+		mboElemOpAddTo(i, i, &tmp, &e);
 	}
 	return e;
 }
 
-ElemOp numOp(int d)
+MboElemOp mboNumOp(int d)
 {
-	ElemOp n;
+	MboElemOp n;
 	int i;
-	struct Amplitude tmp;
+	struct MboAmplitude tmp;
 
-	elemOpCreate(&n);
+	mboElemOpCreate(&n);
 	tmp.im = 0;
 	for (i = 1; i < d; ++i) {
 		tmp.re = i;
-		elemOpAddTo(i, i, &tmp, &n);
+		mboElemOpAddTo(i, i, &tmp, &n);
 	}
 	return n;
 }
 
-ElemOp annihilationOp(int d)
+MboElemOp mboAnnihilationOp(int d)
 {
-	ElemOp a;
+	MboElemOp a;
 	int i;
-	struct Amplitude tmp;
+	struct MboAmplitude tmp;
 
-	elemOpCreate(&a);
+	mboElemOpCreate(&a);
 	tmp.im = 0;
 	for (i = 1; i < d; ++i) {
 		tmp.re = sqrt(i);
-		elemOpAddTo(i - 1, i, &tmp, &a);
+		mboElemOpAddTo(i - 1, i, &tmp, &a);
 	}
 	return a;
 }
 
-ElemOp creationOp(int d)
+MboElemOp mboCreationOp(int d)
 {
-	ElemOp ad;
+	MboElemOp ad;
 	int i;
-	struct Amplitude tmp;
+	struct MboAmplitude tmp;
 
-	elemOpCreate(&ad);
+	mboElemOpCreate(&ad);
 	tmp.im = 0;
 	for (i = 1; i < d; ++i) {
 		tmp.re = sqrt(i);
-		elemOpAddTo(i, i - 1, &tmp, &ad);
+		mboElemOpAddTo(i, i - 1, &tmp, &ad);
 	}
 	return ad;
 }
 
-void elemOpMul(ElemOp a, ElemOp *b)
+void mboElemOpMul(MboElemOp a, MboElemOp *b)
 {
-	ElemOp prod;
+	MboElemOp prod;
 	int numOps, i, j;
 
-	elemOpCreate(&prod);
+	mboElemOpCreate(&prod);
 	numOps = 0;
 	for (i = 0; i < a->nOps; ++i) {
 		for (j = 0; j < (*b)->nOps; ++j) {
@@ -204,14 +204,14 @@ void elemOpMul(ElemOp a, ElemOp *b)
 			}
 		}
 	}
-	elemOpDestroy(b);
+	mboElemOpDestroy(b);
 	*b = prod;
 }
 
-ElemOp elemOpCopy(ElemOp a)
+MboElemOp mboElemOpCopy(MboElemOp a)
 {
-	ElemOp copy;
-	elemOpCreate(&copy);
+	MboElemOp copy;
+	mboElemOpCreate(&copy);
 	copy->nOps = a->nOps;
 	copy->entries =
 	    realloc(copy->entries, a->nOps * sizeof(*copy->entries));
@@ -226,30 +226,30 @@ ElemOp elemOpCopy(ElemOp a)
 #include "TestUtils.h"
 #define EPS 1.0e-12
 
-static int testElemOpCreate()
+static int testMboElemOpCreate()
 {
 	int errs = 0;
-	ElemOp a;
-	elemOpCreate(&a);
+	MboElemOp a;
+	mboElemOpCreate(&a);
 
 	CHK_EQUAL(0, a->nOps, errs);
 	CHK_EQUAL(0, a->entries, errs);
 
-	elemOpDestroy(&a);
+	mboElemOpDestroy(&a);
 	return errs;
 }
 
-static int testElemOpAddTo()
+static int testMboElemOpAddTo()
 {
 	int errs = 0;
-	ElemOp a;
-	struct Amplitude alpha;
+	MboElemOp a;
+	struct MboAmplitude alpha;
 
-	elemOpCreate(&a);
+	mboElemOpCreate(&a);
 
 	alpha.re = 3.0;
 	alpha.im = -5.0;
-	elemOpAddTo(1, 2, &alpha, &a);
+	mboElemOpAddTo(1, 2, &alpha, &a);
 
 	CHK_EQUAL(a->nOps, 1, errs);
 	CHK_EQUAL(a->entries[0].m, 1, errs);
@@ -257,46 +257,46 @@ static int testElemOpAddTo()
 	CHK_EQUAL(a->entries[0].val.re, alpha.re, errs);
 	CHK_EQUAL(a->entries[0].val.im, alpha.im, errs);
 
-	elemOpDestroy(&a);
+	mboElemOpDestroy(&a);
 	return errs;
 }
 
-static int testElemOpScale()
+static int testMboElemOpScale()
 {
 	int errs = 0;
-	ElemOp a;
-	struct Amplitude alpha, beta;
+	MboElemOp a;
+	struct MboAmplitude alpha, beta;
 
-	elemOpCreate(&a);
+	mboElemOpCreate(&a);
 
 	alpha.re = 3.0;
 	alpha.im = 1.0;
-	elemOpAddTo(1, 2, &alpha, &a);
+	mboElemOpAddTo(1, 2, &alpha, &a);
 	beta.re = -1.0;
 	beta.im = 8.0;
-	elemOpScale(&beta, a);
+	mboElemOpScale(&beta, a);
 	CHK_CLOSE(a->entries[0].val.re, alpha.re * beta.re - alpha.im * beta.im,
 		  EPS, errs);
 	CHK_CLOSE(a->entries[0].val.im, alpha.re * beta.im + alpha.im * beta.re,
 		  EPS, errs);
 
-	elemOpDestroy(&a);
+	mboElemOpDestroy(&a);
 	return errs;
 }
 
-static int testElemOpPlus()
+static int testMboElemOpPlus()
 {
 	int errs = 0;
-	ElemOp a = 0;
-	ElemOp b = 0;
-	struct Amplitude alpha, beta;
+	MboElemOp a = 0;
+	MboElemOp b = 0;
+	struct MboAmplitude alpha, beta;
 
-	elemOpCreate(&a);
-	elemOpCreate(&b);
+	mboElemOpCreate(&a);
+	mboElemOpCreate(&b);
 	alpha.re = 11;
 	alpha.im = 22;
-	elemOpAddTo(0, 1, &alpha, &a);
-	elemOpPlus(a, &b);
+	mboElemOpAddTo(0, 1, &alpha, &a);
+	mboElemOpPlus(a, &b);
 	CHK_EQUAL(a->entries[0].m, 0, errs);
 	CHK_EQUAL(a->entries[0].n, 1, errs);
 	CHK_CLOSE(a->entries[0].val.re, alpha.re, EPS, errs);
@@ -305,25 +305,25 @@ static int testElemOpPlus()
 	CHK_EQUAL(b->entries[0].n, 1, errs);
 	CHK_CLOSE(b->entries[0].val.re, alpha.re, EPS, errs);
 	CHK_CLOSE(b->entries[0].val.im, alpha.im, EPS, errs);
-	elemOpDestroy(&a);
-	elemOpDestroy(&b);
+	mboElemOpDestroy(&a);
+	mboElemOpDestroy(&b);
 
-	elemOpCreate(&a);
-	elemOpCreate(&b);
-	elemOpAddTo(0, 1, &alpha, &b);
-	elemOpPlus(a, &b);
+	mboElemOpCreate(&a);
+	mboElemOpCreate(&b);
+	mboElemOpAddTo(0, 1, &alpha, &b);
+	mboElemOpPlus(a, &b);
 	CHK_EQUAL(b->entries[0].m, 0, errs);
 	CHK_EQUAL(b->entries[0].n, 1, errs);
 	CHK_CLOSE(b->entries[0].val.re, alpha.re, EPS, errs);
 	CHK_CLOSE(b->entries[0].val.im, alpha.im, EPS, errs);
-	elemOpDestroy(&a);
-	elemOpDestroy(&b);
+	mboElemOpDestroy(&a);
+	mboElemOpDestroy(&b);
 
-	elemOpCreate(&a);
-	elemOpCreate(&b);
-	elemOpAddTo(0, 1, &alpha, &a);
-	elemOpAddTo(0, 1, &alpha, &b);
-	elemOpPlus(a, &b);
+	mboElemOpCreate(&a);
+	mboElemOpCreate(&b);
+	mboElemOpAddTo(0, 1, &alpha, &a);
+	mboElemOpAddTo(0, 1, &alpha, &b);
+	mboElemOpPlus(a, &b);
 	CHK_EQUAL(a->entries[0].m, 0, errs);
 	CHK_EQUAL(a->entries[0].n, 1, errs);
 	CHK_CLOSE(a->entries[0].val.re, alpha.re, EPS, errs);
@@ -336,16 +336,16 @@ static int testElemOpPlus()
 	CHK_EQUAL(b->entries[1].n, 1, errs);
 	CHK_CLOSE(b->entries[1].val.re, alpha.re, EPS, errs);
 	CHK_CLOSE(b->entries[1].val.im, alpha.im, EPS, errs);
-	elemOpDestroy(&a);
-	elemOpDestroy(&b);
+	mboElemOpDestroy(&a);
+	mboElemOpDestroy(&b);
 
-	elemOpCreate(&a);
-	elemOpCreate(&b);
-	elemOpAddTo(0, 1, &alpha, &a);
+	mboElemOpCreate(&a);
+	mboElemOpCreate(&b);
+	mboElemOpAddTo(0, 1, &alpha, &a);
 	beta.re = -2.0;
 	beta.im = 100;
-	elemOpAddTo(5, 11, &beta, &b);
-	elemOpPlus(a, &b);
+	mboElemOpAddTo(5, 11, &beta, &b);
+	mboElemOpPlus(a, &b);
 	CHK_EQUAL(a->entries[0].m, 0, errs);
 	CHK_EQUAL(a->entries[0].n, 1, errs);
 	CHK_CLOSE(a->entries[0].val.re, alpha.re, EPS, errs);
@@ -358,66 +358,66 @@ static int testElemOpPlus()
 	CHK_EQUAL(b->entries[1].n, 1, errs);
 	CHK_CLOSE(b->entries[1].val.re, alpha.re, EPS, errs);
 	CHK_CLOSE(b->entries[1].val.im, alpha.im, EPS, errs);
-	elemOpDestroy(&a);
-	elemOpDestroy(&b);
+	mboElemOpDestroy(&a);
+	mboElemOpDestroy(&b);
 	return errs;
 }
 
-static int testElemOpMul()
+static int testMboElemOpMul()
 {
 	int errs = 0;
-	ElemOp a = 0;
-	ElemOp b = 0;
-	struct Amplitude alpha;
+	MboElemOp a = 0;
+	MboElemOp b = 0;
+	struct MboAmplitude alpha;
 
 	alpha.re = 3.0;
 	alpha.im = 2.0;
 
 	/* non-zero a * zero b */
-	elemOpCreate(&a);
-	elemOpCreate(&b);
-	elemOpAddTo(0, 1, &alpha, &a);
-	elemOpMul(a, &b);
+	mboElemOpCreate(&a);
+	mboElemOpCreate(&b);
+	mboElemOpAddTo(0, 1, &alpha, &a);
+	mboElemOpMul(a, &b);
 	CHK_EQUAL(a->nOps, 1, errs);
 	CHK_EQUAL(a->entries[0].m, 0, errs);
 	CHK_EQUAL(a->entries[0].n, 1, errs);
 	CHK_CLOSE(a->entries[0].val.re, alpha.re, EPS, errs);
 	CHK_CLOSE(a->entries[0].val.im, alpha.im, EPS, errs);
 	CHK_EQUAL(b->nOps, 0, errs);
-	elemOpDestroy(&a);
-	elemOpDestroy(&b);
+	mboElemOpDestroy(&a);
+	mboElemOpDestroy(&b);
 
 	/* zero a * non-zero b */
-	elemOpCreate(&a);
-	elemOpCreate(&b);
-	elemOpAddTo(0, 1, &alpha, &b);
-	elemOpMul(a, &b);
+	mboElemOpCreate(&a);
+	mboElemOpCreate(&b);
+	mboElemOpAddTo(0, 1, &alpha, &b);
+	mboElemOpMul(a, &b);
 	CHK_EQUAL(a->nOps, 0, errs);
 	CHK_EQUAL(b->nOps, 0, errs);
-	elemOpDestroy(&a);
-	elemOpDestroy(&b);
+	mboElemOpDestroy(&a);
+	mboElemOpDestroy(&b);
 
 	/* non-zero a * non-zero b with zero product */
-	elemOpCreate(&a);
-	elemOpCreate(&b);
-	elemOpAddTo(0, 1, &alpha, &a);
-	elemOpAddTo(0, 1, &alpha, &b);
-	elemOpMul(a, &b);
+	mboElemOpCreate(&a);
+	mboElemOpCreate(&b);
+	mboElemOpAddTo(0, 1, &alpha, &a);
+	mboElemOpAddTo(0, 1, &alpha, &b);
+	mboElemOpMul(a, &b);
 	CHK_EQUAL(a->nOps, 1, errs);
 	CHK_EQUAL(a->entries[0].m, 0, errs);
 	CHK_EQUAL(a->entries[0].n, 1, errs);
 	CHK_CLOSE(a->entries[0].val.re, alpha.re, EPS, errs);
 	CHK_CLOSE(a->entries[0].val.im, alpha.im, EPS, errs);
 	CHK_EQUAL(b->nOps, 0, errs);
-	elemOpDestroy(&a);
-	elemOpDestroy(&b);
+	mboElemOpDestroy(&a);
+	mboElemOpDestroy(&b);
 
 	/* non-zero a * non-zero b with non-zero product */
-	elemOpCreate(&a);
-	elemOpCreate(&b);
-	elemOpAddTo(0, 1, &alpha, &a);
-	elemOpAddTo(1, 0, &alpha, &b);
-	elemOpMul(a, &b);
+	mboElemOpCreate(&a);
+	mboElemOpCreate(&b);
+	mboElemOpAddTo(0, 1, &alpha, &a);
+	mboElemOpAddTo(1, 0, &alpha, &b);
+	mboElemOpMul(a, &b);
 	CHK_EQUAL(a->nOps, 1, errs);
 	CHK_EQUAL(a->entries[0].m, 0, errs);
 	CHK_EQUAL(a->entries[0].n, 1, errs);
@@ -429,64 +429,64 @@ static int testElemOpMul()
 	CHK_CLOSE(b->entries[0].val.re,
 		  alpha.re * alpha.re - alpha.im * alpha.im, EPS, errs);
 	CHK_CLOSE(b->entries[0].val.im, 2.0 * alpha.re * alpha.im, EPS, errs);
-	elemOpDestroy(&a);
-	elemOpDestroy(&b);
+	mboElemOpDestroy(&a);
+	mboElemOpDestroy(&b);
 
 	return errs;
 }
 
-static int testElemOpCheck()
+static int testMboElemOpCheck()
 {
 	int errs = 0;
-	ElemOp o;
+	MboElemOp o;
 
-	elemOpCreate(&o);
-	elemOpCheck(o);
-	elemOpDestroy(&o);
+	mboElemOpCreate(&o);
+	mboElemOpCheck(o);
+	mboElemOpDestroy(&o);
 
-	o = sigmaZ();
-	elemOpCheck(o);
-	elemOpDestroy(&o);
+	o = mboSigmaZ();
+	mboElemOpCheck(o);
+	mboElemOpDestroy(&o);
 
 	return errs;
 }
 
-static int testSigmaPlus()
+static int testMboSigmaPlus()
 {
 	int errs = 0;
-	ElemOp sp;
+	MboElemOp sp;
 
-	sp = sigmaPlus();
+	sp = mboSigmaPlus();
 	CHK_EQUAL(sp->nOps, 1, errs);
 	CHK_EQUAL(sp->entries[0].m, 1, errs);
 	CHK_EQUAL(sp->entries[0].n, 0, errs);
 	CHK_CLOSE(sp->entries[0].val.re, 1.0, EPS, errs);
 	CHK_CLOSE(sp->entries[0].val.im, 0.0, EPS, errs);
-	elemOpDestroy(&sp);
+	mboElemOpDestroy(&sp);
 	return errs;
 }
 
-static int testSigmaMinus()
+static int testMboSigmaMinus()
 {
 	int errs = 0;
-	ElemOp sp;
+	MboElemOp sp;
 
-	sp = sigmaMinus();
+	sp = mboSigmaMinus();
 	CHK_EQUAL(sp->nOps, 1, errs);
 	CHK_EQUAL(sp->entries[0].m, 0, errs);
 	CHK_EQUAL(sp->entries[0].n, 1, errs);
 	CHK_CLOSE(sp->entries[0].val.re, 1.0, EPS, errs);
 	CHK_CLOSE(sp->entries[0].val.im, 0.0, EPS, errs);
-	elemOpDestroy(&sp);
+	mboElemOpDestroy(&sp);
 	return errs;
 }
 
-static int testSigmaZ()
+static int testMboSigmaZ()
 {
 	int errs = 0;
-	ElemOp sz;
+	MboElemOp sz;
 
-	sz = sigmaZ();
+	sz = mboSigmaZ();
 	CHK_EQUAL(sz->nOps, 2, errs);
 	CHK_EQUAL(sz->entries[0].m, 1, errs);
 	CHK_EQUAL(sz->entries[0].n, 1, errs);
@@ -496,16 +496,16 @@ static int testSigmaZ()
 	CHK_EQUAL(sz->entries[1].n, 0, errs);
 	CHK_CLOSE(sz->entries[1].val.re, -1.0, EPS, errs);
 	CHK_CLOSE(sz->entries[1].val.im, 0.0, EPS, errs);
-	elemOpDestroy(&sz);
+	mboElemOpDestroy(&sz);
 	return errs;
 }
 
-static int testEye()
+static int testMboEye()
 {
 	int errs = 0;
 	int i;
-	ElemOp e;
-	e = eye(5);
+	MboElemOp e;
+	e = mboEye(5);
 	CHK_EQUAL(e->nOps, 5, errs);
 	for (i = 0; i < e->nOps; ++i) {
 		CHK_EQUAL(e->entries[i].m, i, errs);
@@ -513,16 +513,16 @@ static int testEye()
 		CHK_CLOSE(e->entries[i].val.re, 1.0, EPS, errs);
 		CHK_CLOSE(e->entries[i].val.im, 0.0, EPS, errs);
 	}
-	elemOpDestroy(&e);
+	mboElemOpDestroy(&e);
 	return errs;
 }
 
-static int testNumOp()
+static int testMboNumOp()
 {
 	int errs = 0;
 	int i;
-	ElemOp num;
-	num = numOp(5);
+	MboElemOp num;
+	num = mboNumOp(5);
 	CHK_EQUAL(num->nOps, 4, errs);
 	for (i = 0; i < num->nOps; ++i) {
 		CHK_EQUAL(num->entries[i].m, i + 1, errs);
@@ -530,16 +530,16 @@ static int testNumOp()
 		CHK_CLOSE(num->entries[i].val.re, i + 1.0, EPS, errs);
 		CHK_CLOSE(num->entries[i].val.im, 0.0, EPS, errs);
 	}
-	elemOpDestroy(&num);
+	mboElemOpDestroy(&num);
 	return errs;
 }
 
-int testAnnihilationOp()
+int testMboAnnihilationOp()
 {
 	int errs = 0;
 	int i;
-	ElemOp a;
-	a = annihilationOp(5);
+	MboElemOp a;
+	a = mboAnnihilationOp(5);
 	CHK_EQUAL(a->nOps, 4, errs);
 	for (i = 0; i < a->nOps; ++i) {
 		CHK_EQUAL(a->entries[i].m, i, errs);
@@ -547,16 +547,16 @@ int testAnnihilationOp()
 		CHK_CLOSE(a->entries[i].val.re, sqrt(i + 1), EPS, errs);
 		CHK_CLOSE(a->entries[i].val.im, 0.0, EPS, errs);
 	}
-	elemOpDestroy(&a);
+	mboElemOpDestroy(&a);
 	return errs;
 }
 
-static int testCreationOp()
+static int testMboCreationOp()
 {
 	int errs = 0;
 	int i;
-	ElemOp ad;
-	ad = creationOp(5);
+	MboElemOp ad;
+	ad = mboCreationOp(5);
 	CHK_EQUAL(ad->nOps, 4, errs);
 	for (i = 0; i < ad->nOps; ++i) {
 		CHK_EQUAL(ad->entries[i].m, i + 1, errs);
@@ -564,25 +564,25 @@ static int testCreationOp()
 		CHK_CLOSE(ad->entries[i].val.re, sqrt(i + 1), EPS, errs);
 		CHK_CLOSE(ad->entries[i].val.im, 0.0, EPS, errs);
 	}
-	elemOpDestroy(&ad);
+	mboElemOpDestroy(&ad);
 	return errs;
 }
 
-int elemOpTest()
+int mboElemOpTest()
 {
 	int errs = 0;
-	errs += testElemOpCreate();
-	errs += testElemOpAddTo();
-	errs += testElemOpScale();
-	errs += testElemOpPlus();
-	errs += testElemOpMul();
-	errs += testElemOpCheck();
-	errs += testSigmaPlus();
-	errs += testSigmaMinus();
-	errs += testSigmaZ();
-	errs += testEye();
-	errs += testNumOp();
-	errs += testAnnihilationOp();
-	errs += testCreationOp();
+	errs += testMboElemOpCreate();
+	errs += testMboElemOpAddTo();
+	errs += testMboElemOpScale();
+	errs += testMboElemOpPlus();
+	errs += testMboElemOpMul();
+	errs += testMboElemOpCheck();
+	errs += testMboSigmaPlus();
+	errs += testMboSigmaMinus();
+	errs += testMboSigmaZ();
+	errs += testMboEye();
+	errs += testMboNumOp();
+	errs += testMboAnnihilationOp();
+	errs += testMboCreationOp();
 	return errs;
 }

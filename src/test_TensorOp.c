@@ -1,6 +1,6 @@
-#include "TensorOp.h"
+#include "MboTensorOp.h"
 
 int main()
 {
-	return tensorOpTest();
+	return mboTensorOpTest();
 }

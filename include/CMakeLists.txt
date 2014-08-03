@@ -1,6 +1,7 @@
 set(QUO_HEADERS
-    Amplitude.h
     ElemOp.h
+    MboAmplitude.h
+    MboErrors.h
     ProdSpace.h
     Quo.h
     TensProdOp.h

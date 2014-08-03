@@ -1,11 +1,11 @@
-#ifndef AMPLITUDE_H
-#define AMPLITUDE_H
+#ifndef MBO_AMPLITUDE_H
+#define MBO_AMPLITUDE_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-struct Amplitude {
+struct MboAmplitude {
 	double re;
 	double im;
 };

@@ -1,6 +1,6 @@
-#include "ProdSpace.h"
+#include "MboProdSpace.h"
 
 int main()
 {
-	return prodSpaceTest();
+	return mboProdSpaceTest();
 }
