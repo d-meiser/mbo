@@ -1,8 +1,9 @@
 #include <MboVec.h>
+#include <MboAmplitude.h>
 
 int main()
 {
-	double alpha[2] = {2.0, 3.0};
+	struct MboAmplitude alpha = {2.0, 3.0};
 	long d = 10l;
 	int i;
 	MboVec x;
@@ -11,7 +12,7 @@ int main()
 	mboVecCreate(d, &y);
 
 	for (i = 0; i < 10; ++i) {
-		mboVecAXPY(alpha, x, y);
+		mboVecAXPY(&alpha, x, y);
 	}
 
 	mboVecDestroy(&x);
