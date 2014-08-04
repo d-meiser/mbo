@@ -19,6 +19,9 @@ MBO_STATUS mboVecCreate(long dim, MboVec *v);
 /** @brief Release all resources of a MboVec */
 MBO_STATUS mboVecDestroy(MboVec *v);
 
+/** @brief Get dimension of vector */
+long mboVecDim(MboVec v);
+
 /** @brief Obtain a read-write view of the vector data
  *
  * * The view has to be released using mboVecReleaseView before the vector can

@@ -4,9 +4,7 @@
 #include <MboProdSpace.h>
 #include <MboElemOp.h>
 #include <MboErrors.h>
-
-struct MboVec;
-typedef struct MboVec *MboVec;
+#include <MboVec.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -86,7 +84,7 @@ void mboTensorOpKron(MboTensorOp a, MboTensorOp b, MboTensorOp *c);
 MBO_STATUS mboTensorOpMatVec(struct MboAmplitude *alpha, MboTensorOp a,
 			     MboVec x, struct MboAmplitude *beta, MboVec y);
 
-/** @brief Check integrity of tensor operator. 
+/** @brief Check integrity of tensor operator.
  * Returns the number of errors.*/
 int mboTensorOpCheck(MboTensorOp);
 

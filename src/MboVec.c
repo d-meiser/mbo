@@ -127,6 +127,11 @@ MBO_STATUS mboVecKron(int n, int *dims, struct MboAmplitude **vecs, MboVec x)
 	return MBO_SUCCESS;
 }
 
+long mboVecDim(MboVec x)
+{
+	return x->dim;
+}
+
 /* Private helper functions */
 
 static void fillWithKron(struct MboAmplitude a, int n, int *dims,
@@ -396,6 +401,20 @@ static int testMboVecKron()
 	return errs;
 }
 
+static int testMboVecDim()
+{
+	int errs = 0;
+	long d;
+	MboVec x;
+
+	mboVecCreate(10l, &x);
+	d = mboVecDim(x);
+	CHK_EQUAL(d, 10, errs);
+	mboVecDestroy(&x);
+
+	return errs;
+}
+
 int mboVecTest()
 {
 	int errs = 0;
@@ -407,6 +426,7 @@ int mboVecTest()
 	errs += testMboVecAXPY();
 	errs += testMboVecSet();
 	errs += testMboVecKron();
+	errs += testMboVecDim();
 	return errs;
 }
 

@@ -120,7 +120,8 @@ void mboTensorOpAddTo(MboElemOp a, int i, MboTensorOp op)
 	++op->numTerms;
 }
 
-void mboTensorOpAddScaledTo(struct MboAmplitude *alpha, MboElemOp a, int i, MboTensorOp op)
+void mboTensorOpAddScaledTo(struct MboAmplitude *alpha, MboElemOp a, int i,
+			    MboTensorOp op)
 {
 	struct SimpleTOp *newTerm;
 	struct Embedding *aEmbedded;
@@ -240,7 +241,8 @@ void multiplySimpleTOps(int N, struct SimpleTOp *a, struct SimpleTOp *b)
 				    realloc(b->embeddings,
 					    (b->numFactors + 1) *
 						sizeof(struct Embedding));
-				mboElemOpCreate(&b->embeddings[b->numFactors].op);
+				mboElemOpCreate(
+				    &b->embeddings[b->numFactors].op);
 				copyEmbedding(b->embeddings + b->numFactors,
 						a->embeddings + j);
 				++b->numFactors;
@@ -266,7 +268,8 @@ void copySimpleTOp(struct SimpleTOp* dest, struct SimpleTOp *src)
 	}
 }
 
-void scaleSimpleTOp(struct MboAmplitude *alpha, MboProdSpace h, struct SimpleTOp *op)
+void scaleSimpleTOp(struct MboAmplitude *alpha, MboProdSpace h,
+		    struct SimpleTOp *op)
 {
 	int d;
 	if (mboProdSpaceSize(h) == 0) return;
@@ -376,6 +379,10 @@ int checkSimpleTOp(struct SimpleTOp *sa)
 MBO_STATUS mboTensorOpMatVec(struct MboAmplitude *alpha, MboTensorOp a,
 			     MboVec x, struct MboAmplitude *beta, MboVec y)
 {
+	if (mboProdSpaceDim(a->space) != mboVecDim(x) ||
+	    mboProdSpaceDim(a->space) != mboVecDim(y)) {
+		return MBO_DIMENSIONS_MISMATCH;
+	}
 	return MBO_SUCCESS;
 }
 
@@ -953,6 +960,39 @@ static int testKronSimpleTOps()
 static int testMboTensorOpMatVec()
 {
 	int errs = 0;
+	MboProdSpace h1, h2;
+	MboVec x, y;
+	MboTensorOp A;
+	struct MboAmplitude a, b;
+	MBO_STATUS err;
+
+	h1 = mboProdSpaceCreate(2);
+	h2 = mboProdSpaceCreate(0);
+	mboProdSpaceMul(h1, &h2);
+	mboProdSpaceDestroy(&h1);
+	h1 = mboProdSpaceCreate(3);
+	mboProdSpaceMul(h1, &h2);
+	mboProdSpaceDestroy(&h1);
+	h1 = mboProdSpaceCreate(2);
+	mboProdSpaceMul(h1, &h2);
+
+	mboVecCreate(mboProdSpaceDim(h2), &x);
+	mboTensorOpIdentity(h2, &A);
+	err = mboTensorOpMatVec(0, A, x, 0, x);
+	CHK_EQUAL(err, MBO_SUCCESS, errs);
+	mboTensorOpDestroy(&A);
+	mboVecDestroy(&x);
+
+	mboVecCreate(1l + mboProdSpaceDim(h2), &x);
+	mboTensorOpIdentity(h2, &A);
+	err = mboTensorOpMatVec(0, A, x, 0, x);
+	CHK_EQUAL(err, MBO_DIMENSIONS_MISMATCH, errs);
+	mboTensorOpDestroy(&A);
+	mboVecDestroy(&x);
+
+	mboProdSpaceDestroy(&h1);
+	mboProdSpaceDestroy(&h2);
+
 	return errs;
 }
 
