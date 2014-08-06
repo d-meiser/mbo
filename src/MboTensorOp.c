@@ -50,6 +50,11 @@ static void copySimpleTOp(struct SimpleTOp *dest, struct SimpleTOp *src);
 static void scaleSimpleTOp(struct MboAmplitude *alpha, MboProdSpace h,
 			   struct SimpleTOp *op);
 static int checkSimpleTOp(struct SimpleTOp *sa);
+static MBO_STATUS applySimpleTOp(int start, int n, int *dims,
+				 struct MboAmplitude *alpha,
+				 struct SimpleTOp *a, struct MboAmplitude *x,
+				 struct MboAmplitude *beta,
+				 struct MboAmplitude *y);
 
 /**
    Data structure for tensor product operators.
@@ -379,13 +384,47 @@ int checkSimpleTOp(struct SimpleTOp *sa)
 MBO_STATUS mboTensorOpMatVec(struct MboAmplitude *alpha, MboTensorOp a,
 			     MboVec x, struct MboAmplitude *beta, MboVec y)
 {
+	int i, N, *dims;
+	MBO_STATUS err;
+	struct MboAmplitude *xarr, *yarr;
 	if (mboProdSpaceDim(a->space) != mboVecDim(x) ||
 	    mboProdSpaceDim(a->space) != mboVecDim(y)) {
 		return MBO_DIMENSIONS_MISMATCH;
 	}
+
+	N = mboProdSpaceSize(a->space);
+	dims = malloc(N * sizeof(*dims));
+	err = mboVecGetViewR(x, &xarr);
+	if (err) return err;
+	err = mboVecGetViewRW(y, &yarr);
+	if (err) return err;
+	for (i = 0; i < a->numTerms; ++i) {
+		applySimpleTOp(0, N, dims, alpha, a->sum + i, xarr, beta, yarr);
+	}
+	err = mboVecReleaseView(x, &xarr);
+	if (err) return err;
+	err = mboVecReleaseView(y, &yarr);
+	if (err) return err;
+	free(dims);
 	return MBO_SUCCESS;
 }
 
+MBO_STATUS applySimpleTOp(int start, int N, int *dims,
+			  struct MboAmplitude *alpha, struct SimpleTOp *a,
+			  struct MboAmplitude *x, struct MboAmplitude *beta,
+			  struct MboAmplitude *y)
+{
+	int i, j, n;
+
+	for (i = 0; i < N; ++i) {
+		j = gatherIthEmbedding(i, a->numFactors, &a->embeddings);
+		if (j < 0) {
+			for (n = 0; n < dims[n]; ++n) {
+			}
+		} else {
+		}
+	}
+}
 
 /*
  * Tests
@@ -959,12 +998,15 @@ static int testKronSimpleTOps()
 
 static int testMboTensorOpMatVec()
 {
-	int errs = 0;
+	int errs = 0, i;
 	MboProdSpace h1, h2;
 	MboVec x, y;
 	MboTensorOp A;
-	struct MboAmplitude a, b;
+	struct MboAmplitude a, b, one, *arr;
 	MBO_STATUS err;
+
+	one.re = 1.0;
+	one.im = 0.0;
 
 	h1 = mboProdSpaceCreate(2);
 	h2 = mboProdSpaceCreate(0);
@@ -977,9 +1019,16 @@ static int testMboTensorOpMatVec()
 	mboProdSpaceMul(h1, &h2);
 
 	mboVecCreate(mboProdSpaceDim(h2), &x);
+	mboVecSet(&one, x);
 	mboTensorOpIdentity(h2, &A);
 	err = mboTensorOpMatVec(0, A, x, 0, x);
 	CHK_EQUAL(err, MBO_SUCCESS, errs);
+	err = mboVecGetViewR(x, &arr);
+	CHK_EQUAL(err, MBO_SUCCESS, errs);
+	for (i = 0; i < mboProdSpaceDim(h2); ++i) {
+		CHK_CLOSE(arr[i].re, 2.0, EPS, errs);
+		CHK_CLOSE(arr[i].im, 0.0, EPS, errs);
+	}
 	mboTensorOpDestroy(&A);
 	mboVecDestroy(&x);
 
