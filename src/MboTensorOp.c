@@ -2,6 +2,7 @@
 
 #include <MboTensorOp.h>
 #include <MboAmplitude.h>
+#include <MboNonZeroEntry.h>
 
 /**
  * @brief Elementary embedding of an operator into a product space.
@@ -42,6 +43,9 @@ static void copyEmbedding(struct Embedding *dest, struct Embedding *src);
  * */
 static int gatherIthEmbedding(int i, int *numEmbeddings,
 			      struct Embedding **embeddings);
+/**
+ * @brief sort embeddings in ascending order according to i */
+static void sortEmbeddings(int *numEmbeddings, struct Embedding **a);
 static void destroySimpleTOp(struct SimpleTOp *term);
 static void multiplySimpleTOps(int, struct SimpleTOp *sa, struct SimpleTOp *sb);
 static void kronSimpleTOps(struct SimpleTOp *a, int numSpacesInA,
@@ -50,11 +54,15 @@ static void copySimpleTOp(struct SimpleTOp *dest, struct SimpleTOp *src);
 static void scaleSimpleTOp(struct MboAmplitude *alpha, MboProdSpace h,
 			   struct SimpleTOp *op);
 static int checkSimpleTOp(struct SimpleTOp *sa);
-static MBO_STATUS applySimpleTOp(int start, int n, int *dims,
-				 struct MboAmplitude *alpha,
-				 struct SimpleTOp *a, struct MboAmplitude *x,
-				 struct MboAmplitude *beta,
-				 struct MboAmplitude *y);
+static MBO_STATUS applySimpleTOp(MboProdSpace h, struct MboAmplitude *alpha,
+				 struct SimpleTOp *a, MboVec x,
+				 struct MboAmplitude *beta, MboVec y);
+static long computeBlockSize(int N, int *dims);
+static void applyEmbeddings(int i, int numSpaces, int *dims, long blockSize,
+			    struct MboAmplitude alpha, int numFactors,
+			    struct Embedding *embeddings,
+			    struct MboAmplitude *xarr, struct MboAmplitude beta,
+			    struct MboAmplitude *yarr);
 
 /**
    Data structure for tensor product operators.
@@ -384,46 +392,136 @@ int checkSimpleTOp(struct SimpleTOp *sa)
 MBO_STATUS mboTensorOpMatVec(struct MboAmplitude *alpha, MboTensorOp a,
 			     MboVec x, struct MboAmplitude *beta, MboVec y)
 {
-	int i, N, *dims;
+	int i;
 	MBO_STATUS err;
-	struct MboAmplitude *xarr, *yarr;
 	if (mboProdSpaceDim(a->space) != mboVecDim(x) ||
 	    mboProdSpaceDim(a->space) != mboVecDim(y)) {
 		return MBO_DIMENSIONS_MISMATCH;
 	}
-
-	N = mboProdSpaceSize(a->space);
-	dims = malloc(N * sizeof(*dims));
-	err = mboVecGetViewR(x, &xarr);
-	if (err) return err;
-	err = mboVecGetViewRW(y, &yarr);
-	if (err) return err;
 	for (i = 0; i < a->numTerms; ++i) {
-		applySimpleTOp(0, N, dims, alpha, a->sum + i, xarr, beta, yarr);
+		err = applySimpleTOp(a->space, alpha, a->sum + i, x, beta, y);
+		if (err != MBO_SUCCESS) return err;
 	}
-	err = mboVecReleaseView(x, &xarr);
-	if (err) return err;
-	err = mboVecReleaseView(y, &yarr);
-	if (err) return err;
-	free(dims);
 	return MBO_SUCCESS;
 }
 
-MBO_STATUS applySimpleTOp(int start, int N, int *dims,
-			  struct MboAmplitude *alpha, struct SimpleTOp *a,
-			  struct MboAmplitude *x, struct MboAmplitude *beta,
-			  struct MboAmplitude *y)
+MBO_STATUS applySimpleTOp(MboProdSpace h, struct MboAmplitude *alpha,
+			  struct SimpleTOp *a, MboVec x,
+			  struct MboAmplitude *beta, MboVec y)
 {
-	int i, j, n;
+	int numSpaces, dims[mboProdSpaceSize(h)];
+	long blockSize;
+	struct MboAmplitude *xarr, *yarr;
 
-	for (i = 0; i < N; ++i) {
+	sortEmbeddings(&a->numFactors, &a->embeddings);
+
+	numSpaces = mboProdSpaceSize(h);
+	blockSize = mboProdSpaceDim(h);
+	mboProdSpaceGetDims(h, sizeof(dims) / sizeof(*dims), dims);
+
+	mboVecGetViewR(x, &xarr);
+	mboVecGetViewRW(y, &yarr);
+	applyEmbeddings(0, numSpaces, dims, blockSize, *alpha, a->numFactors,
+			a->embeddings, xarr, *beta, yarr);
+	mboVecReleaseView(x, &xarr);
+	mboVecReleaseView(y, &yarr);
+
+#if 0
+	blockSize = mboProdSpaceDim(h);
+	dims = malloc(mboProdSpaceSize(h) * sizeof(*dims));
+	mboProdSpaceGetDims(h, mboProdSpaceSize(h), dims);
+
+	for (i = 0; i < mboProdSpaceSize(h); ++i) {
+		blockSize /= dims[i];
 		j = gatherIthEmbedding(i, a->numFactors, &a->embeddings);
 		if (j < 0) {
-			for (n = 0; n < dims[n]; ++n) {
-			}
+		for (n = 0; n < dims[i]; ++n) {
+			applySimpleTOp(i + 1, N, dims, alpha, a,
+				       x + n * blockSize, beta,
+				       y + n * blockSize);
+		}
 		} else {
 		}
 	}
+	free(dims);
+#endif
+	return MBO_SUCCESS;
+}
+
+void applyEmbeddings(int i, int numSpaces, int *dims, long blockSizeAfter,
+		     struct MboAmplitude alpha, int numFactors,
+		     struct Embedding *embeddings, struct MboAmplitude *xarr,
+		     struct MboAmplitude beta, struct MboAmplitude *yarr)
+{
+	int nextI, e;
+	struct MboAmplitude tmp, tmp2;
+	long blockSizeBefore, n;
+	struct MboNonZeroEntry *entries;
+	if (numFactors > 0) {
+		nextI = embeddings->i;
+		blockSizeBefore = computeBlockSize(nextI - i, dims);
+		blockSizeAfter /= (blockSizeBefore * (long)dims[nextI]);
+		entries = mboElemOpGetEntries(embeddings->op);
+		for (n = 0; n < blockSizeBefore; ++n) {
+			for (e = 0; e < mboElemOpNumEntries(embeddings->op);
+					++e) {
+				tmp.re = alpha.re * entries[e].val.re -
+					       alpha.im * entries[e].val.im;
+				tmp.im = alpha.re * entries[e].val.im +
+					       alpha.im * entries[e].val.re;
+				applyEmbeddings(
+				    nextI + 1, numSpaces, dims,
+				    blockSizeAfter, tmp, numFactors - 1,
+				    embeddings + 1,
+				    xarr + entries[e].m * blockSizeAfter, beta,
+				    yarr + entries[e].n * blockSizeAfter);
+			}
+			xarr += blockSizeAfter * (long)dims[nextI];
+			yarr += blockSizeAfter * (long)dims[nextI];
+		}
+	} else {
+		blockSizeBefore = computeBlockSize(numSpaces - i, dims + i);
+		for (n = 0; n < blockSizeBefore; ++n) {
+			tmp.re = beta.re * yarr[n].re - beta.im * yarr[n].im;
+			tmp.im = beta.re * yarr[n].im + beta.im * yarr[n].re;
+			yarr[n].re = tmp.re + alpha.re * xarr[n].re -
+				     alpha.im * xarr[n].im;
+			yarr[n].im = tmp.im + alpha.re * xarr[n].im +
+				     alpha.im * xarr[n].re;
+		}
+	}
+}
+
+static int intcmp(const void *i1, const void *i2)
+{
+	int j1 = *(int*)i1, j2 = *(int*)i2;
+	return j1 - j2;
+}
+
+void sortEmbeddings(int *numEmbeddings, struct Embedding **embeddings)
+{
+	int i = 0, prev, nInitial = *numEmbeddings;
+	int is[nInitial];
+	for (i = 0; i < nInitial; ++i) {
+		is[i] = (*embeddings)[i].i;
+	}
+	qsort(is, nInitial, sizeof(*is), intcmp);
+	prev = -1;
+	for (i = 0; i < nInitial; ++i) {
+		if (is[i] == prev) continue;
+		gatherIthEmbedding(is[i], numEmbeddings, embeddings);
+		prev = is[i];
+	}
+}
+
+long computeBlockSize(int N, int *dims)
+{
+	int i;
+	long blockSize = 1;
+	for (i = 0; i < N; ++i) {
+		blockSize *= (long)dims[i];
+	}
+	return blockSize;
 }
 
 /*

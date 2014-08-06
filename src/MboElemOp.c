@@ -3,12 +3,12 @@
 #include <math.h>
 
 #include <MboElemOp.h>
-#include <NonZeroEntry.h>
+#include <MboNonZeroEntry.h>
 
 struct MboElemOp
 {
 	int nOps;
-	struct NonZeroEntry *entries;
+	struct MboNonZeroEntry *entries;
 };
 
 void mboElemOpCreate(MboElemOp *eo)
@@ -56,6 +56,16 @@ void mboElemOpPlus(MboElemOp a, MboElemOp *b)
 	memcpy((*b)->entries + (*b)->nOps, a->entries,
 	       a->nOps * sizeof(*a->entries));
 	(*b)->nOps += a->nOps;
+}
+
+int mboElemOpNumEntries(MboElemOp op)
+{
+	return op->nOps;
+}
+
+struct MboNonZeroEntry *mboElemOpGetEntries(MboElemOp op)
+{
+	return op->entries;
 }
 
 int mboElemOpCheck(MboElemOp a)

@@ -17,6 +17,8 @@ void mboElemOpScale(struct MboAmplitude*, MboElemOp);
 void mboElemOpPlus(MboElemOp, MboElemOp *);
 void mboElemOpMul(MboElemOp, MboElemOp *);
 MboElemOp mboElemOpCopy(MboElemOp);
+int mboElemOpNumEntries(MboElemOp);
+struct MboNonZeroEntry *mboElemOpGetEntries(MboElemOp);
 int mboElemOpCheck(MboElemOp);
 int mboElemOpTest();
 

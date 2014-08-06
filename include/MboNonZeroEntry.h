@@ -1,5 +1,5 @@
-#ifndef NON_ZERO_ENTRY_H
-#define NON_ZERO_ENTRY_H
+#ifndef MBO_NON_ZERO_ENTRY_H
+#define MBO_NON_ZERO_ENTRY_H
 
 #include "MboAmplitude.h"
 
@@ -7,7 +7,7 @@
  * @brief A sparse matrix entry
  *
  */
-struct NonZeroEntry {
+struct MboNonZeroEntry {
 	int m;
 	int n;
 	struct MboAmplitude val;
