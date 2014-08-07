@@ -426,25 +426,6 @@ MBO_STATUS applySimpleTOp(MboProdSpace h, struct MboAmplitude *alpha,
 	mboVecReleaseView(x, &xarr);
 	mboVecReleaseView(y, &yarr);
 
-#if 0
-	blockSize = mboProdSpaceDim(h);
-	dims = malloc(mboProdSpaceSize(h) * sizeof(*dims));
-	mboProdSpaceGetDims(h, mboProdSpaceSize(h), dims);
-
-	for (i = 0; i < mboProdSpaceSize(h); ++i) {
-		blockSize /= dims[i];
-		j = gatherIthEmbedding(i, a->numFactors, &a->embeddings);
-		if (j < 0) {
-		for (n = 0; n < dims[i]; ++n) {
-			applySimpleTOp(i + 1, N, dims, alpha, a,
-				       x + n * blockSize, beta,
-				       y + n * blockSize);
-		}
-		} else {
-		}
-	}
-	free(dims);
-#endif
 	return MBO_SUCCESS;
 }
 
