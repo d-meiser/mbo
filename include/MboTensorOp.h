@@ -60,6 +60,10 @@ void mboTensorOpAddScaledTo(struct MboAmplitude *alpha, MboElemOp elemop, int i,
 
 /** @brief Multiply two operators and add result to third
  *      (*c) += a * b
+ *      @todo : Does this allow for aliasing?
+ *      (*b) += a * b?
+ *      (*a) += a * a?
+ *      It should, if it doesn't already.
  * */
 void mboTensorOpMul(MboTensorOp a, MboTensorOp b, MboTensorOp *c);
 
