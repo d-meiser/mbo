@@ -1083,10 +1083,10 @@ static int testKronSimpleTOps()
 
 static int testMboTensorOpMatVec()
 {
-	int errs = 0, i;
+	int errs = 0, i, *dims;
 	MboProdSpace h1, h2;
 	MboVec x, y;
-	MboTensorOp A;
+	MboTensorOp A, B, C;
 	struct MboAmplitude a, b, one, result, *arr;
 	MboElemOp eop;
 	MBO_STATUS err;
@@ -1219,6 +1219,46 @@ static int testMboTensorOpMatVec()
 	mboVecDestroy(&y);
 	mboElemOpDestroy(&eop);
 
+	mboVecCreate(mboProdSpaceDim(h2), &x);
+	a.re = 2.5;
+	a.im = 22.0;
+	mboVecSet(&a, x);
+	mboVecCreate(mboProdSpaceDim(h2), &y);
+	b.re = 3.0;
+	b.im = -1.7;
+	mboVecSet(&b, y);
+	mboTensorOpNull(h2, &A);
+	eop = mboSigmaMinus();
+	mboTensorOpAddTo(eop, 0, A);
+	mboElemOpDestroy(&eop);
+	mboTensorOpNull(h2, &B);
+	eop = mboSigmaPlus();
+	mboTensorOpAddTo(eop, 1, B);
+	mboElemOpDestroy(&eop);
+	mboTensorOpNull(h2, &C);
+	mboTensorOpMul(A, B, &C);
+	mboTensorOpDestroy(&A);
+	mboTensorOpDestroy(&B);
+	b.re = 0.0;
+	b.im = 0.0;
+	err = mboTensorOpMatVec(&one, C, x, &b, y);
+	CHK_EQUAL(err, MBO_SUCCESS, errs);
+	err = mboVecGetViewR(y, &arr);
+	CHK_EQUAL(err, MBO_SUCCESS, errs);
+	dims = malloc(3 * sizeof(*dims));
+	mboProdSpaceGetDims(h2, 3, dims);
+	for (i = 0; i < mboProdSpaceDim(h2); ++i) {
+		if ((i % (dims[1] * dims[2]) == 0) && (i % dims[2] == 1)) {
+			CHK_CLOSE(arr[i].re, a.re, EPS, errs);
+			CHK_CLOSE(arr[i].im, a.im, EPS, errs);
+		} else {
+			CHK_CLOSE(arr[i].re, 0.0, EPS, errs);
+			CHK_CLOSE(arr[i].im, 0.0, EPS, errs);
+		}
+	}
+	free(dims);
+	mboVecDestroy(&x);
+	mboVecDestroy(&y);
 	mboProdSpaceDestroy(&h1);
 	mboProdSpaceDestroy(&h2);
 
