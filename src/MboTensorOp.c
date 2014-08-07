@@ -55,13 +55,12 @@ static void scaleSimpleTOp(struct MboAmplitude *alpha, MboProdSpace h,
 			   struct SimpleTOp *op);
 static int checkSimpleTOp(struct SimpleTOp *sa);
 static MBO_STATUS applySimpleTOp(MboProdSpace h, struct MboAmplitude *alpha,
-				 struct SimpleTOp *a, MboVec x,
-				 struct MboAmplitude *beta, MboVec y);
+				 struct SimpleTOp *a, MboVec x, MboVec y);
 static long computeBlockSize(int N, int *dims);
 static void applyEmbeddings(int i, int numSpaces, int *dims, long blockSize,
 			    struct MboAmplitude alpha, int numFactors,
 			    struct Embedding *embeddings,
-			    struct MboAmplitude *xarr, struct MboAmplitude beta,
+			    struct MboAmplitude *xarr,
 			    struct MboAmplitude *yarr);
 
 /**
@@ -395,29 +394,28 @@ MBO_STATUS mboTensorOpMatVec(struct MboAmplitude *alpha, MboTensorOp a,
 	int i;
 	MBO_STATUS err;
 	MboVec tmp;
+	struct MboAmplitude zero;
 
 	if (mboProdSpaceDim(a->space) != mboVecDim(x) ||
 	    mboProdSpaceDim(a->space) != mboVecDim(y)) {
 		return MBO_DIMENSIONS_MISMATCH;
 	}
-	if (y == x) {
-		mboVecDuplicate(y, &tmp);
-	} else {
-		tmp = y;
-	}
+	mboVecCreate(mboVecDim(y), &tmp);
+	zero.re = 0;
+	zero.im = 0;
+	mboVecSet(&zero, tmp);
 	for (i = 0; i < a->numTerms; ++i) {
-		err = applySimpleTOp(a->space, alpha, a->sum + i, x, beta, tmp);
+		err = applySimpleTOp(a->space, alpha, a->sum + i, x, tmp);
 		if (err != MBO_SUCCESS) return err;
 	}
-	if (y == x) {
-		mboVecDestroy(&tmp);
-	}
+	mboVecAXPY(beta, y, tmp);
+	mboVecSwap(tmp, y);
+	mboVecDestroy(&tmp);
 	return MBO_SUCCESS;
 }
 
 MBO_STATUS applySimpleTOp(MboProdSpace h, struct MboAmplitude *alpha,
-			  struct SimpleTOp *a, MboVec x,
-			  struct MboAmplitude *beta, MboVec y)
+			  struct SimpleTOp *a, MboVec x, MboVec y)
 {
 	int numSpaces, dims[mboProdSpaceSize(h)];
 	long blockSize;
@@ -432,7 +430,7 @@ MBO_STATUS applySimpleTOp(MboProdSpace h, struct MboAmplitude *alpha,
 	mboVecGetViewR(x, &xarr);
 	mboVecGetViewRW(y, &yarr);
 	applyEmbeddings(0, numSpaces, dims, blockSize, *alpha, a->numFactors,
-			a->embeddings, xarr, *beta, yarr);
+			a->embeddings, xarr, yarr);
 	mboVecReleaseView(x, &xarr);
 	mboVecReleaseView(y, &yarr);
 
@@ -442,12 +440,13 @@ MBO_STATUS applySimpleTOp(MboProdSpace h, struct MboAmplitude *alpha,
 void applyEmbeddings(int i, int numSpaces, int *dims, long blockSizeAfter,
 		     struct MboAmplitude alpha, int numFactors,
 		     struct Embedding *embeddings, struct MboAmplitude *xarr,
-		     struct MboAmplitude beta, struct MboAmplitude *yarr)
+		     struct MboAmplitude *yarr)
 {
 	int nextI, e;
-	struct MboAmplitude tmp;
 	long blockSizeBefore, n;
 	struct MboNonZeroEntry *entries;
+	struct MboAmplitude tmp;
+
 	if (numFactors > 0) {
 		nextI = embeddings->i;
 		blockSizeBefore = computeBlockSize(nextI - i, dims);
@@ -461,11 +460,10 @@ void applyEmbeddings(int i, int numSpaces, int *dims, long blockSizeAfter,
 				tmp.im = alpha.re * entries[e].val.im +
 					       alpha.im * entries[e].val.re;
 				applyEmbeddings(
-				    nextI + 1, numSpaces, dims,
-				    blockSizeAfter, tmp, numFactors - 1,
-				    embeddings + 1,
-				    xarr + entries[e].m * blockSizeAfter, beta,
-				    yarr + entries[e].n * blockSizeAfter);
+				    nextI + 1, numSpaces, dims, blockSizeAfter,
+				    tmp, numFactors - 1, embeddings + 1,
+				    xarr + entries[e].n * blockSizeAfter,
+				    yarr + entries[e].m * blockSizeAfter);
 			}
 			xarr += blockSizeAfter * (long)dims[nextI];
 			yarr += blockSizeAfter * (long)dims[nextI];
@@ -473,12 +471,10 @@ void applyEmbeddings(int i, int numSpaces, int *dims, long blockSizeAfter,
 	} else {
 		blockSizeBefore = computeBlockSize(numSpaces - i, dims + i);
 		for (n = 0; n < blockSizeBefore; ++n) {
-			tmp.re = beta.re * yarr[n].re - beta.im * yarr[n].im;
-			tmp.im = beta.re * yarr[n].im + beta.im * yarr[n].re;
-			yarr[n].re = tmp.re + alpha.re * xarr[n].re -
-				     alpha.im * xarr[n].im;
-			yarr[n].im = tmp.im + alpha.re * xarr[n].im +
-				     alpha.im * xarr[n].re;
+			yarr[n].re +=
+			    alpha.re * xarr[n].re - alpha.im * xarr[n].im;
+			yarr[n].im +=
+			    alpha.re * xarr[n].im + alpha.im * xarr[n].re;
 		}
 	}
 }
@@ -1092,6 +1088,7 @@ static int testMboTensorOpMatVec()
 	MboVec x, y;
 	MboTensorOp A;
 	struct MboAmplitude a, b, one, result, *arr;
+	MboElemOp eop;
 	MBO_STATUS err;
 
 	one.re = 1.0;
@@ -1159,6 +1156,37 @@ static int testMboTensorOpMatVec()
 	mboTensorOpDestroy(&A);
 	mboVecDestroy(&x);
 	mboVecDestroy(&y);
+
+	/* y <-  s_minus(0) * x */
+	mboVecCreate(mboProdSpaceDim(h2), &x);
+	a.re = 2.5;
+	a.im = 22.0;
+	mboVecSet(&a, x);
+	mboVecCreate(mboProdSpaceDim(h2), &y);
+	b.re = 3.0;
+	b.im = -1.7;
+	mboVecSet(&b, y);
+	mboTensorOpNull(h2, &A);
+	eop = mboSigmaMinus();
+	mboTensorOpAddTo(eop, 0, A);
+	b.re = 0.0;
+	b.im = 0.0;
+	err = mboTensorOpMatVec(&one, A, x, &b, y);
+	CHK_EQUAL(err, MBO_SUCCESS, errs);
+	err = mboVecGetViewR(y, &arr);
+	CHK_EQUAL(err, MBO_SUCCESS, errs);
+	for (i = 0; i < mboProdSpaceDim(h2) / 2; ++i) {
+		CHK_CLOSE(arr[i].re, a.re, EPS, errs);
+		CHK_CLOSE(arr[i].im, a.im, EPS, errs);
+	}
+	for (i = mboProdSpaceDim(h2) / 2; i < mboProdSpaceDim(h2); ++i) {
+		CHK_CLOSE(arr[i].re, 0, EPS, errs);
+		CHK_CLOSE(arr[i].im, 0, EPS, errs);
+	}
+	mboTensorOpDestroy(&A);
+	mboVecDestroy(&x);
+	mboVecDestroy(&y);
+	mboElemOpDestroy(&eop);
 
 	mboProdSpaceDestroy(&h1);
 	mboProdSpaceDestroy(&h2);
