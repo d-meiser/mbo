@@ -42,6 +42,14 @@ MBO_STATUS mboVecDestroy(MboVec *v)
 	return MBO_SUCCESS;
 }
 
+MBO_STATUS mboVecDuplicate(MboVec x, MboVec *y)
+{
+	MBO_STATUS err = mboVecCreate(mboVecDim(x), y);
+	if (err != MBO_SUCCESS) return err;
+	memcpy((*y)->array, x->array, mboVecDim(x) * sizeof(*x->array));
+	return MBO_SUCCESS;
+}
+
 int mboVecCheck(MboVec v)
 {
 	int errs = 0;

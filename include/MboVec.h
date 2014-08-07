@@ -69,6 +69,8 @@ MBO_STATUS mboVecSet(struct MboAmplitude *a, MboVec x);
  * */
 MBO_STATUS mboVecKron(int n, int *dims, struct MboAmplitude **vecs, MboVec x);
 
+MBO_STATUS mboVecDuplicate(MboVec x, MboVec *y);
+
 /** @brief Check integrity of MboVec
  * Returns the number of errors enountered. */
 int mboVecCheck();
