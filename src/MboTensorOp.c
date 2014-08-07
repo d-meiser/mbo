@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <strings.h>
 
 #include <MboTensorOp.h>
 #include <MboAmplitude.h>
@@ -1265,6 +1266,23 @@ static int testMboTensorOpMatVec()
 	return errs;
 }
 
+static int testApplyEmbeddings()
+{
+	int errs = 0;
+	int dims[] = {2, 3, 5, 2};
+	long blockSize;
+	struct MboAmplitude x[computeBlockSize(4, dims)],
+	    y[computeBlockSize(4, dims)];
+
+	bzero(x, sizeof(x));
+	bzero(y, sizeof(y));
+
+	blockSize = computeBlockSize(3, dims + 1);
+	applyEmbeddings(0, 4, dims, blockSize, x[0], 0, 0, x, y);
+
+	return errs;
+}
+
 int mboTensorOpTest()
 {
 	int errs = 0;
@@ -1280,6 +1298,7 @@ int mboTensorOpTest()
 	errs += testMboTensorOpCheck();
 	errs += testMboTensorOpKron();
 	errs += testKronSimpleTOps();
-	errs += testMboTensorOpMatVec();
+	//errs += testMboTensorOpMatVec();
+	errs += testApplyEmbeddings();
 	return errs;
 }
