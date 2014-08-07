@@ -394,13 +394,28 @@ MBO_STATUS mboTensorOpMatVec(struct MboAmplitude *alpha, MboTensorOp a,
 {
 	int i;
 	MBO_STATUS err;
+	MboVec tmp;
+	struct MboAmplitude one;
+
 	if (mboProdSpaceDim(a->space) != mboVecDim(x) ||
 	    mboProdSpaceDim(a->space) != mboVecDim(y)) {
 		return MBO_DIMENSIONS_MISMATCH;
 	}
+	if (y == x) {
+		mboVecDuplicate(y, &tmp);
+	} else {
+		tmp = y;
+	}
 	for (i = 0; i < a->numTerms; ++i) {
-		err = applySimpleTOp(a->space, alpha, a->sum + i, x, beta, y);
+		err = applySimpleTOp(a->space, alpha, a->sum + i, x, beta, tmp);
 		if (err != MBO_SUCCESS) return err;
+	}
+	if (y == x) {
+		mboVecDestroy(&tmp);
+	} else {
+		one.re = 1.0;
+		one.im = 0.0;
+		mboVecAXPY(&one, y, tmp);
 	}
 	return MBO_SUCCESS;
 }
@@ -435,7 +450,7 @@ void applyEmbeddings(int i, int numSpaces, int *dims, long blockSizeAfter,
 		     struct MboAmplitude beta, struct MboAmplitude *yarr)
 {
 	int nextI, e;
-	struct MboAmplitude tmp, tmp2;
+	struct MboAmplitude tmp;
 	long blockSizeBefore, n;
 	struct MboNonZeroEntry *entries;
 	if (numFactors > 0) {
@@ -1086,6 +1101,9 @@ static int testMboTensorOpMatVec()
 
 	one.re = 1.0;
 	one.im = 0.0;
+	a = one;
+	b.re = 0.0;
+	b.im = 0.0;
 
 	h1 = mboProdSpaceCreate(2);
 	h2 = mboProdSpaceCreate(0);
@@ -1100,7 +1118,7 @@ static int testMboTensorOpMatVec()
 	mboVecCreate(mboProdSpaceDim(h2), &x);
 	mboVecSet(&one, x);
 	mboTensorOpIdentity(h2, &A);
-	err = mboTensorOpMatVec(0, A, x, 0, x);
+	err = mboTensorOpMatVec(&a, A, x, &b, x);
 	CHK_EQUAL(err, MBO_SUCCESS, errs);
 	err = mboVecGetViewR(x, &arr);
 	CHK_EQUAL(err, MBO_SUCCESS, errs);
@@ -1113,7 +1131,7 @@ static int testMboTensorOpMatVec()
 
 	mboVecCreate(1l + mboProdSpaceDim(h2), &x);
 	mboTensorOpIdentity(h2, &A);
-	err = mboTensorOpMatVec(0, A, x, 0, x);
+	err = mboTensorOpMatVec(&a, A, x, &b, x);
 	CHK_EQUAL(err, MBO_DIMENSIONS_MISMATCH, errs);
 	mboTensorOpDestroy(&A);
 	mboVecDestroy(&x);
