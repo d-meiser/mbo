@@ -395,7 +395,6 @@ MBO_STATUS mboTensorOpMatVec(struct MboAmplitude *alpha, MboTensorOp a,
 	int i;
 	MBO_STATUS err;
 	MboVec tmp;
-	struct MboAmplitude one;
 
 	if (mboProdSpaceDim(a->space) != mboVecDim(x) ||
 	    mboProdSpaceDim(a->space) != mboVecDim(y)) {
@@ -411,9 +410,6 @@ MBO_STATUS mboTensorOpMatVec(struct MboAmplitude *alpha, MboTensorOp a,
 		if (err != MBO_SUCCESS) return err;
 	}
 	if (y == x) {
-		one.re = 1.0;
-		one.im = 0.0;
-		mboVecAXPY(&one, tmp, y);
 		mboVecDestroy(&tmp);
 	}
 	return MBO_SUCCESS;
@@ -1095,7 +1091,7 @@ static int testMboTensorOpMatVec()
 	MboProdSpace h1, h2;
 	MboVec x, y;
 	MboTensorOp A;
-	struct MboAmplitude a, b, one, *arr;
+	struct MboAmplitude a, b, one, result, *arr;
 	MBO_STATUS err;
 
 	one.re = 1.0;
@@ -1104,6 +1100,7 @@ static int testMboTensorOpMatVec()
 	b.re = 0.0;
 	b.im = 0.0;
 
+	/* set up spaces */
 	h1 = mboProdSpaceCreate(2);
 	h2 = mboProdSpaceCreate(0);
 	mboProdSpaceMul(h1, &h2);
@@ -1114,6 +1111,15 @@ static int testMboTensorOpMatVec()
 	h1 = mboProdSpaceCreate(2);
 	mboProdSpaceMul(h1, &h2);
 
+	/* mismatching dimensions */
+	mboVecCreate(1l + mboProdSpaceDim(h2), &x);
+	mboTensorOpIdentity(h2, &A);
+	err = mboTensorOpMatVec(&a, A, x, &b, x);
+	CHK_EQUAL(err, MBO_DIMENSIONS_MISMATCH, errs);
+	mboTensorOpDestroy(&A);
+	mboVecDestroy(&x);
+
+	/* x <- I * x + 0 * x */
 	mboVecCreate(mboProdSpaceDim(h2), &x);
 	mboVecSet(&one, x);
 	mboTensorOpIdentity(h2, &A);
@@ -1122,18 +1128,37 @@ static int testMboTensorOpMatVec()
 	err = mboVecGetViewR(x, &arr);
 	CHK_EQUAL(err, MBO_SUCCESS, errs);
 	for (i = 0; i < mboProdSpaceDim(h2); ++i) {
-		CHK_CLOSE(arr[i].re, 2.0, EPS, errs);
+		CHK_CLOSE(arr[i].re, 1.0, EPS, errs);
 		CHK_CLOSE(arr[i].im, 0.0, EPS, errs);
 	}
 	mboTensorOpDestroy(&A);
 	mboVecDestroy(&x);
 
-	mboVecCreate(1l + mboProdSpaceDim(h2), &x);
+	/* y <- a * I * x + b * y
+	 * expected result:
+	 * a * one * one + b * b */
+	mboVecCreate(mboProdSpaceDim(h2), &x);
+	a.re = 2.5;
+	a.im = 22.0;
+	mboVecSet(&one, x);
+	mboVecCreate(mboProdSpaceDim(h2), &y);
+	b.re = 3.0;
+	b.im = -1.7;
+	mboVecSet(&b, y);
+	result.re = a.re + b.re * b.re - b.im * b.im;
+	result.im = a.im + b.re * b.im + b.im * b.re;
 	mboTensorOpIdentity(h2, &A);
-	err = mboTensorOpMatVec(&a, A, x, &b, x);
-	CHK_EQUAL(err, MBO_DIMENSIONS_MISMATCH, errs);
+	err = mboTensorOpMatVec(&a, A, x, &b, y);
+	CHK_EQUAL(err, MBO_SUCCESS, errs);
+	err = mboVecGetViewR(y, &arr);
+	CHK_EQUAL(err, MBO_SUCCESS, errs);
+	for (i = 0; i < mboProdSpaceDim(h2); ++i) {
+		CHK_CLOSE(arr[i].re, result.re, EPS, errs);
+		CHK_CLOSE(arr[i].im, result.im, EPS, errs);
+	}
 	mboTensorOpDestroy(&A);
 	mboVecDestroy(&x);
+	mboVecDestroy(&y);
 
 	mboProdSpaceDestroy(&h1);
 	mboProdSpaceDestroy(&h2);

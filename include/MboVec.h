@@ -50,6 +50,8 @@ MBO_STATUS mboVecReleaseView(MboVec v, struct MboAmplitude **array);
  * */
 MBO_STATUS mboVecAXPY(struct MboAmplitude *a, MboVec x, MboVec y);
 
+MBO_STATUS mboVecSwap(MboVec x, MboVec y);
+
 /** @brief set vector to a constant */
 MBO_STATUS mboVecSet(struct MboAmplitude *a, MboVec x);
 

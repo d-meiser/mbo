@@ -104,6 +104,17 @@ MBO_STATUS mboVecAXPY(struct MboAmplitude* a, MboVec x, MboVec y)
 	return MBO_SUCCESS;
 }
 
+MBO_STATUS mboVecSwap(MboVec x, MboVec y)
+{
+	struct MboAmplitude *tmp;
+	if (x->dim != y->dim) return MBO_DIMENSIONS_MISMATCH;
+	if (x->mapped || y->mapped) return MBO_VEC_IN_USE;
+	tmp = y->array;
+	y->array = x->array;
+	x->array = tmp;
+	return MBO_SUCCESS;
+}
+
 MBO_STATUS mboVecSet(struct MboAmplitude* a, MboVec x)
 {
 	int i;
