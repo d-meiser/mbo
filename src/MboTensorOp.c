@@ -411,11 +411,10 @@ MBO_STATUS mboTensorOpMatVec(struct MboAmplitude *alpha, MboTensorOp a,
 		if (err != MBO_SUCCESS) return err;
 	}
 	if (y == x) {
-		mboVecDestroy(&tmp);
-	} else {
 		one.re = 1.0;
 		one.im = 0.0;
-		mboVecAXPY(&one, y, tmp);
+		mboVecAXPY(&one, tmp, y);
+		mboVecDestroy(&tmp);
 	}
 	return MBO_SUCCESS;
 }
