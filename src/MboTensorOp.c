@@ -1188,6 +1188,37 @@ static int testMboTensorOpMatVec()
 	mboVecDestroy(&y);
 	mboElemOpDestroy(&eop);
 
+	/* y <-  (I + s_minus(0)) * x */
+	mboVecCreate(mboProdSpaceDim(h2), &x);
+	a.re = 2.5;
+	a.im = 22.0;
+	mboVecSet(&a, x);
+	mboVecCreate(mboProdSpaceDim(h2), &y);
+	b.re = 3.0;
+	b.im = -1.7;
+	mboVecSet(&b, y);
+	mboTensorOpIdentity(h2, &A);
+	eop = mboSigmaMinus();
+	mboTensorOpAddTo(eop, 0, A);
+	b.re = 0.0;
+	b.im = 0.0;
+	err = mboTensorOpMatVec(&one, A, x, &b, y);
+	CHK_EQUAL(err, MBO_SUCCESS, errs);
+	err = mboVecGetViewR(y, &arr);
+	CHK_EQUAL(err, MBO_SUCCESS, errs);
+	for (i = 0; i < mboProdSpaceDim(h2) / 2; ++i) {
+		CHK_CLOSE(arr[i].re, 2.0 * a.re, EPS, errs);
+		CHK_CLOSE(arr[i].im, 2.0 * a.im, EPS, errs);
+	}
+	for (i = mboProdSpaceDim(h2) / 2; i < mboProdSpaceDim(h2); ++i) {
+		CHK_CLOSE(arr[i].re, a.re, EPS, errs);
+		CHK_CLOSE(arr[i].im, a.im, EPS, errs);
+	}
+	mboTensorOpDestroy(&A);
+	mboVecDestroy(&x);
+	mboVecDestroy(&y);
+	mboElemOpDestroy(&eop);
+
 	mboProdSpaceDestroy(&h1);
 	mboProdSpaceDestroy(&h2);
 
