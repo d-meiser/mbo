@@ -55,6 +55,8 @@ MBO_STATUS mboVecSwap(MboVec x, MboVec y);
 /** @brief set vector to a constant */
 MBO_STATUS mboVecSet(struct MboAmplitude *a, MboVec x);
 
+MBO_STATUS mboVecSetRandom(MboVec x);
+
 /** @brief Add outer product of vectors
  * @param n    Number of arrays.  n can be obtained from an MboProdSpace
  *             object by means of mboProdSpaceSize.

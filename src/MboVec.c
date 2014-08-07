@@ -125,6 +125,17 @@ MBO_STATUS mboVecSet(struct MboAmplitude* a, MboVec x)
 	return MBO_SUCCESS;
 }
 
+MBO_STATUS mboVecSetRandom(MboVec x)
+{
+	int i;
+	if (x->mapped) return MBO_VEC_IN_USE;
+	for (i = 0; i < x->dim; ++i) {
+		x->array[i].re = rand() / (double)RAND_MAX;
+		x->array[i].im = rand() / (double)RAND_MAX;
+	}
+	return MBO_SUCCESS;
+}
+
 MBO_STATUS mboVecKron(int n, int *dims, struct MboAmplitude **vecs, MboVec x)
 {
 	int i, dim;
@@ -336,6 +347,45 @@ static int testMboVecSet()
 	return errs;
 }
 
+static int testMboVecSetRandom()
+{
+	int errs = 0, d = 2, i;
+	MboVec x;
+	struct MboAmplitude *arr, zero;
+	MBO_STATUS err;
+
+	err = mboVecCreate(d, &x);
+	CHK_EQUAL(err, MBO_SUCCESS, errs);
+	err = mboVecGetViewR(x, &arr);
+	err = mboVecSetRandom(x);
+	CHK_EQUAL(err, MBO_VEC_IN_USE, errs);
+	err = mboVecReleaseView(x, &arr);
+	CHK_EQUAL(err, MBO_SUCCESS, errs);
+	err = mboVecDestroy(&x);
+	CHK_EQUAL(err, MBO_SUCCESS, errs);
+
+	err = mboVecCreate(d, &x);
+	CHK_EQUAL(err, MBO_SUCCESS, errs);
+	zero.re = 0;
+	zero.im = 0;
+	err = mboVecSet(&zero, x);
+	CHK_EQUAL(err, MBO_SUCCESS, errs);
+	err = mboVecSetRandom(x);
+	CHK_EQUAL(err, MBO_SUCCESS, errs);
+	err = mboVecGetViewR(x, &arr);
+	CHK_EQUAL(err, MBO_SUCCESS, errs);
+	for (i = 0; i < d; ++i) {
+		CHK_TRUE(arr[i].re != 0, errs);
+		CHK_TRUE(arr[i].im != 0, errs);
+	}
+	err = mboVecReleaseView(x, &arr);
+	CHK_EQUAL(err, MBO_SUCCESS, errs);
+	err = mboVecDestroy(&x);
+	CHK_EQUAL(err, MBO_SUCCESS, errs);
+
+	return errs;
+}
+
 static void buildArrays(int n, int *dims, struct MboAmplitude ***arrays)
 {
 	int i, j;
@@ -444,6 +494,7 @@ int mboVecTest()
 	errs += testMboVecGetViewR();
 	errs += testMboVecAXPY();
 	errs += testMboVecSet();
+	errs += testMboVecSetRandom();
 	errs += testMboVecKron();
 	errs += testMboVecDim();
 	return errs;
