@@ -450,7 +450,7 @@ void applyEmbeddings(int i, int numSpaces, int *dims, long blockSizeAfter,
 
 	if (numFactors > 0) {
 		nextI = embeddings->i;
-		blockSizeBefore = computeBlockSize(nextI - i, dims);
+		blockSizeBefore = computeBlockSize(nextI - i, dims + i);
 		blockSizeAfter /= (blockSizeBefore * (long)dims[nextI]);
 		entries = mboElemOpGetEntries(embeddings->op);
 		for (n = 0; n < blockSizeBefore; ++n) {
@@ -470,8 +470,7 @@ void applyEmbeddings(int i, int numSpaces, int *dims, long blockSizeAfter,
 			yarr += blockSizeAfter * (long)dims[nextI];
 		}
 	} else {
-		blockSizeBefore = computeBlockSize(numSpaces - i, dims + i);
-		for (n = 0; n < blockSizeBefore; ++n) {
+		for (n = 0; n < blockSizeAfter; ++n) {
 			yarr[n].re +=
 			    alpha.re * xarr[n].re - alpha.im * xarr[n].im;
 			yarr[n].im +=
@@ -1271,10 +1270,13 @@ static int testApplyEmbeddings()
 	int errs = 0, i;
 	int dims[] = {2, 3, 5, 2};
 	long blockSize;
-	struct MboAmplitude alpha, x[computeBlockSize(4, dims)],
+	struct MboAmplitude alpha, expectedResult, x[computeBlockSize(4, dims)],
 	    y[computeBlockSize(4, dims)];
 	struct Embedding *embeddings;
-	MboElemOp eop;
+	MboElemOp sz, sp;
+
+	sz = mboSigmaZ();
+	sp = mboSigmaPlus();
 
 	bzero(x, sizeof(x));
 	bzero(y, sizeof(y));
@@ -1287,9 +1289,8 @@ static int testApplyEmbeddings()
 	}
 
 	embeddings = malloc(sizeof(*embeddings));
-	eop = mboSigmaZ();
 	embeddings[0].i = 3;
-	embeddings[0].op = eop;
+	embeddings[0].op = sz;
 	alpha.re = 2.0;
 	alpha.im = 3.0;
 	for (i = 0; i < computeBlockSize(4, dims); ++i) {
@@ -1300,15 +1301,94 @@ static int testApplyEmbeddings()
 			embeddings, x, y);
 	for (i = 0; i < computeBlockSize(4, dims); ++i) {
 		if (i & 1l) {
-			CHK_CLOSE(y[i].re, alpha.re, EPS, errs);
-			CHK_CLOSE(y[i].im, alpha.im, EPS, errs);
+			expectedResult.re = alpha.re;
+			expectedResult.im = alpha.im;
 		} else {
-			CHK_CLOSE(y[i].re, -alpha.re, EPS, errs);
-			CHK_CLOSE(y[i].im, -alpha.im, EPS, errs);
+			expectedResult.re = -alpha.re;
+			expectedResult.im = -alpha.im;
 		}
+		CHK_CLOSE(y[i].re, expectedResult.re, EPS, errs);
+		CHK_CLOSE(y[i].im, expectedResult.im, EPS, errs);
 	}
-	mboElemOpDestroy(&eop);
 	free(embeddings);
+
+	embeddings = malloc(sizeof(*embeddings));
+	embeddings[0].i = 1;
+	embeddings[0].op = sz;
+	alpha.re = 2.0;
+	alpha.im = 3.0;
+	for (i = 0; i < computeBlockSize(4, dims); ++i) {
+		x[i].re = 1.0;
+		x[i].im = 0.0;
+	}
+	for (i = 0; i < computeBlockSize(4, dims); ++i) {
+		y[i].re = 0.0;
+		y[i].im = 0.0;
+	}
+	applyEmbeddings(0, 4, dims, computeBlockSize(4, dims), alpha, 1,
+			embeddings, x, y);
+	for (i = 0; i < computeBlockSize(4, dims); ++i) {
+		switch ((i / computeBlockSize(2, dims + 2)) % dims[1]) {
+		case 0:
+			expectedResult.re = -alpha.re;
+			expectedResult.im = -alpha.im;
+			break;
+		case 1:
+			expectedResult.re = alpha.re;
+			expectedResult.im = alpha.im;
+			break;
+		default:
+			expectedResult.re = 0;
+			expectedResult.im = 0;
+		}
+		CHK_CLOSE(y[i].re, expectedResult.re, EPS, errs);
+		CHK_CLOSE(y[i].im, expectedResult.im, EPS, errs);
+	}
+	free(embeddings);
+
+	embeddings = malloc(2 * sizeof(*embeddings));
+	embeddings[0].i = 0;
+	embeddings[0].op = sz;
+	embeddings[1].i = 2;
+	embeddings[1].op = sp;
+	alpha.re = 2.0;
+	alpha.im = 3.0;
+	for (i = 0; i < computeBlockSize(4, dims); ++i) {
+		x[i].re = 1.0;
+		x[i].im = 0.0;
+	}
+	for (i = 0; i < computeBlockSize(4, dims); ++i) {
+		y[i].re = 0.0;
+		y[i].im = 0.0;
+	}
+	applyEmbeddings(0, 4, dims, computeBlockSize(4, dims), alpha, 2,
+			embeddings, x, y);
+	for (i = 0; i < computeBlockSize(4, dims); ++i) {
+		if ((i / computeBlockSize(1, dims + 3)) % dims[2] == 1) {
+			switch ((i / computeBlockSize(3, dims + 1)) % dims[0]) {
+			case 0:
+				expectedResult.re = -alpha.re;
+				expectedResult.im = -alpha.im;
+				break;
+			case 1:
+				expectedResult.re = alpha.re;
+				expectedResult.im = alpha.im;
+				break;
+			default:
+				expectedResult.re = 0;
+				expectedResult.im = 0;
+			}
+		} else {
+			expectedResult.re = 0;
+			expectedResult.im = 0;
+		}
+		CHK_CLOSE(y[i].re, expectedResult.re, EPS, errs);
+		CHK_CLOSE(y[i].im, expectedResult.im, EPS, errs);
+	}
+	free(embeddings);
+
+	mboElemOpDestroy(&sz);
+	mboElemOpDestroy(&sp);
 
 	return errs;
 }
