@@ -1268,17 +1268,47 @@ static int testMboTensorOpMatVec()
 
 static int testApplyEmbeddings()
 {
-	int errs = 0;
+	int errs = 0, i;
 	int dims[] = {2, 3, 5, 2};
 	long blockSize;
-	struct MboAmplitude x[computeBlockSize(4, dims)],
+	struct MboAmplitude alpha, x[computeBlockSize(4, dims)],
 	    y[computeBlockSize(4, dims)];
+	struct Embedding *embeddings;
+	MboElemOp eop;
 
 	bzero(x, sizeof(x));
 	bzero(y, sizeof(y));
 
 	blockSize = computeBlockSize(3, dims + 1);
 	applyEmbeddings(0, 4, dims, blockSize, x[0], 0, 0, x, y);
+	for (i = 0; i < computeBlockSize(4, dims); ++i) {
+		CHK_CLOSE(y[i].re, 0, EPS, errs);
+		CHK_CLOSE(y[i].im, 0, EPS, errs);
+	}
+
+	embeddings = malloc(sizeof(*embeddings));
+	eop = mboSigmaZ();
+	embeddings[0].i = 3;
+	embeddings[0].op = eop;
+	alpha.re = 2.0;
+	alpha.im = 3.0;
+	for (i = 0; i < computeBlockSize(4, dims); ++i) {
+		x[i].re = 1.0;
+		x[i].im = 0.0;
+	}
+	applyEmbeddings(0, 4, dims, computeBlockSize(4, dims), alpha, 1,
+			embeddings, x, y);
+	for (i = 0; i < computeBlockSize(4, dims); ++i) {
+		if (i & 1l) {
+			CHK_CLOSE(y[i].re, alpha.re, EPS, errs);
+			CHK_CLOSE(y[i].im, alpha.im, EPS, errs);
+		} else {
+			CHK_CLOSE(y[i].re, -alpha.re, EPS, errs);
+			CHK_CLOSE(y[i].im, -alpha.im, EPS, errs);
+		}
+	}
+	mboElemOpDestroy(&eop);
+	free(embeddings);
 
 	return errs;
 }
