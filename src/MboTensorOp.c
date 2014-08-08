@@ -1087,7 +1087,7 @@ static int testMboTensorOpMatVec()
 	MboProdSpace h1, h2;
 	MboVec x, y;
 	MboTensorOp A, B, C;
-	struct MboAmplitude a, b, one, result, *arr;
+	struct MboAmplitude a, b, one, result, *arr, expectedResult;
 	MboElemOp eop;
 	MBO_STATUS err;
 
@@ -1239,8 +1239,6 @@ static int testMboTensorOpMatVec()
 	mboTensorOpMul(A, B, &C);
 	mboTensorOpDestroy(&A);
 	mboTensorOpDestroy(&B);
-	b.re = 0.0;
-	b.im = 0.0;
 	err = mboTensorOpMatVec(&one, C, x, &b, y);
 	CHK_EQUAL(err, MBO_SUCCESS, errs);
 	err = mboVecGetViewR(y, &arr);
@@ -1248,17 +1246,22 @@ static int testMboTensorOpMatVec()
 	dims = malloc(3 * sizeof(*dims));
 	mboProdSpaceGetDims(h2, 3, dims);
 	for (i = 0; i < mboProdSpaceDim(h2); ++i) {
-		if ((i % (dims[1] * dims[2]) == 0) && (i % dims[2] == 1)) {
-			CHK_CLOSE(arr[i].re, a.re, EPS, errs);
-			CHK_CLOSE(arr[i].im, a.im, EPS, errs);
-		} else {
-			CHK_CLOSE(arr[i].re, 0.0, EPS, errs);
-			CHK_CLOSE(arr[i].im, 0.0, EPS, errs);
+		expectedResult.re = b.re * b.re - b.im * b.im;
+		expectedResult.im = b.re * b.im + b.im * b.re;
+		if (((i / computeBlockSize(2, dims + 1)) % dims[0] == 0) &&
+		    ((i / computeBlockSize(1, dims + 2)) % dims[1] == 1)) {
+			expectedResult.re += a.re;
+			expectedResult.im += a.im;
 		}
+		printf("%d %lf %lf %lf %lf\n", i, arr[i].re, arr[i].im,
+		       expectedResult.re, expectedResult.im);
+		CHK_CLOSE(arr[i].re, expectedResult.re, EPS, errs);
+		CHK_CLOSE(arr[i].im, expectedResult.im, EPS, errs);
 	}
 	free(dims);
 	mboVecDestroy(&x);
 	mboVecDestroy(&y);
+	mboTensorOpDestroy(&C);
 	mboProdSpaceDestroy(&h1);
 	mboProdSpaceDestroy(&h2);
 
@@ -1408,7 +1411,7 @@ int mboTensorOpTest()
 	errs += testMboTensorOpCheck();
 	errs += testMboTensorOpKron();
 	errs += testKronSimpleTOps();
-	//errs += testMboTensorOpMatVec();
+	errs += testMboTensorOpMatVec();
 	errs += testApplyEmbeddings();
 	return errs;
 }
