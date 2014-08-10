@@ -44,6 +44,7 @@ MBO_STATUS mboVecDestroy(MboVec *v)
 
 MBO_STATUS mboVecDuplicate(MboVec x, MboVec *y)
 {
+	if (x->mapped) return MBO_VEC_IN_USE;
 	MBO_STATUS err = mboVecCreate(mboVecDim(x), y);
 	if (err != MBO_SUCCESS) return err;
 	memcpy((*y)->array, x->array, mboVecDim(x) * sizeof(*x->array));
@@ -386,6 +387,33 @@ static int testMboVecSetRandom()
 	return errs;
 }
 
+static int testMboVecDuplicate()
+{
+	int errs = 0, err, i, d = 5;
+	MboVec x, y;
+	struct MboAmplitude *arr;
+
+	mboVecCreate(d, &x);
+	mboVecSetRandom(x);
+
+	mboVecGetViewR(x, &arr);
+	err = mboVecDuplicate(x, &y);
+	CHK_EQUAL(err, MBO_VEC_IN_USE, errs);
+	mboVecReleaseView(x, &arr);
+
+	err = mboVecDuplicate(x, &y);
+	CHK_EQUAL(err, MBO_SUCCESS, errs);
+	CHK_EQUAL(x->dim, y->dim, errs);
+	for (i = 0; i < x->dim; ++i) {
+		CHK_CLOSE(x->array[i].re, y->array[i].re, EPS, errs);
+		CHK_CLOSE(x->array[i].im, y->array[i].im, EPS, errs);
+	}
+	mboVecDestroy(&y);
+	mboVecDestroy(&x);
+
+	return errs;
+}
+
 static void buildArrays(int n, int *dims, struct MboAmplitude ***arrays)
 {
 	int i, j;
@@ -495,6 +523,7 @@ int mboVecTest()
 	errs += testMboVecAXPY();
 	errs += testMboVecSet();
 	errs += testMboVecSetRandom();
+	errs += testMboVecDuplicate();
 	errs += testMboVecKron();
 	errs += testMboVecDim();
 	return errs;
