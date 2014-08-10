@@ -16,17 +16,17 @@ int main()
 	const int nPhotons = 30;
 	MboTensorOp inhomogeneousJz;
 	MboTensorOp jMinus;
-  struct MboAmplitude tmp;
+	struct MboAmplitude tmp;
 
 	mboElemOpCreate(&sm);
-  tmp.re = 1.0;
-  tmp.im = 0.0;
+	tmp.re = 1.0;
+	tmp.im = 0.0;
 	mboElemOpAddTo(0, 1, &tmp, &sm);
 	mboElemOpCreate(&sp);
 	mboElemOpAddTo(1, 0, &tmp, &sp);
 	mboElemOpCreate(&sz);
 	mboElemOpAddTo(1, 1, &tmp, &sz);
-  tmp.re = -1.0;
+	tmp.re = -1.0;
 	mboElemOpAddTo(0, 0, &tmp, &sz);
 
 	hSingleAtom = mboProdSpaceCreate(2);
@@ -41,7 +41,7 @@ int main()
 
 	mboTensorOpNull(hAtoms, &inhomogeneousJz);
 	for (int i = 0; i < nAtoms; ++i) {
-    tmp.re = omega(i);
+		tmp.re = omega(i);
 		mboTensorOpAddScaledTo(&tmp, sz, i, inhomogeneousJz);
 	}
 
