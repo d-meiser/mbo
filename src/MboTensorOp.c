@@ -678,6 +678,45 @@ static int testGatherIthEmbedding()
 	return errs;
 }
 
+static int intCmp(const void *p1, const void *p2)
+{
+	int *i1 = (int *)p1, *i2 = (int *)p2;
+	return *i1 - *i2;
+}
+
+static int testGatherAllEmbeddings()
+{
+	int errs = 0, i, n = 12, is[] = { 2, 4, 3, 4, 4, 5, 6, 7, 9, 5, 6, 2 },
+	    isAfterGather[7];
+	struct Embedding *embeddings = malloc(n * sizeof(*embeddings));
+
+	for (i = 0; i < n; ++i) {
+		embeddings[i].i = is[i];
+		mboElemOpCreate(&embeddings[i].op);
+	}
+
+	gatherAllEmbeddings(&n, &embeddings);
+	CHK_EQUAL(n, 7, errs);
+	for (i = 0; i < n; ++i) {
+		isAfterGather[i] = embeddings[i].i;
+	}
+	qsort(isAfterGather, n, sizeof(*isAfterGather), intCmp);
+	CHK_EQUAL(isAfterGather[0], 2, errs);
+	CHK_EQUAL(isAfterGather[1], 3, errs);
+	CHK_EQUAL(isAfterGather[2], 4, errs);
+	CHK_EQUAL(isAfterGather[3], 5, errs);
+	CHK_EQUAL(isAfterGather[4], 6, errs);
+	CHK_EQUAL(isAfterGather[5], 7, errs);
+	CHK_EQUAL(isAfterGather[6], 9, errs);
+
+	for (i = 0; i < n; ++i) {
+		mboElemOpDestroy(&embeddings[i].op);
+	}
+	free(embeddings);
+
+	return errs;
+}
+
 static int testMboTensorOpMul()
 {
 	int errs = 0;
@@ -1483,6 +1522,7 @@ int mboTensorOpTest()
 	errs += testMboTensorOpAddScaledTo();
 	errs += testFindEmbedding();
 	errs += testGatherIthEmbedding();
+	errs += testGatherAllEmbeddings();
 	errs += testMboTensorOpMul();
 	errs += testMboTensorOpPlus();
 	errs += testMboTensorOpScale();
