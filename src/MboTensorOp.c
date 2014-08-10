@@ -479,26 +479,27 @@ void applyEmbeddings(int i, int numSpaces, int *dims, long blockSizeAfter,
 	}
 }
 
-static int intcmp(const void *i1, const void *i2)
+void gatherAllEmbeddings(int *numEmbeddings, struct Embedding **embeddings)
 {
-	int j1 = *(int*)i1, j2 = *(int*)i2;
-	return j1 - j2;
-}
-
-void sortEmbeddings(int *numEmbeddings, struct Embedding **embeddings)
-{
-	int i = 0, prev, nInitial = *numEmbeddings;
-	int is[nInitial];
+	int is[*numEmbeddings], nInitial = *numEmbeddings, i;
 	for (i = 0; i < nInitial; ++i) {
 		is[i] = (*embeddings)[i].i;
 	}
-	qsort(is, nInitial, sizeof(*is), intcmp);
-	prev = -1;
 	for (i = 0; i < nInitial; ++i) {
-		if (is[i] == prev) continue;
 		gatherIthEmbedding(is[i], numEmbeddings, embeddings);
-		prev = is[i];
 	}
+}
+
+static int embeddingCmp(const void *p1, const void *p2)
+{
+	struct Embedding *e1 = (struct Embedding *)p1;
+	struct Embedding *e2 = (struct Embedding *)p2;
+	return e1->i - e2->i;
+}
+
+void sortEmbeddings(int numEmbeddings, struct Embedding *embeddings)
+{
+	qsort(embeddings, numEmbeddings, sizeof(*embeddings), embeddingCmp);
 }
 
 long computeBlockSize(int N, int *dims)
@@ -1404,7 +1405,7 @@ int testSortEmbeddings()
 
 	numEmbeddings = 0;
 	embeddings = 0;
-	sortEmbeddings(&numEmbeddings, &embeddings); 
+	sortEmbeddings(numEmbeddings, embeddings); 
 	CHK_EQUAL(numEmbeddings, 0, errs);
 
 	numEmbeddings = 1;
@@ -1413,7 +1414,7 @@ int testSortEmbeddings()
 	for (i = 0; i < numEmbeddings; ++i) {
 		mboElemOpCreate(&embeddings[i].op);
 	}
-	sortEmbeddings(&numEmbeddings, &embeddings);
+	sortEmbeddings(numEmbeddings, embeddings);
 	CHK_EQUAL(numEmbeddings, 1, errs);
 	CHK_EQUAL(embeddings[0].i, 3, errs);
 	for (i = 0; i < numEmbeddings; ++i) {
@@ -1421,19 +1422,43 @@ int testSortEmbeddings()
 	}
 	free(embeddings);
 
+	/* With duplicates */
 	numEmbeddings = 6;
 	embeddings = malloc(numEmbeddings * sizeof(*embeddings));
 	embeddings[0].i = 3;
-	embeddings[0].i = 4;
-	embeddings[0].i = 2;
-	embeddings[0].i = 4;
-	embeddings[0].i = 6;
+	embeddings[1].i = 4;
+	embeddings[2].i = 2;
+	embeddings[3].i = 4;
+	embeddings[4].i = 4;
+	embeddings[5].i = 0;
 	for (i = 0; i < numEmbeddings; ++i) {
 		mboElemOpCreate(&embeddings[i].op);
 	}
-	sortEmbeddings(&numEmbeddings, &embeddings);
+	sortEmbeddings(numEmbeddings, embeddings);
 	for (i = 1; i < numEmbeddings; ++i) {
 		CHK_TRUE(embeddings[i].i >= embeddings[i - 1].i, errs);
+	}
+	for (i = 0; i < numEmbeddings; ++i) {
+		destroyEmbedding(&embeddings[i]);
+	}
+	free(embeddings);
+
+	/* Without duplicates we end up with an ordered array */
+	numEmbeddings = 6;
+	embeddings = malloc(numEmbeddings * sizeof(*embeddings));
+	embeddings[0].i = 3;
+	embeddings[1].i = 4;
+	embeddings[2].i = 2;
+	embeddings[3].i = 12;
+	embeddings[4].i = 15;
+	embeddings[5].i = 7;
+	for (i = 0; i < numEmbeddings; ++i) {
+		mboElemOpCreate(&embeddings[i].op);
+	}
+	sortEmbeddings(numEmbeddings, embeddings);
+	for (i = 1; i < numEmbeddings; ++i) {
+		printf("%d %d\n", i, embeddings[i].i);
+		CHK_TRUE(embeddings[i].i > embeddings[i - 1].i, errs);
 	}
 	for (i = 0; i < numEmbeddings; ++i) {
 		destroyEmbedding(&embeddings[i]);
