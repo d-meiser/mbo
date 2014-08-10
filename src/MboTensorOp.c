@@ -45,8 +45,13 @@ static void copyEmbedding(struct Embedding *dest, struct Embedding *src);
 static int gatherIthEmbedding(int i, int *numEmbeddings,
 			      struct Embedding **embeddings);
 /**
+ * @brief Merge embeddings for each slot
+ * Effectively calls gatherIthEmbedding for each index in the *embeddings array.
+ * */
+void gatherAllEmbeddings(int *numEmbeddings, struct Embedding **embeddings);
+/**
  * @brief sort embeddings in ascending order according to i */
-static void sortEmbeddings(int *numEmbeddings, struct Embedding **a);
+static void sortEmbeddings(int numEmbeddings, struct Embedding *a);
 static void destroySimpleTOp(struct SimpleTOp *term);
 static void multiplySimpleTOps(int, struct SimpleTOp *sa, struct SimpleTOp *sb);
 static void kronSimpleTOps(struct SimpleTOp *a, int numSpacesInA,
@@ -422,7 +427,8 @@ MBO_STATUS applySimpleTOp(MboProdSpace h, struct MboAmplitude *alpha,
 	long blockSize;
 	struct MboAmplitude *xarr, *yarr;
 
-	sortEmbeddings(&a->numFactors, &a->embeddings);
+	gatherAllEmbeddings(&a->numFactors, &a->embeddings);
+	sortEmbeddings(a->numFactors, a->embeddings);
 
 	numSpaces = mboProdSpaceSize(h);
 	blockSize = mboProdSpaceDim(h);
