@@ -1529,7 +1529,7 @@ int mboTensorOpTest()
 	errs += testMboTensorOpCheck();
 	errs += testMboTensorOpKron();
 	errs += testKronSimpleTOps();
-	//errs += testMboTensorOpMatVec();
+	errs += testMboTensorOpMatVec();
 	errs += testApplyEmbeddings();
 	errs += testSortEmbeddings();
 	return errs;
