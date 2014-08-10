@@ -1412,20 +1412,18 @@ static int testApplyEmbeddings()
 	}
 	applyEmbeddings(0, 4, dims, computeBlockSize(4, dims), alpha, 2,
 			embeddings, x, y);
+	/* Make sure that dim of first space is 2.  Otherwise the expected
+	 * results are not calculated correctly. */
+	CHK_EQUAL(dims[0], 2, errs);
 	for (i = 0; i < computeBlockSize(4, dims); ++i) {
 		if ((i / computeBlockSize(1, dims + 3)) % dims[2] == 1) {
-			switch ((i / computeBlockSize(3, dims + 1)) % dims[0]) {
-			case 0:
+			if ((i / computeBlockSize(3, dims + 1)) % dims[0]) {
+				expectedResult.re = alpha.re;
+				expectedResult.im = alpha.im;
+			} else {
 				expectedResult.re = -alpha.re;
 				expectedResult.im = -alpha.im;
 				break;
-			case 1:
-				expectedResult.re = alpha.re;
-				expectedResult.im = alpha.im;
-				break;
-			default:
-				expectedResult.re = 0;
-				expectedResult.im = 0;
 			}
 		} else {
 			expectedResult.re = 0;
