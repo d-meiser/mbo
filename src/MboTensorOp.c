@@ -68,6 +68,7 @@ static void applyEmbeddings(int i, int numSpaces, int *dims, long blockSize,
 			    struct Embedding *embeddings,
 			    struct MboAmplitude *xarr,
 			    struct MboAmplitude *yarr);
+static double flopsSimpleTOp(int numSpaces, int *dims, struct SimpleTOp *op);
 
 /**
    Data structure for tensor product operators.
@@ -420,6 +421,19 @@ MBO_STATUS mboTensorOpMatVec(struct MboAmplitude *alpha, MboTensorOp a,
 	return MBO_SUCCESS;
 }
 
+double mboTensorOpFlops(MboTensorOp a)
+{
+	int i, numSpaces, dims[mboProdSpaceSize(a->space)];
+	double flops = 0;
+
+	numSpaces = mboProdSpaceSize(a->space);
+	mboProdSpaceGetDims(a->space, numSpaces, dims);
+	for (i = 0; i < a->numTerms; ++i) {
+		flops += flopsSimpleTOp(numSpaces, dims, a->sum + i);
+	}
+	return flops;
+}
+
 MBO_STATUS applySimpleTOp(MboProdSpace h, struct MboAmplitude *alpha,
 			  struct SimpleTOp *a, MboVec x, MboVec y)
 {
@@ -516,6 +530,26 @@ long computeBlockSize(int N, int *dims)
 		blockSize *= (long)dims[i];
 	}
 	return blockSize;
+}
+
+double flopsSimpleTOp(int numSpaces, int *dims, struct SimpleTOp *a)
+{
+	int i, j;
+	double flops;
+
+	gatherAllEmbeddings(&a->numFactors, &a->embeddings);
+	sortEmbeddings(a->numFactors, a->embeddings);
+
+	flops = 1;
+	for (i = 0; i < numSpaces; ++i) {
+		j = gatherIthEmbedding(i, &a->numFactors, &a->embeddings);
+		if (j < 0) {
+			flops *= dims[i];
+		} else {
+			flops *= mboElemOpNumEntries(a->embeddings[j].op);
+		}
+	}
+	return flops * 8.0;
 }
 
 /*
@@ -1508,6 +1542,58 @@ int testSortEmbeddings()
 	return errs;
 }
 
+static int testMboTensorOpFlops()
+{
+	int errs = 0;
+	MboTensorOp a;
+	MboElemOp sz;
+	MboProdSpace h, h1;
+	double flops;
+
+	h = mboProdSpaceCreate(2);
+	mboTensorOpNull(h, &a);
+	flops = mboTensorOpFlops(a);
+	CHK_CLOSE(flops, 0.0, EPS, errs);
+	mboTensorOpDestroy(&a);
+	mboProdSpaceDestroy(&h);
+
+	h = mboProdSpaceCreate(5);
+	mboTensorOpIdentity(h, &a);
+	flops = mboTensorOpFlops(a);
+	CHK_CLOSE(flops, 5 * 8, EPS, errs);
+	mboTensorOpDestroy(&a);
+	mboProdSpaceDestroy(&h);
+
+	h1 = mboProdSpaceCreate(5);
+	h = mboProdSpaceCreate(0);
+	mboProdSpaceMul(h1, &h);
+	mboProdSpaceMul(h1, &h);
+	mboProdSpaceMul(h1, &h);
+	mboTensorOpIdentity(h, &a);
+	flops = mboTensorOpFlops(a);
+	CHK_CLOSE(flops, 5 * 5 * 5 * 8, EPS, errs);
+	mboTensorOpDestroy(&a);
+	mboProdSpaceDestroy(&h);
+	mboProdSpaceDestroy(&h1);
+
+	h1 = mboProdSpaceCreate(5);
+	h = mboProdSpaceCreate(0);
+	mboProdSpaceMul(h1, &h);
+	mboProdSpaceMul(h1, &h);
+	mboProdSpaceMul(h1, &h);
+	mboTensorOpIdentity(h, &a);
+	sz = mboSigmaZ();
+	mboTensorOpAddTo(sz, 0, a);
+	flops = mboTensorOpFlops(a);
+	CHK_CLOSE(flops, (5 * 5 * 5 + 2 * 5 * 5) * 8, EPS, errs);
+	mboElemOpDestroy(&sz);
+	mboTensorOpDestroy(&a);
+	mboProdSpaceDestroy(&h);
+	mboProdSpaceDestroy(&h1);
+
+	return errs;
+}
+
 int mboTensorOpTest()
 {
 	int errs = 0;
@@ -1527,5 +1613,6 @@ int mboTensorOpTest()
 	errs += testMboTensorOpMatVec();
 	errs += testApplyEmbeddings();
 	errs += testSortEmbeddings();
+	errs += testMboTensorOpFlops();
 	return errs;
 }

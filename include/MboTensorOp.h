@@ -88,6 +88,14 @@ void mboTensorOpKron(MboTensorOp a, MboTensorOp b, MboTensorOp *c);
 MBO_STATUS mboTensorOpMatVec(struct MboAmplitude *alpha, MboTensorOp a,
 			     MboVec x, struct MboAmplitude *beta, MboVec y);
 
+/** @brief Returns an estimate for the number of floating point operations in a
+ *         MatVec.
+ *
+ * A complex multiply-add is counted as 8 floating point operations.
+ *
+ * @param a The tensor operator for which the flops are to be computed. */
+double mboTensorOpFlops(MboTensorOp a);
+
 /** @brief Check integrity of tensor operator.
  * Returns the number of errors.*/
 int mboTensorOpCheck(MboTensorOp);
