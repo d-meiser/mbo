@@ -73,6 +73,10 @@ int main()
 
 	printf("Dimension of total Hilbert Space: %lld\n",
 	       mboProdSpaceDim(hTot));
+	printf("GFLOPs per operator application (estimated):  %lf\n",
+	       mboTensorOpFlops(H) / (double)(1 << 30));
+	printf("Total GFLOPs (estimated):  %lf\n",
+	       (1 + numIter) * mboTensorOpFlops(H) / (double)(1 << 30));
 
 	mboVecCreate(mboProdSpaceDim(hTot), &x);
 	mboVecCreate(mboProdSpaceDim(hTot), &y);
