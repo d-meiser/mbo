@@ -1299,8 +1299,6 @@ static int testMboTensorOpMatVec()
 			expectedResult.re += a.re;
 			expectedResult.im += a.im;
 		}
-		printf("%d %lf %lf %lf %lf\n", i, arr[i].re, arr[i].im,
-		       expectedResult.re, expectedResult.im);
 		CHK_CLOSE(arr[i].re, expectedResult.re, EPS, errs);
 		CHK_CLOSE(arr[i].im, expectedResult.im, EPS, errs);
 	}
@@ -1500,7 +1498,6 @@ int testSortEmbeddings()
 	}
 	sortEmbeddings(numEmbeddings, embeddings);
 	for (i = 1; i < numEmbeddings; ++i) {
-		printf("%d %d\n", i, embeddings[i].i);
 		CHK_TRUE(embeddings[i].i > embeddings[i - 1].i, errs);
 	}
 	for (i = 0; i < numEmbeddings; ++i) {
