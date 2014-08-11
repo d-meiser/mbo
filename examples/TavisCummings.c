@@ -69,7 +69,7 @@ int main()
 	mboTensorOpKron(A, jPlus, &H);
 	mboTensorOpKron(Ad, jMinus, &H);
 
-	printf("Dimension of total Hilbert Space: %ld\n",
+	printf("Dimension of total Hilbert Space: %lld\n",
 	       mboProdSpaceDim(hTot));
 
 	mboVecCreate(mboProdSpaceDim(hTot), &x);
