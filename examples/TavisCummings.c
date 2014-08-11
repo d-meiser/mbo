@@ -4,6 +4,7 @@
 static const int nAtoms = 10;
 static const int nPhotons = 30;
 static const double omegaC = 2.345e0;
+static const int numIter = 0;
 
 static double omega(int i);
 
@@ -15,11 +16,12 @@ int main()
 	    H;
 	struct MboAmplitude tmp;
 	MboVec x, y;
+	int i;
 
 	/* build various Hilbert spaces */
 	hSingleAtom = mboProdSpaceCreate(2);
 	hAtoms = mboProdSpaceCreate(0);
-	for (int i = 0; i < nAtoms; ++i) {
+	for (i = 0; i < nAtoms; ++i) {
 		mboProdSpaceMul(hSingleAtom, &hAtoms);
 	}
 	hField = mboProdSpaceCreate(nPhotons + 1);
@@ -78,6 +80,9 @@ int main()
 	tmp.re = 1.0;
 	tmp.im = 0.0;
 	mboTensorOpMatVec(&tmp, H, x, &tmp, y);
+	for (i = 0; i < numIter; ++i) {
+		mboTensorOpMatVec(&tmp, H, x, &tmp, y);
+	}
 
 	/* Release all resources */
 	mboElemOpDestroy(&sm);
