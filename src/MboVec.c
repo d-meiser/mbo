@@ -128,6 +128,18 @@ MBO_STATUS mboVecDot(MboVec x, MboVec y, struct MboAmplitude *result)
 	return MBO_SUCCESS;
 }
 
+MBO_STATUS mboVecUnitVector(long n, MboVec x)
+{
+	long i;
+	if (n < 0 || n >= x->dim) return MBO_ILLEGAL_DIMENSION;
+	if (x->mapped) return MBO_VEC_IN_USE;
+	for (i = 0; i < x->dim; ++i) {
+		x->array[i].re = (i == n) ? 1.0 : 0.0;
+		x->array[i].im = 0.0;
+	}
+	return MBO_SUCCESS;
+}
+
 MBO_STATUS mboVecSwap(MboVec x, MboVec y)
 {
 	struct MboAmplitude *tmp;
@@ -729,6 +741,39 @@ int testMboVecDot()
 	return errs;
 }
 
+int testMboVecUnitVector()
+{
+	int errs = 0;
+	MBO_STATUS err;
+	MboVec x;
+	struct MboAmplitude *xarr;
+
+	mboVecCreate(2, &x);
+	err = mboVecUnitVector(2, x);
+	CHK_EQUAL(err, MBO_ILLEGAL_DIMENSION, errs);
+	mboVecDestroy(&x);
+
+	mboVecCreate(2, &x);
+	mboVecGetViewRW(x, &xarr);
+	err = mboVecUnitVector(1, x);
+	CHK_EQUAL(err, MBO_VEC_IN_USE, errs);
+	mboVecReleaseView(x, &xarr);
+	mboVecDestroy(&x);
+
+	mboVecCreate(2, &x);
+	err = mboVecUnitVector(1, x);
+	CHK_EQUAL(err, MBO_SUCCESS, errs);
+	mboVecGetViewRW(x, &xarr);
+	CHK_CLOSE(xarr[0].re, 0, EPS, errs);
+	CHK_CLOSE(xarr[0].im, 0, EPS, errs);
+	CHK_CLOSE(xarr[1].re, 1, EPS, errs);
+	CHK_CLOSE(xarr[1].im, 0, EPS, errs);
+	mboVecReleaseView(x, &xarr);
+	mboVecDestroy(&x);
+
+	return errs;
+}
+
 int mboVecTest()
 {
 	int errs = 0;
@@ -746,6 +791,7 @@ int mboVecTest()
 	errs += testMboVecMap();
 	errs += testBumpIndices();
 	errs += testMboVecDot();
+	errs += testMboVecUnitVector();
 	return errs;
 }
 

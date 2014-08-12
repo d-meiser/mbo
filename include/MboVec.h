@@ -25,6 +25,15 @@ MBO_STATUS mboVecCreate(long dim, MboVec *v);
 /** @brief Release all resources of a MboVec */
 MBO_STATUS mboVecDestroy(MboVec *v);
 
+/** @brief Fill vector with nth unit vector
+ * Sets the nth entry in the vector to 1 and all other entries to zero.
+ * @param n Dimension in vector to set to 1.
+ * @param v The vector to be filled by the unit vector. v must have been
+ *          previously created with mboVecCreate.
+ * @sa mboVecCreate
+ * */
+MBO_STATUS mboVecUnitVector(long n, MboVec v);
+
 /** @brief Get dimension of vector */
 long mboVecDim(MboVec v);
 
