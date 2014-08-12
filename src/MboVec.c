@@ -105,6 +105,29 @@ MBO_STATUS mboVecAXPY(struct MboAmplitude* a, MboVec x, MboVec y)
 	return MBO_SUCCESS;
 }
 
+MBO_STATUS mboVecDot(MboVec x, MboVec y, struct MboAmplitude *result)
+{
+	struct MboAmplitude *xarr, *yarr;
+	int i;
+	MBO_STATUS err;
+
+	if (x->dim != y->dim) return MBO_DIMENSIONS_MISMATCH;
+
+	err = mboVecGetViewR(x, &xarr);
+	if (err) return err;
+	err = mboVecGetViewR(y, &yarr);
+	if (err) return err;
+
+	result->re = 0;
+	result->im = 0;
+	for (i = 0; i < x->dim; ++i) {
+		result->re += xarr[i].re * yarr[i].re + xarr[i].im * yarr[i].im;
+		result->im += xarr[i].re * yarr[i].im - xarr[i].im * yarr[i].re;
+	}
+
+	return MBO_SUCCESS;
+}
+
 MBO_STATUS mboVecSwap(MboVec x, MboVec y)
 {
 	struct MboAmplitude *tmp;
@@ -657,6 +680,55 @@ int testBumpIndices()
 	return errs;
 }
 
+int testMboVecDot()
+{
+	int errs = 0;
+	MboVec x, y;
+	MBO_STATUS err;
+	struct MboAmplitude result, *dummy;
+
+	mboVecCreate(3, &x);
+	mboVecCreate(2, &y);
+	err = mboVecDot(x, y, &result);
+	CHK_EQUAL(err, MBO_DIMENSIONS_MISMATCH, errs);
+	mboVecDestroy(&x);
+	mboVecDestroy(&y);
+
+	mboVecCreate(2, &x);
+	mboVecCreate(2, &y);
+	mboVecGetViewRW(x, &dummy);
+	err = mboVecDot(x, y, &result);
+	CHK_EQUAL(err, MBO_VEC_IN_USE, errs);
+	mboVecDestroy(&x);
+	mboVecDestroy(&y);
+
+	mboVecCreate(2, &x);
+	mboVecGetViewRW(x, &dummy);
+	dummy[0].re = 2.0;
+	dummy[0].im = 1.0;
+	dummy[1].re = 3.0;
+	dummy[1].im = -1.0;
+	mboVecReleaseView(x, &dummy);
+	mboVecCreate(2, &y);
+	mboVecGetViewRW(y, &dummy);
+	dummy[0].re = 1.0;
+	dummy[0].im = 3.0;
+	dummy[1].re = 10.0;
+	dummy[1].im = 15.0;
+	mboVecReleaseView(y, &dummy);
+	err = mboVecDot(x, y, &result);
+	CHK_EQUAL(err, MBO_SUCCESS, errs);
+	CHK_CLOSE(result.re, 2.0 * 1.0 + 1.0 * 3.0 + 3.0 * 10.0 + (-1.0) * 15.0,
+		  EPS, errs);
+	CHK_CLOSE(result.im, 2.0 * 3.0 - 1.0 * 1.0 + 3.0 * 15.0 - (-1.0) * 10.0,
+		  EPS, errs);
+	printf("result.re == %lf\n", result.re);
+	mboVecDestroy(&x);
+	mboVecDestroy(&y);
+
+	return errs;
+}
+
 int mboVecTest()
 {
 	int errs = 0;
@@ -673,6 +745,7 @@ int mboVecTest()
 	errs += testMboVecDim();
 	errs += testMboVecMap();
 	errs += testBumpIndices();
+	errs += testMboVecDot();
 	return errs;
 }
 

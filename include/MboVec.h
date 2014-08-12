@@ -56,6 +56,13 @@ MBO_STATUS mboVecReleaseView(MboVec v, struct MboAmplitude **array);
  * */
 MBO_STATUS mboVecAXPY(struct MboAmplitude *a, MboVec x, MboVec y);
 
+/** @brief computes the dot product of two vectors
+ * @param x vector on left hand side in dot product ("Bra")
+ * @param y vector on right hand size in dot product ("Ket")
+ * @param result the dot product
+ * */
+MBO_STATUS mboVecDot(MboVec x, MboVec y, struct MboAmplitude *result);
+
 MBO_STATUS mboVecSwap(MboVec x, MboVec y);
 
 /** @brief set vector to a constant */
