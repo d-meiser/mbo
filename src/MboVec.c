@@ -158,6 +158,51 @@ MBO_STATUS mboVecKron(int n, int *dims, struct MboAmplitude **vecs, MboVec x)
 	return MBO_SUCCESS;
 }
 
+static void bumpIndices(int n, int *dims, int *indices)
+{
+	int i = n - 1;
+	++indices[i];
+	while (indices[i] >= dims[i] && i > 0) {
+		indices[i] = 0;
+		++indices[i - 1];
+		--i;
+	}
+}
+
+MBO_STATUS mboVecMap(int n, int *dims,
+		     void f(int, int *, int *, void *, struct MboAmplitude *),
+		     void *ctx, MboVec x)
+{
+	long i, totalDim;
+	int *indices;
+	struct MboAmplitude *arr;
+	MBO_STATUS err;
+
+	if (n <= 0) return MBO_INVALID_ARGUMENT;
+	indices = malloc(n * sizeof(*indices));
+
+	totalDim = 1;
+	for (i = 0; i < n; ++i) {
+		totalDim *= dims[i];
+	}
+	err = mboVecGetViewRW(x, &arr);
+	if (err) return err;
+
+	for (i = 0; i < n; ++i) {
+		indices[i] = 0;
+	}
+
+	for (i = 0; i < totalDim; ++i) {
+		f(n, dims, indices, ctx, arr + i);
+		bumpIndices(n, dims, indices); 
+	}
+
+	err = mboVecReleaseView(x, &arr);
+	free(indices);
+
+	return err;
+}
+
 long mboVecDim(MboVec x)
 {
 	return x->dim;
@@ -512,6 +557,106 @@ static int testMboVecDim()
 	return errs;
 }
 
+static void f1(int n, int *dims, int *indices, void *ctx,
+	       struct MboAmplitude *x)
+{
+	int i;
+	double value = 0.0, b = 1.0;
+	for (i = n - 1; i >= 0; --i) {
+		value += indices[i] * b;
+		b *= 10.0;
+	}
+	x->re = value;
+	x->im = 0;
+}
+
+static void f2(int n, int *dims, int *indices, void *ctx,
+	       struct MboAmplitude *x)
+{
+	int *i = (int *)ctx;
+	x->re = *i;
+	x->im = 0;
+	++*i;
+}
+
+int testMboVecMap()
+{
+	int errs = 0, dims[] = {2, 3, 2}, i;
+	MboVec x;
+	struct MboAmplitude *xarr;
+
+	mboVecCreate(12, &x);
+	mboVecMap(3, dims, f1, 0, x);
+	mboVecGetViewR(x, &xarr);
+	CHK_CLOSE(xarr[0].re, 0, EPS, errs);
+	CHK_CLOSE(xarr[0].im, 0, EPS, errs);
+	CHK_CLOSE(xarr[1].re, 1, EPS, errs);
+	CHK_CLOSE(xarr[2].re, 10, EPS, errs);
+	CHK_CLOSE(xarr[3].re, 11, EPS, errs);
+	CHK_CLOSE(xarr[4].re, 20, EPS, errs);
+	CHK_CLOSE(xarr[5].re, 21, EPS, errs);
+	CHK_CLOSE(xarr[6].re, 100, EPS, errs);
+	CHK_CLOSE(xarr[7].re, 101, EPS, errs);
+	CHK_CLOSE(xarr[8].re, 110, EPS, errs);
+	CHK_CLOSE(xarr[9].re, 111, EPS, errs);
+	CHK_CLOSE(xarr[10].re, 120, EPS, errs);
+	CHK_CLOSE(xarr[11].re, 121, EPS, errs);
+	mboVecReleaseView(x, &xarr);
+	mboVecDestroy(&x);
+
+	mboVecCreate(12, &x);
+	i = 0;
+	mboVecMap(3, dims, f2, &i, x);
+	mboVecGetViewR(x, &xarr);
+	CHK_EQUAL(i, 12, errs);
+	for (i = 0; i < 12; ++i) {
+		CHK_CLOSE(xarr[i].re, i, EPS, errs);
+		CHK_CLOSE(xarr[i].im, 0, EPS, errs);
+	}
+	mboVecReleaseView(x, &xarr);
+	mboVecDestroy(&x);
+	return errs;
+}
+
+int testBumpIndices()
+{
+	int errs = 0, indices[3], dims[] = {2, 3, 6};
+
+	indices[0] = 0;
+	indices[1] = 0;
+	indices[2] = 0;
+	bumpIndices(3, dims, indices);
+	CHK_EQUAL(indices[0], 0, errs);
+	CHK_EQUAL(indices[1], 0, errs);
+	CHK_EQUAL(indices[2], 1, errs);
+
+	indices[0] = 0;
+	indices[1] = 0;
+	indices[2] = 5;
+	bumpIndices(3, dims, indices);
+	CHK_EQUAL(indices[0], 0, errs);
+	CHK_EQUAL(indices[1], 1, errs);
+	CHK_EQUAL(indices[2], 0, errs);
+
+	indices[0] = 0;
+	indices[1] = 2;
+	indices[2] = 5;
+	bumpIndices(3, dims, indices);
+	CHK_EQUAL(indices[0], 1, errs);
+	CHK_EQUAL(indices[1], 0, errs);
+	CHK_EQUAL(indices[2], 0, errs);
+
+	indices[0] = 0;
+	indices[1] = 2;
+	indices[2] = 6;
+	bumpIndices(3, dims, indices);
+	CHK_EQUAL(indices[0], 1, errs);
+	CHK_EQUAL(indices[1], 0, errs);
+	CHK_EQUAL(indices[2], 0, errs);
+
+	return errs;
+}
+
 int mboVecTest()
 {
 	int errs = 0;
@@ -526,6 +671,8 @@ int mboVecTest()
 	errs += testMboVecDuplicate();
 	errs += testMboVecKron();
 	errs += testMboVecDim();
+	errs += testMboVecMap();
+	errs += testBumpIndices();
 	return errs;
 }
 

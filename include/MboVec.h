@@ -73,6 +73,22 @@ MBO_STATUS mboVecSetRandom(MboVec x);
  * */
 MBO_STATUS mboVecKron(int n, int *dims, struct MboAmplitude **vecs, MboVec x);
 
+/** @brief Apply a function to every entry in a vector
+ * @param n    Number of dimensions.
+ * @param dims Dimensions of underlying product space.
+ * @param f    Function to apply to entries.  As the first two arguments
+ *             n and dims are passed to f.  The next integer array is
+ *             the set of indices for a given invocation of f.  The last
+ *             argument is a function defined context.  The context is
+ *             never accessed by mboVecMap.
+ * @param ctx  Context for function application.  The context is never
+ *             accessed by mboVecMap.
+ * @param x    The vector to which the function is applied.
+ * */
+MBO_STATUS mboVecMap(int n, int *dims,
+		     void f(int, int *, int *, void *, struct MboAmplitude *),
+		     void *ctx, MboVec x);
+
 MBO_STATUS mboVecDuplicate(MboVec x, MboVec *y);
 
 /** @brief Check integrity of MboVec
