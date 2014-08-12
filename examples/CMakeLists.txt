@@ -1,4 +1,5 @@
 set(EXAMPLES
+    ComputeMatrix
     TavisCummings
     Vectors
    )
