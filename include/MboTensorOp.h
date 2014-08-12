@@ -1,3 +1,15 @@
+/**
+ * @file MboTensorOp.h
+ * @brief The MboTensorOp API.
+ *
+ * MboTensorOps provide functionality for describing tensor product
+ * operators including an operator algebra (multiplication, addition,
+ * Kronecker products) and application of tensor product operators to
+ * vectors.
+ *
+ * @sa MboVec, mboTensorOpMul, mboTensorOpPlus, mboTensorOpKron,
+ * mboTensorOpMatVec
+ * */
 #ifndef MBO_TENSOR_OP_H
 #define MBO_TENSOR_OP_H
 

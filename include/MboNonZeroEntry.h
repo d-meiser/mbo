@@ -1,3 +1,7 @@
+/**
+ * @file MboNonZeroEntry.h
+ * @brief Definition of data type for nonzero entries.
+ * */
 #ifndef MBO_NON_ZERO_ENTRY_H
 #define MBO_NON_ZERO_ENTRY_H
 

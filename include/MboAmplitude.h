@@ -1,3 +1,7 @@
+/**
+ * @file MboAmplitude.h
+ * @brief Definition of the complex amplitude type
+ * */
 #ifndef MBO_AMPLITUDE_H
 #define MBO_AMPLITUDE_H
 

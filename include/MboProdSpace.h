@@ -1,3 +1,9 @@
+/**
+ * @file MboProdSpace.h
+ * @brief The MboProdSpace API.
+ *
+ * MboProdSpaces are used to describe tensor product spaces.
+ * */
 #ifndef MBO_PROD_SPACE_H
 #define MBO_PROD_SPACE_H
 
@@ -6,6 +12,9 @@ extern "C" {
 #endif
 
 struct MboProdSpace;
+/**
+ * @brief Type for describing tensor product spaces
+ * */
 typedef struct MboProdSpace *MboProdSpace;
 
 MboProdSpace mboProdSpaceCreate(int);

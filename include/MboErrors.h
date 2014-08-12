@@ -1,3 +1,7 @@
+/**
+ * @file MboErrors.h
+ * @brief Error codes used by the MBO library.
+ * */
 #ifndef MBO_ERRORS_H
 #define MBO_ERRORS_H
 

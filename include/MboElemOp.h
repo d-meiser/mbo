@@ -1,3 +1,12 @@
+/**
+ * @file MboElemOp.h
+ * @brief Definition of elementary operators.
+ *
+ * Elementary operators are used as building blocks of tensor product
+ * operators.  In the context of quantum mechanics they are single
+ * particle operators.  Mathematically, they are sparse matrices: A
+ * collection of non-zero entries.
+ * */
 #ifndef MBO_ELEM_OP_H
 #define MBO_ELEM_OP_H
 

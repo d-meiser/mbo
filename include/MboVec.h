@@ -1,3 +1,9 @@
+/**
+ * @file MboVec.h
+ * @brief The MboVec API.
+ *
+ * MboVecs are used to describe vectors in product spaces.
+ * */
 #ifndef MBO_VEC_H
 #define MBO_VEC_H
 
