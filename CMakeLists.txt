@@ -9,6 +9,8 @@ option(RUN_EXAMPLES_AS_TESTS
     "Whether to run the examples as part of the test suite" ON)
 option(MBO_ENABLE_COVERAGE
     "Instrument tests for coverage" ON)
+option(MBO_BUILD_DOCS
+    "Whether to build documentation" OFF)
 
 if(CMAKE_COMPILER_IS_GNUCC)
   set(WARNING_FLAGS "-Wall")
@@ -39,3 +41,19 @@ add_subdirectory(include)
 add_subdirectory(src)
 add_subdirectory(tests)
 add_subdirectory(examples)
+
+if(MBO_BUILD_DOCS)
+  find_package(Doxygen)
+  if(DOXYGEN_FOUND)
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/doxyfile @ONLY)
+  file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/doc")
+  add_custom_target(doc
+    ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/doxyfile
+    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/doc"
+    COMMENT "Generating API documentation with Doxygen" VERBATIM
+  )
+  else()
+    message(STATUS "Doxygen not found -- not building docs")
+  endif()
+endif()
+
