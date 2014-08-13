@@ -1,5 +1,9 @@
 #include <stdlib.h>
+#ifdef _WIN32
+#include <memory.h>
+#else
 #include <strings.h>
+#endif
 
 #include <MboTensorOp.h>
 #include <MboAmplitude.h>
@@ -423,24 +427,27 @@ MBO_STATUS mboTensorOpMatVec(struct MboAmplitude *alpha, MboTensorOp a,
 
 double mboTensorOpFlops(MboTensorOp a)
 {
-	int i, numSpaces, dims[mboProdSpaceSize(a->space)];
+	int i, numSpaces, *dims;
 	double flops = 0;
 
+    dims = malloc(mboProdSpaceSize(a->space) * sizeof(*dims));
 	numSpaces = mboProdSpaceSize(a->space);
 	mboProdSpaceGetDims(a->space, numSpaces, dims);
 	for (i = 0; i < a->numTerms; ++i) {
 		flops += flopsSimpleTOp(numSpaces, dims, a->sum + i);
 	}
+    free(dims);
 	return flops;
 }
 
 MBO_STATUS applySimpleTOp(MboProdSpace h, struct MboAmplitude *alpha,
 			  struct SimpleTOp *a, MboVec x, MboVec y)
 {
-	int numSpaces, dims[mboProdSpaceSize(h)];
+	int numSpaces, *dims;
 	long blockSize;
 	struct MboAmplitude *xarr, *yarr;
 
+    dims = malloc(mboProdSpaceSize(h) * sizeof(*dims));
 	gatherAllEmbeddings(&a->numFactors, &a->embeddings);
 	sortEmbeddings(a->numFactors, a->embeddings);
 
@@ -454,6 +461,8 @@ MBO_STATUS applySimpleTOp(MboProdSpace h, struct MboAmplitude *alpha,
 			a->embeddings, xarr, yarr);
 	mboVecReleaseView(x, &xarr);
 	mboVecReleaseView(y, &yarr);
+
+    free(dims);
 
 	return MBO_SUCCESS;
 }
@@ -501,13 +510,15 @@ void applyEmbeddings(int i, int numSpaces, int *dims, long blockSizeAfter,
 
 void gatherAllEmbeddings(int *numEmbeddings, struct Embedding **embeddings)
 {
-	int is[*numEmbeddings], nInitial = *numEmbeddings, i;
+	int *is, nInitial = *numEmbeddings, i;
+    is = malloc(*numEmbeddings * sizeof(*is));
 	for (i = 0; i < nInitial; ++i) {
 		is[i] = (*embeddings)[i].i;
 	}
 	for (i = 0; i < nInitial; ++i) {
 		gatherIthEmbedding(is[i], numEmbeddings, embeddings);
 	}
+    free(is);
 }
 
 static int embeddingCmp(const void *p1, const void *p2)
@@ -1351,16 +1362,17 @@ static int testApplyEmbeddings()
 	int errs = 0, i;
 	int dims[] = {2, 3, 5, 2};
 	long blockSize;
-	struct MboAmplitude alpha, expectedResult, x[computeBlockSize(4, dims)],
-	    y[computeBlockSize(4, dims)];
+	struct MboAmplitude alpha, expectedResult, *x, *y;
 	struct Embedding *embeddings;
 	MboElemOp sz, sp;
 
+    x = malloc(computeBlockSize(4, dims) * sizeof(*x));
+    y = malloc(computeBlockSize(4, dims) * sizeof(*y));
 	sz = mboSigmaZ();
 	sp = mboSigmaPlus();
 
-	bzero(x, sizeof(x));
-	bzero(y, sizeof(y));
+	memset(x, 0, sizeof(*x) * computeBlockSize(4, dims));
+	memset(y, 0, sizeof(*y) * computeBlockSize(4, dims));
 
 	blockSize = computeBlockSize(3, dims + 1);
 	applyEmbeddings(0, 4, dims, blockSize, x[0], 0, 0, x, y);
@@ -1468,6 +1480,9 @@ static int testApplyEmbeddings()
 
 	mboElemOpDestroy(&sz);
 	mboElemOpDestroy(&sp);
+
+    free(x);
+    free(y);
 
 	return errs;
 }

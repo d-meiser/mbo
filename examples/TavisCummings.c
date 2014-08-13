@@ -34,17 +34,17 @@ int main()
 	sp = mboSigmaPlus();
 	sz = mboSigmaZ();
 	mboTensorOpNull(hAtoms, &inhomogeneousJz);
-	for (int i = 0; i < nAtoms; ++i) {
+	for (i = 0; i < nAtoms; ++i) {
 		tmp.re = omega(i);
 		tmp.im = 0;
 		mboTensorOpAddScaledTo(&tmp, sz, i, inhomogeneousJz);
 	}
 	mboTensorOpNull(hAtoms, &jMinus);
-	for (int i = 0; i < nAtoms; ++i) {
+	for (i = 0; i < nAtoms; ++i) {
 		mboTensorOpAddTo(sm, i, jMinus);
 	}
 	mboTensorOpNull(hAtoms, &jPlus);
-	for (int i = 0; i < nAtoms; ++i) {
+	for (i = 0; i < nAtoms; ++i) {
 		mboTensorOpAddTo(sp, i, jPlus);
 	}
 	mboTensorOpIdentity(hAtoms, &idAtoms);

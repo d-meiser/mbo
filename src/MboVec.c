@@ -44,8 +44,9 @@ MBO_STATUS mboVecDestroy(MboVec *v)
 
 MBO_STATUS mboVecDuplicate(MboVec x, MboVec *y)
 {
+    MBO_STATUS err;
 	if (x->mapped) return MBO_VEC_IN_USE;
-	MBO_STATUS err = mboVecCreate(mboVecDim(x), y);
+    err = mboVecCreate(mboVecDim(x), y);
 	if (err != MBO_SUCCESS) return err;
 	memcpy((*y)->array, x->array, mboVecDim(x) * sizeof(*x->array));
 	return MBO_SUCCESS;
