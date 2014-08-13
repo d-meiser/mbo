@@ -1,9 +1,5 @@
 #include <stdlib.h>
-#ifdef _WIN32
-#include <memory.h>
-#else
-#include <strings.h>
-#endif
+#include <string.h>
 
 #include <MboTensorOp.h>
 #include <MboAmplitude.h>
