@@ -453,7 +453,7 @@ MBO_STATUS applySimpleTOp(MboProdSpace h, struct MboAmplitude *alpha,
 
 	numSpaces = mboProdSpaceSize(h);
 	blockSize = mboProdSpaceDim(h);
-	mboProdSpaceGetDims(h, sizeof(dims) / sizeof(*dims), dims);
+	mboProdSpaceGetDims(h, mboProdSpaceSize(h), dims);
 
 	mboVecGetViewR(x, &xarr);
 	mboVecGetViewRW(y, &yarr);
