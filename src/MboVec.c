@@ -125,6 +125,11 @@ MBO_STATUS mboVecDot(MboVec x, MboVec y, struct MboAmplitude *result)
 		result->im += xarr[i].re * yarr[i].im - xarr[i].im * yarr[i].re;
 	}
 
+	err = mboVecReleaseView(x, &xarr);
+	if (err) return err;
+	err = mboVecReleaseView(y, &yarr);
+	if (err) return err;
+
 	return MBO_SUCCESS;
 }
 
@@ -729,6 +734,8 @@ int testMboVecDot()
 	dummy[1].im = 15.0;
 	mboVecReleaseView(y, &dummy);
 	err = mboVecDot(x, y, &result);
+	CHK_EQUAL(x->mapped, MBO_VEC_MAPPING_STATUS_UNMAPPED, errs);
+	CHK_EQUAL(y->mapped, MBO_VEC_MAPPING_STATUS_UNMAPPED, errs);
 	CHK_EQUAL(err, MBO_SUCCESS, errs);
 	CHK_CLOSE(result.re, 2.0 * 1.0 + 1.0 * 3.0 + 3.0 * 10.0 + (-1.0) * 15.0,
 		  EPS, errs);
