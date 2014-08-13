@@ -426,13 +426,13 @@ double mboTensorOpFlops(MboTensorOp a)
 	int i, numSpaces, *dims;
 	double flops = 0;
 
-    dims = malloc(mboProdSpaceSize(a->space) * sizeof(*dims));
+	dims = malloc(mboProdSpaceSize(a->space) * sizeof(*dims));
 	numSpaces = mboProdSpaceSize(a->space);
 	mboProdSpaceGetDims(a->space, numSpaces, dims);
 	for (i = 0; i < a->numTerms; ++i) {
 		flops += flopsSimpleTOp(numSpaces, dims, a->sum + i);
 	}
-    free(dims);
+	free(dims);
 	return flops;
 }
 
@@ -443,13 +443,13 @@ MBO_STATUS applySimpleTOp(MboProdSpace h, struct MboAmplitude *alpha,
 	long blockSize;
 	struct MboAmplitude *xarr, *yarr;
 
-    dims = malloc(mboProdSpaceSize(h) * sizeof(*dims));
+	dims = malloc(mboProdSpaceSize(h) * sizeof(*dims));
 	gatherAllEmbeddings(&a->numFactors, &a->embeddings);
 	sortEmbeddings(a->numFactors, a->embeddings);
 
 	numSpaces = mboProdSpaceSize(h);
 	blockSize = mboProdSpaceDim(h);
-	mboProdSpaceGetDims(h, sizeof(dims) / sizeof(*dims), dims);
+	mboProdSpaceGetDims(h, mboProdSpaceSize(h), dims);
 
 	mboVecGetViewR(x, &xarr);
 	mboVecGetViewRW(y, &yarr);
@@ -458,7 +458,7 @@ MBO_STATUS applySimpleTOp(MboProdSpace h, struct MboAmplitude *alpha,
 	mboVecReleaseView(x, &xarr);
 	mboVecReleaseView(y, &yarr);
 
-    free(dims);
+	free(dims);
 
 	return MBO_SUCCESS;
 }
@@ -507,14 +507,14 @@ void applyEmbeddings(int i, int numSpaces, int *dims, long blockSizeAfter,
 void gatherAllEmbeddings(int *numEmbeddings, struct Embedding **embeddings)
 {
 	int *is, nInitial = *numEmbeddings, i;
-    is = malloc(*numEmbeddings * sizeof(*is));
+	is = malloc(*numEmbeddings * sizeof(*is));
 	for (i = 0; i < nInitial; ++i) {
 		is[i] = (*embeddings)[i].i;
 	}
 	for (i = 0; i < nInitial; ++i) {
 		gatherIthEmbedding(is[i], numEmbeddings, embeddings);
 	}
-    free(is);
+	free(is);
 }
 
 static int embeddingCmp(const void *p1, const void *p2)
@@ -1362,8 +1362,8 @@ static int testApplyEmbeddings()
 	struct Embedding *embeddings;
 	MboElemOp sz, sp;
 
-    x = malloc(computeBlockSize(4, dims) * sizeof(*x));
-    y = malloc(computeBlockSize(4, dims) * sizeof(*y));
+	x = malloc(computeBlockSize(4, dims) * sizeof(*x));
+	y = malloc(computeBlockSize(4, dims) * sizeof(*y));
 	sz = mboSigmaZ();
 	sp = mboSigmaPlus();
 
@@ -1477,8 +1477,8 @@ static int testApplyEmbeddings()
 	mboElemOpDestroy(&sz);
 	mboElemOpDestroy(&sp);
 
-    free(x);
-    free(y);
+	free(x);
+	free(y);
 
 	return errs;
 }
