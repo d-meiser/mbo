@@ -188,7 +188,7 @@ static int testBuildSpace()
 	for (i = 0; i < N; ++i) {
 		mboProdSpaceMul(h, &hTot);
 	}
-	CHK_EQUAL(mboProdSpaceDim(hTot), 1 << N, errs);
+	CHK_EQUAL(mboProdSpaceDim(hTot), (MboGlobInd)1 << N, errs);
 
 	mboProdSpaceDestroy(&h);
 	mboProdSpaceDestroy(&hTot);
@@ -217,7 +217,7 @@ static int testMultiplyWithSelf()
 static int testMultiplyLargeDims()
 {
 	int errs = 0;
-        long long d1, d2;
+        MboLocInd d1, d2;
 	MboProdSpace h1;
 	MboProdSpace h2;
 
@@ -226,7 +226,7 @@ static int testMultiplyLargeDims()
 	h1 = mboProdSpaceCreate(d1);
 	h2 = mboProdSpaceCreate(d2);
 	mboProdSpaceMul(h1, &h2);
-	CHK_EQUAL(mboProdSpaceDim(h2), d1 * d2, errs);
+	CHK_EQUAL(mboProdSpaceDim(h2), (MboGlobInd)d1 * (MboGlobInd)d2, errs);
 	mboProdSpaceDestroy(&h1);
         mboProdSpaceDestroy(&h2);
 

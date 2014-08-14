@@ -1322,7 +1322,8 @@ static int testKronSimpleTOps()
 
 static int testMboTensorOpMatVec()
 {
-	int errs = 0, i;
+	int errs = 0;
+    MboGlobInd i;
 	MboLocInd *dims;
 	MboProdSpace h1, h2;
 	MboVec x, y;
