@@ -5,6 +5,7 @@
 extern "C" {
 #endif
 
+#include <MboIndices.h>
 #include <MboAmplitude.h>
 #include <MboElemOp.h>
 #include <MboProdSpace.h>
