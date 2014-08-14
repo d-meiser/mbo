@@ -1,5 +1,6 @@
 #include <Mbo.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 static const int nAtoms = 10;
 static const int nPhotons = 30;
@@ -13,7 +14,7 @@ int main()
 	MboProdSpace hSingleAtom, hAtoms, hField, hTot;
 	MboElemOp sm, sp, sz, a, ad, numberOp;
 	MboTensorOp inhomogeneousJz, jPlus, jMinus, idField, idAtoms, A, Ad, N,
-	    H;
+	    H, *factors;
 	struct MboAmplitude tmp;
 	MboVec x, y;
 	int i;
@@ -65,11 +66,21 @@ int main()
 	mboTensorOpIdentity(hField, &idField);
 
 	/* Assemble Hamiltonian */
+	factors = malloc(2 * sizeof(*factors));
 	mboTensorOpNull(hTot, &H);
-	mboTensorOpKron(idField, inhomogeneousJz, &H);
-	mboTensorOpKron(N, idAtoms, &H);
-	mboTensorOpKron(A, jPlus, &H);
-	mboTensorOpKron(Ad, jMinus, &H);
+	factors[0] = idField;
+	factors[1] = inhomogeneousJz;
+	mboTensorOpKron(2, factors, &H);
+	factors[0] = N;
+	factors[1] = idAtoms;
+	mboTensorOpKron(2, factors, &H);
+	factors[0] = A;
+	factors[1] = jPlus;
+	mboTensorOpKron(2, factors, &H);
+	factors[0] = Ad;
+	factors[1] = jMinus;
+	mboTensorOpKron(2, factors, &H);
+	free(factors);
 
 	printf("Dimension of total Hilbert Space: %lld\n",
 	       mboProdSpaceDim(hTot));

@@ -90,9 +90,9 @@ void mboTensorOpPlus(MboTensorOp a, MboTensorOp *b);
 void mboTensorOpScale(struct MboAmplitude *alpha, MboTensorOp *a);
 
 /** @brief Tensor product of two operators.
- *      *c += a x b
+ *      *c += ops[0] x ops[1] x ... x ops[n] 
  * */
-void mboTensorOpKron(MboTensorOp a, MboTensorOp b, MboTensorOp *c);
+MBO_STATUS mboTensorOpKron(int n, MboTensorOp *ops, MboTensorOp *c);
 
 /**
  * y <- alpha * a * x + beta * y

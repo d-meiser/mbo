@@ -207,7 +207,7 @@ void mboTensorOpScale(struct MboAmplitude *alpha, MboTensorOp *a)
 	}
 }
 
-void mboTensorOpKron(MboTensorOp a, MboTensorOp b, MboTensorOp *c)
+static void mboTensorOpKronTwo(MboTensorOp a, MboTensorOp b, MboTensorOp *c)
 {
 	int i, j, numNewTerms = a->numTerms * b->numTerms;
 	struct SimpleTOp *cFillPtr;
@@ -224,6 +224,35 @@ void mboTensorOpKron(MboTensorOp a, MboTensorOp b, MboTensorOp *c)
 		}
 	}
 	(*c)->numTerms += numNewTerms;
+}
+
+MBO_STATUS mboTensorOpKron(int n, MboTensorOp *ops, MboTensorOp *c)
+{
+	MboProdSpace h;
+	int i, spacesEqual;
+	MboTensorOp a, b;
+
+	h = mboProdSpaceCreate(0);
+	for (i = 0; i < n; ++i) {
+		mboProdSpaceMul(ops[i]->space, &h);
+	}
+	spacesEqual = mboProdSpaceEqual(h, (*c)->space);
+	mboProdSpaceDestroy(&h);
+	if (!spacesEqual) return MBO_SPACE_MISMATCH;
+
+	h = mboProdSpaceCreate(0);
+	mboTensorOpIdentity(h, &b);
+	for (i = 0; i < n; ++i) {
+		mboProdSpaceMul(ops[i]->space, &h);
+		mboTensorOpNull(h, &a);
+		mboTensorOpKronTwo(b, ops[i], &a);
+		mboTensorOpDestroy(&b);
+		b = a;
+	}
+	mboTensorOpPlus(b, c);
+	mboTensorOpDestroy(&b);
+	mboProdSpaceDestroy(&h);
+	return MBO_SUCCESS;
 }
 
 void kronSimpleTOps(struct SimpleTOp *a, int numSpacesInA, struct SimpleTOp *b,
@@ -1000,7 +1029,7 @@ static int testMboTensorOpCheck()
 	return errs;
 }
 
-static int testMboTensorOpKron()
+static int testMboTensorOpKronTwo()
 {
 	int errs = 0;
 	MboProdSpace h1, h2, h3;
@@ -1016,7 +1045,7 @@ static int testMboTensorOpKron()
 	mboTensorOpNull(h1, &a);
 	mboTensorOpNull(h2, &b);
 	mboTensorOpNull(h3, &c);
-	mboTensorOpKron(a, b, &c);
+	mboTensorOpKronTwo(a, b, &c);
 	CHK_EQUAL(mboTensorOpCheck(c), 0, errs);
 	CHK_EQUAL(c->numTerms, 0, errs);
 	mboTensorOpDestroy(&a);
@@ -1034,7 +1063,7 @@ static int testMboTensorOpKron()
 	mboTensorOpIdentity(h1, &a);
 	mboTensorOpIdentity(h2, &b);
 	mboTensorOpNull(h3, &c);
-	mboTensorOpKron(a, b, &c);
+	mboTensorOpKronTwo(a, b, &c);
 	CHK_EQUAL(mboTensorOpCheck(c), 0, errs);
 	CHK_EQUAL(c->numTerms, 1, errs);
 	mboTensorOpDestroy(&a);
@@ -1052,7 +1081,7 @@ static int testMboTensorOpKron()
 	mboTensorOpIdentity(h1, &a);
 	mboTensorOpIdentity(h2, &b);
 	mboTensorOpIdentity(h3, &c);
-	mboTensorOpKron(a, b, &c);
+	mboTensorOpKronTwo(a, b, &c);
 	CHK_EQUAL(mboTensorOpCheck(c), 0, errs);
 	CHK_EQUAL(c->numTerms, 2, errs);
 	mboTensorOpDestroy(&a);
@@ -1070,7 +1099,7 @@ static int testMboTensorOpKron()
 	mboTensorOpIdentity(h1, &a);
 	mboTensorOpIdentity(h2, &b);
 	mboTensorOpIdentity(h3, &c);
-	mboTensorOpKron(a, b, &c);
+	mboTensorOpKronTwo(a, b, &c);
 	CHK_EQUAL(mboTensorOpCheck(c), 0, errs);
 	CHK_EQUAL(c->numTerms, 2, errs);
 	mboTensorOpDestroy(&a);
@@ -1092,7 +1121,7 @@ static int testMboTensorOpKron()
 	sp = mboSigmaPlus();
 	mboTensorOpAddTo(sp, 0, b);
 	mboTensorOpIdentity(h3, &c);
-	mboTensorOpKron(a, b, &c);
+	mboTensorOpKronTwo(a, b, &c);
 	CHK_EQUAL(mboTensorOpCheck(c), 0, errs);
 	CHK_EQUAL(c->numTerms, 5, errs);
 	mboElemOpDestroy(&sz);
@@ -1103,6 +1132,125 @@ static int testMboTensorOpKron()
 	mboProdSpaceDestroy(&h1);
 	mboProdSpaceDestroy(&h2);
 	mboProdSpaceDestroy(&h3);
+
+	return errs;
+}
+
+static int testMboTensorOpKron()
+{
+	int errs = 0, n;
+	MboTensorOp *ops, result;
+	MboProdSpace h1, h2, h3, hTot;
+	MBO_STATUS err;
+	MboElemOp sz;
+
+	h1 = mboProdSpaceCreate(2);
+	hTot = mboProdSpaceCreate(0);
+	mboTensorOpNull(hTot, &result);
+	n = 1;
+	ops = malloc(n * sizeof(*ops));
+	mboTensorOpIdentity(h1, &ops[0]);
+	err = mboTensorOpKron(1, ops, &result);
+	CHK_EQUAL(err, MBO_SPACE_MISMATCH, errs);
+	mboTensorOpDestroy(&result);
+	mboTensorOpDestroy(&ops[0]);
+	free(ops);
+	mboProdSpaceDestroy(&hTot);
+	mboProdSpaceDestroy(&h1);
+
+	h1 = mboProdSpaceCreate(2);
+	hTot = mboProdSpaceCreate(0);
+	mboProdSpaceMul(h1, &hTot);
+	mboTensorOpNull(hTot, &result);
+	n = 1;
+	ops = malloc(n * sizeof(*ops));
+	mboTensorOpIdentity(h1, &ops[0]);
+	err = mboTensorOpKron(n, ops, &result);
+	CHK_EQUAL(err, MBO_SUCCESS, errs);
+	CHK_EQUAL(result->numTerms, 1, errs);
+	CHK_EQUAL(result->sum[0].numFactors, 0, errs);
+	mboTensorOpDestroy(&ops[0]);
+	free(ops);
+	mboTensorOpDestroy(&result);
+	mboProdSpaceDestroy(&hTot);
+	mboProdSpaceDestroy(&h1);
+
+	h1 = mboProdSpaceCreate(2);
+	h2 = mboProdSpaceCreate(3);
+	hTot = mboProdSpaceCreate(0);
+	mboProdSpaceMul(h1, &hTot);
+	mboProdSpaceMul(h2, &hTot);
+	mboTensorOpNull(hTot, &result);
+	n = 2;
+	ops = malloc(n * sizeof(*ops));
+	mboTensorOpIdentity(h1, &ops[0]);
+	mboTensorOpIdentity(h2, &ops[1]);
+	err = mboTensorOpKron(n, ops, &result);
+	CHK_EQUAL(err, MBO_SUCCESS, errs);
+	CHK_EQUAL(result->numTerms, 1, errs);
+	CHK_EQUAL(result->sum[0].numFactors, 0, errs);
+	mboTensorOpDestroy(&ops[0]);
+	mboTensorOpDestroy(&ops[1]);
+	free(ops);
+	mboTensorOpDestroy(&result);
+	mboProdSpaceDestroy(&hTot);
+	mboProdSpaceDestroy(&h1);
+	mboProdSpaceDestroy(&h2);
+
+	sz = mboSigmaZ();
+	h1 = mboProdSpaceCreate(2);
+	h2 = mboProdSpaceCreate(3);
+	hTot = mboProdSpaceCreate(0);
+	mboProdSpaceMul(h1, &hTot);
+	mboProdSpaceMul(h2, &hTot);
+	mboTensorOpNull(hTot, &result);
+	n = 2;
+	ops = malloc(n * sizeof(*ops));
+	mboTensorOpIdentity(h1, &ops[0]);
+	mboTensorOpIdentity(h2, &ops[1]);
+	mboTensorOpAddTo(sz, 0, ops[0]);
+	err = mboTensorOpKron(n, ops, &result);
+	CHK_EQUAL(err, MBO_SUCCESS, errs);
+	CHK_EQUAL(result->numTerms, 2, errs);
+	mboTensorOpDestroy(&ops[0]);
+	mboTensorOpDestroy(&ops[1]);
+	free(ops);
+	mboTensorOpDestroy(&result);
+	mboProdSpaceDestroy(&hTot);
+	mboProdSpaceDestroy(&h1);
+	mboProdSpaceDestroy(&h2);
+	mboElemOpDestroy(&sz);
+
+	sz = mboSigmaZ();
+	h1 = mboProdSpaceCreate(2);
+	h2 = mboProdSpaceCreate(3);
+	h3 = mboProdSpaceCreate(2);
+	hTot = mboProdSpaceCreate(0);
+	mboProdSpaceMul(h1, &hTot);
+	mboProdSpaceMul(h2, &hTot);
+	mboProdSpaceMul(h3, &hTot);
+	mboTensorOpNull(hTot, &result);
+	n = 3;
+	ops = malloc(n * sizeof(*ops));
+	mboTensorOpIdentity(h1, &ops[0]);
+	mboTensorOpIdentity(h2, &ops[1]);
+	mboTensorOpIdentity(h3, &ops[2]);
+	mboTensorOpAddTo(sz, 0, ops[0]);
+	mboTensorOpAddTo(sz, 0, ops[1]);
+	mboTensorOpAddTo(sz, 0, ops[2]);
+	err = mboTensorOpKron(n, ops, &result);
+	CHK_EQUAL(err, MBO_SUCCESS, errs);
+	CHK_EQUAL(result->numTerms, 8, errs);
+	mboTensorOpDestroy(&ops[0]);
+	mboTensorOpDestroy(&ops[1]);
+	mboTensorOpDestroy(&ops[2]);
+	free(ops);
+	mboTensorOpDestroy(&result);
+	mboProdSpaceDestroy(&hTot);
+	mboProdSpaceDestroy(&h1);
+	mboProdSpaceDestroy(&h2);
+	mboProdSpaceDestroy(&h3);
+	mboElemOpDestroy(&sz);
 
 	return errs;
 }
@@ -1623,6 +1771,7 @@ int mboTensorOpTest()
 	errs += testMboTensorOpPlus();
 	errs += testMboTensorOpScale();
 	errs += testMboTensorOpCheck();
+	errs += testMboTensorOpKronTwo();
 	errs += testMboTensorOpKron();
 	errs += testKronSimpleTOps();
 	errs += testMboTensorOpMatVec();
