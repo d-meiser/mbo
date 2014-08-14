@@ -27,8 +27,8 @@ int main()
 	}
 	hField = mboProdSpaceCreate(nPhotons + 1);
 	hTot = mboProdSpaceCreate(0);
-	mboProdSpaceMul(hAtoms, &hTot);
 	mboProdSpaceMul(hField, &hTot);
+	mboProdSpaceMul(hAtoms, &hTot);
 
 	/* build atomic operators */
 	sm = mboSigmaMinus();
