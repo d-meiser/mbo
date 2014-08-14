@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include <MboTensorOp.h>
+#include <MboIndices.h>
 #include <MboAmplitude.h>
 #include <MboNonZeroEntry.h>
 
@@ -62,13 +63,14 @@ static void scaleSimpleTOp(struct MboAmplitude *alpha, MboProdSpace h,
 static int checkSimpleTOp(struct SimpleTOp *sa);
 static MBO_STATUS applySimpleTOp(MboProdSpace h, struct MboAmplitude *alpha,
 				 struct SimpleTOp *a, MboVec x, MboVec y);
-static long computeBlockSize(int N, int *dims);
-static void applyEmbeddings(int i, int numSpaces, int *dims, long blockSize,
-			    struct MboAmplitude alpha, int numFactors,
-			    struct Embedding *embeddings,
+static MboGlobInd computeBlockSize(int N, MboLocInd *dims);
+static void applyEmbeddings(int i, int numSpaces, MboLocInd *dims,
+			    MboGlobInd blockSize, struct MboAmplitude alpha,
+			    int numFactors, struct Embedding *embeddings,
 			    struct MboAmplitude *xarr,
 			    struct MboAmplitude *yarr);
-static double flopsSimpleTOp(int numSpaces, int *dims, struct SimpleTOp *op);
+static double flopsSimpleTOp(int numSpaces, MboLocInd *dims,
+			     struct SimpleTOp *op);
 
 /**
    Data structure for tensor product operators.
@@ -319,7 +321,7 @@ void copySimpleTOp(struct SimpleTOp* dest, struct SimpleTOp *src)
 void scaleSimpleTOp(struct MboAmplitude *alpha, MboProdSpace h,
 		    struct SimpleTOp *op)
 {
-	int d;
+	MboLocInd d;
 	if (mboProdSpaceSize(h) == 0) return;
 	if (op->numFactors == 0) {
 		op->embeddings = malloc(sizeof(*op->embeddings));
@@ -452,7 +454,8 @@ MBO_STATUS mboTensorOpMatVec(struct MboAmplitude *alpha, MboTensorOp a,
 
 double mboTensorOpFlops(MboTensorOp a)
 {
-	int i, numSpaces, *dims;
+	int i, numSpaces;
+	MboLocInd *dims;
 	double flops = 0;
 
 	dims = malloc(mboProdSpaceSize(a->space) * sizeof(*dims));
@@ -468,8 +471,9 @@ double mboTensorOpFlops(MboTensorOp a)
 MBO_STATUS applySimpleTOp(MboProdSpace h, struct MboAmplitude *alpha,
 			  struct SimpleTOp *a, MboVec x, MboVec y)
 {
-	int numSpaces, *dims;
-	long blockSize;
+	int numSpaces;
+	MboLocInd *dims;
+	MboGlobInd blockSize;
 	struct MboAmplitude *xarr, *yarr;
 
 	dims = malloc(mboProdSpaceSize(h) * sizeof(*dims));
@@ -492,20 +496,20 @@ MBO_STATUS applySimpleTOp(MboProdSpace h, struct MboAmplitude *alpha,
 	return MBO_SUCCESS;
 }
 
-void applyEmbeddings(int i, int numSpaces, int *dims, long blockSizeAfter,
-		     struct MboAmplitude alpha, int numFactors,
-		     struct Embedding *embeddings, struct MboAmplitude *xarr,
-		     struct MboAmplitude *yarr)
+void applyEmbeddings(int i, int numSpaces, MboLocInd *dims,
+		     MboGlobInd blockSizeAfter, struct MboAmplitude alpha,
+		     int numFactors, struct Embedding *embeddings,
+		     struct MboAmplitude *xarr, struct MboAmplitude *yarr)
 {
 	int nextI, e;
-	long blockSizeBefore, n;
+	MboGlobInd blockSizeBefore, n;
 	struct MboNonZeroEntry *entries;
 	struct MboAmplitude tmp;
 
 	if (numFactors > 0) {
 		nextI = embeddings->i;
 		blockSizeBefore = computeBlockSize(nextI - i, dims + i);
-		blockSizeAfter /= (blockSizeBefore * (long)dims[nextI]);
+		blockSizeAfter /= (blockSizeBefore * (MboGlobInd)dims[nextI]);
 		entries = mboElemOpGetEntries(embeddings->op);
 		for (n = 0; n < blockSizeBefore; ++n) {
 			for (e = 0; e < mboElemOpNumEntries(embeddings->op);
@@ -520,8 +524,8 @@ void applyEmbeddings(int i, int numSpaces, int *dims, long blockSizeAfter,
 				    xarr + entries[e].n * blockSizeAfter,
 				    yarr + entries[e].m * blockSizeAfter);
 			}
-			xarr += blockSizeAfter * (long)dims[nextI];
-			yarr += blockSizeAfter * (long)dims[nextI];
+			xarr += blockSizeAfter * (MboGlobInd)dims[nextI];
+			yarr += blockSizeAfter * (MboGlobInd)dims[nextI];
 		}
 	} else {
 		for (n = 0; n < blockSizeAfter; ++n) {
@@ -558,17 +562,17 @@ void sortEmbeddings(int numEmbeddings, struct Embedding *embeddings)
 	qsort(embeddings, numEmbeddings, sizeof(*embeddings), embeddingCmp);
 }
 
-long computeBlockSize(int N, int *dims)
+MboGlobInd computeBlockSize(int N, MboLocInd *dims)
 {
 	int i;
-	long blockSize = 1;
+	MboGlobInd blockSize = 1;
 	for (i = 0; i < N; ++i) {
-		blockSize *= (long)dims[i];
+		blockSize *= (MboGlobInd)dims[i];
 	}
 	return blockSize;
 }
 
-double flopsSimpleTOp(int numSpaces, int *dims, struct SimpleTOp *a)
+double flopsSimpleTOp(int numSpaces, MboLocInd *dims, struct SimpleTOp *a)
 {
 	int i, j;
 	double flops;
@@ -1318,7 +1322,8 @@ static int testKronSimpleTOps()
 
 static int testMboTensorOpMatVec()
 {
-	int errs = 0, i, *dims;
+	int errs = 0, i;
+	MboLocInd *dims;
 	MboProdSpace h1, h2;
 	MboVec x, y;
 	MboTensorOp A, B, C;
@@ -1504,8 +1509,8 @@ static int testMboTensorOpMatVec()
 static int testApplyEmbeddings()
 {
 	int errs = 0, i;
-	int dims[] = {2, 3, 5, 2};
-	long blockSize;
+	MboLocInd dims[] = {2, 3, 5, 2};
+	MboGlobInd blockSize;
 	struct MboAmplitude alpha, expectedResult, *x, *y;
 	struct Embedding *embeddings;
 	MboElemOp sz, sp;

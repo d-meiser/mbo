@@ -5,10 +5,10 @@
 
 struct MboProdSpace {
 	int numSpaces;
-	int *dims;
+	MboLocInd *dims;
 };
 
-MboProdSpace mboProdSpaceCreate(int d)
+MboProdSpace mboProdSpaceCreate(MboLocInd d)
 {
 	MboProdSpace sp = malloc(sizeof(*sp));
 	if (d) {
@@ -49,12 +49,12 @@ MboProdSpace mboProdSpaceCopy(MboProdSpace sp)
 	return copy;
 }
 
-long long mboProdSpaceDim(MboProdSpace sp)
+MboGlobInd mboProdSpaceDim(MboProdSpace sp)
 {
-	long long dim = 1;
+	MboGlobInd dim = 1;
 	int i;
 	for (i = 0; i < sp->numSpaces; ++i) {
-		dim *= (long long)sp->dims[i];
+		dim *= (MboGlobInd)sp->dims[i];
 	}
 	return dim;
 }
@@ -64,7 +64,7 @@ int mboProdSpaceSize(MboProdSpace h)
 	return h->numSpaces;
 }
 
-void mboProdSpaceGetDims(MboProdSpace h, int n, int *dims)
+void mboProdSpaceGetDims(MboProdSpace h, int n, MboLocInd *dims)
 {
 	int i = 0;
 	while (i < h->numSpaces && i < n) {
@@ -256,7 +256,7 @@ static int testMboProdSpaceSize()
 static int testMboProdSpaceGetDims()
 {
 	int errs = 0;
-	int dims[10];
+	MboLocInd dims[10];
 	MboProdSpace h;
 
 	h = mboProdSpaceCreate(0);

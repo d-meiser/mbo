@@ -10,6 +10,8 @@
 #ifndef MBO_ELEM_OP_H
 #define MBO_ELEM_OP_H
 
+#include <MboIndices.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -21,7 +23,7 @@ struct MboAmplitude;
 
 void mboElemOpCreate(MboElemOp *);
 void mboElemOpDestroy(MboElemOp *);
-void mboElemOpAddTo(int, int, struct MboAmplitude*, MboElemOp *);
+void mboElemOpAddTo(MboLocInd, MboLocInd, struct MboAmplitude*, MboElemOp *);
 void mboElemOpScale(struct MboAmplitude*, MboElemOp);
 void mboElemOpPlus(MboElemOp, MboElemOp *);
 void mboElemOpMul(MboElemOp, MboElemOp *);
@@ -34,10 +36,10 @@ int mboElemOpTest();
 MboElemOp mboSigmaPlus();
 MboElemOp mboSigmaMinus();
 MboElemOp mboSigmaZ();
-MboElemOp mboEye(int);
-MboElemOp mboNumOp(int);
-MboElemOp mboAnnihilationOp(int);
-MboElemOp mboCreationOp(int);
+MboElemOp mboEye(MboLocInd);
+MboElemOp mboNumOp(MboLocInd);
+MboElemOp mboAnnihilationOp(MboLocInd);
+MboElemOp mboCreationOp(MboLocInd);
 
 #ifdef __cplusplus
 }

@@ -25,7 +25,8 @@ void mboElemOpDestroy(MboElemOp *eo)
 	*eo = 0;
 }
 
-void mboElemOpAddTo(int m, int n, struct MboAmplitude *val, MboElemOp *eo)
+void mboElemOpAddTo(MboLocInd m, MboLocInd n, struct MboAmplitude *val,
+		    MboElemOp *eo)
 {
 	MboElemOp a = *eo;
 	a->entries = realloc(a->entries, (a->nOps + 1) * sizeof(*a->entries));
@@ -118,7 +119,7 @@ MboElemOp mboSigmaZ()
 	return sz;
 }
 
-MboElemOp mboEye(int d)
+MboElemOp mboEye(MboLocInd d)
 {
 	MboElemOp e;
 	int i;
@@ -133,7 +134,7 @@ MboElemOp mboEye(int d)
 	return e;
 }
 
-MboElemOp mboNumOp(int d)
+MboElemOp mboNumOp(MboLocInd d)
 {
 	MboElemOp n;
 	int i;
@@ -148,7 +149,7 @@ MboElemOp mboNumOp(int d)
 	return n;
 }
 
-MboElemOp mboAnnihilationOp(int d)
+MboElemOp mboAnnihilationOp(MboLocInd d)
 {
 	MboElemOp a;
 	int i;
@@ -163,7 +164,7 @@ MboElemOp mboAnnihilationOp(int d)
 	return a;
 }
 
-MboElemOp mboCreationOp(int d)
+MboElemOp mboCreationOp(MboLocInd d)
 {
 	MboElemOp ad;
 	int i;

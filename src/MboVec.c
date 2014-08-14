@@ -11,15 +11,15 @@ enum MBO_VEC_MAPPING_STATUS {
 };
 
 struct MboVec {
-	long dim;
+	MboGlobInd dim;
 	enum MBO_VEC_MAPPING_STATUS mapped;
 	struct MboAmplitude *array;
 };
 
-static void fillWithKron(struct MboAmplitude a, int n, int *dims,
+static void fillWithKron(struct MboAmplitude a, int n, MboLocInd *dims,
 			 struct MboAmplitude **vecs, struct MboAmplitude *arr);
 
-MBO_STATUS mboVecCreate(long dim, MboVec *v)
+MBO_STATUS mboVecCreate(MboGlobInd dim, MboVec *v)
 {
 	*v = malloc(sizeof(**v));
 	if (*v == 0) return MBO_OUT_OF_MEMORY;
@@ -91,7 +91,7 @@ MBO_STATUS mboVecReleaseView(MboVec v, struct MboAmplitude **array)
 
 MBO_STATUS mboVecAXPY(struct MboAmplitude* a, MboVec x, MboVec y)
 {
-	long i;
+	MboGlobInd i;
 	struct MboAmplitude tmp;
 	if (x->dim != y->dim) return MBO_DIMENSIONS_MISMATCH;
 	if (x->mapped || y->mapped) return MBO_VEC_IN_USE;
@@ -134,9 +134,9 @@ MBO_STATUS mboVecDot(MboVec x, MboVec y, struct MboAmplitude *result)
 	return MBO_SUCCESS;
 }
 
-MBO_STATUS mboVecUnitVector(long n, MboVec x)
+MBO_STATUS mboVecUnitVector(MboGlobInd n, MboVec x)
 {
-	long i;
+	MboGlobInd i;
 	if (n < 0 || n >= x->dim) return MBO_ILLEGAL_DIMENSION;
 	if (x->mapped) return MBO_VEC_IN_USE;
 	for (i = 0; i < x->dim; ++i) {
@@ -178,9 +178,11 @@ MBO_STATUS mboVecSetRandom(MboVec x)
 	return MBO_SUCCESS;
 }
 
-MBO_STATUS mboVecKron(int n, int *dims, struct MboAmplitude **vecs, MboVec x)
+MBO_STATUS mboVecKron(int n, MboLocInd *dims, struct MboAmplitude **vecs,
+		      MboVec x)
 {
-	int i, dim;
+	int i;
+  MboGlobInd dim;
 	struct MboAmplitude *tmp, one;
 
 	if (x->mapped) return MBO_VEC_IN_USE;
@@ -199,7 +201,7 @@ MBO_STATUS mboVecKron(int n, int *dims, struct MboAmplitude **vecs, MboVec x)
 	return MBO_SUCCESS;
 }
 
-static void bumpIndices(int n, int *dims, int *indices)
+static void bumpIndices(int n, MboLocInd *dims, MboLocInd *indices)
 {
 	int i = n - 1;
 	++indices[i];
@@ -210,12 +212,13 @@ static void bumpIndices(int n, int *dims, int *indices)
 	}
 }
 
-MBO_STATUS mboVecMap(int n, int *dims,
-		     void f(int, int *, int *, void *, struct MboAmplitude *),
+MBO_STATUS mboVecMap(int n, MboLocInd *dims,
+		     void f(int, MboLocInd *, MboLocInd *, void *,
+			    struct MboAmplitude *),
 		     void *ctx, MboVec x)
 {
-	long i, totalDim;
-	int *indices;
+	MboGlobInd i, totalDim;
+	MboLocInd *indices;
 	struct MboAmplitude *arr;
 	MBO_STATUS err;
 
@@ -244,17 +247,18 @@ MBO_STATUS mboVecMap(int n, int *dims,
 	return err;
 }
 
-long mboVecDim(MboVec x)
+MboGlobInd mboVecDim(MboVec x)
 {
 	return x->dim;
 }
 
 /* Private helper functions */
 
-static void fillWithKron(struct MboAmplitude a, int n, int *dims,
+static void fillWithKron(struct MboAmplitude a, int n, MboLocInd *dims,
 			 struct MboAmplitude **vecs, struct MboAmplitude *arr)
 {
-	int blockSize, i;
+	MboGlobInd blockSize;
+  int i;
 	struct MboAmplitude b;
 	if (n > 1) {
 		blockSize = 1;
@@ -500,7 +504,7 @@ static int testMboVecDuplicate()
 	return errs;
 }
 
-static void buildArrays(int n, int *dims, struct MboAmplitude ***arrays)
+static void buildArrays(int n, MboLocInd *dims, struct MboAmplitude ***arrays)
 {
 	int i, j;
 	*arrays = malloc(n * sizeof(**arrays));
@@ -525,7 +529,8 @@ static void freeArrays(int n, struct MboAmplitude ***arrays)
 
 static int testMboVecKron()
 {
-	int errs = 0, n, dims[10], i, j;
+	int errs = 0, n, i, j;
+	MboLocInd dims[10];
 	struct MboAmplitude **arrays, *arr;
 	struct MboAmplitude zero, tmp;
 	MboVec x;
@@ -587,7 +592,7 @@ static int testMboVecKron()
 static int testMboVecDim()
 {
 	int errs = 0;
-	long d;
+	MboGlobInd d;
 	MboVec x;
 
 	mboVecCreate(10l, &x);
@@ -598,7 +603,7 @@ static int testMboVecDim()
 	return errs;
 }
 
-static void f1(int n, int *dims, int *indices, void *ctx,
+static void f1(int n, MboLocInd *dims, MboLocInd *indices, void *ctx,
 	       struct MboAmplitude *x)
 {
 	int i;
@@ -611,7 +616,7 @@ static void f1(int n, int *dims, int *indices, void *ctx,
 	x->im = 0;
 }
 
-static void f2(int n, int *dims, int *indices, void *ctx,
+static void f2(int n, MboLocInd *dims, MboLocInd *indices, void *ctx,
 	       struct MboAmplitude *x)
 {
 	int *i = (int *)ctx;
@@ -622,7 +627,8 @@ static void f2(int n, int *dims, int *indices, void *ctx,
 
 int testMboVecMap()
 {
-	int errs = 0, dims[] = {2, 3, 2}, i;
+	int errs = 0, i;
+	MboLocInd dims[] = { 2, 3, 2 };
 	MboVec x;
 	struct MboAmplitude *xarr;
 
@@ -661,7 +667,8 @@ int testMboVecMap()
 
 int testBumpIndices()
 {
-	int errs = 0, indices[3], dims[] = {2, 3, 6};
+	int errs = 0;
+	MboLocInd indices[3], dims[] = {2, 3, 6};
 
 	indices[0] = 0;
 	indices[1] = 0;

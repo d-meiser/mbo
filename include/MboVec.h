@@ -8,6 +8,7 @@
 #define MBO_VEC_H
 
 #include <MboErrors.h>
+#include <MboIndices.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -20,7 +21,7 @@ typedef struct MboVec *MboVec;
 
 
 /** @brief Create MboVec of dimension dim */
-MBO_STATUS mboVecCreate(long dim, MboVec *v);
+MBO_STATUS mboVecCreate(MboGlobInd dim, MboVec *v);
 
 /** @brief Release all resources of a MboVec */
 MBO_STATUS mboVecDestroy(MboVec *v);
@@ -32,10 +33,10 @@ MBO_STATUS mboVecDestroy(MboVec *v);
  *          previously created with mboVecCreate.
  * @sa mboVecCreate
  * */
-MBO_STATUS mboVecUnitVector(long n, MboVec v);
+MBO_STATUS mboVecUnitVector(MboGlobInd n, MboVec v);
 
 /** @brief Get dimension of vector */
-long mboVecDim(MboVec v);
+MboGlobInd mboVecDim(MboVec v);
 
 /** @brief Obtain a read-write view of the vector data
  *
@@ -93,7 +94,8 @@ MBO_STATUS mboVecSetRandom(MboVec x);
  *             be added.
  * @see mboProdSpaceSize, mboProdSpaceGetDims
  * */
-MBO_STATUS mboVecKron(int n, int *dims, struct MboAmplitude **vecs, MboVec x);
+MBO_STATUS mboVecKron(int n, MboLocInd *dims, struct MboAmplitude **vecs,
+		      MboVec x);
 
 /** @brief Apply a function to every entry in a vector
  * @param n    Number of dimensions.
@@ -107,8 +109,8 @@ MBO_STATUS mboVecKron(int n, int *dims, struct MboAmplitude **vecs, MboVec x);
  *             accessed by mboVecMap.
  * @param x    The vector to which the function is applied.
  * */
-MBO_STATUS mboVecMap(int n, int *dims,
-		     void f(int, int *, int *, void *, struct MboAmplitude *),
+MBO_STATUS mboVecMap(int n, MboLocInd *dims,
+		     void f(int, MboLocInd *, MboLocInd *, void *, struct MboAmplitude *),
 		     void *ctx, MboVec x);
 
 MBO_STATUS mboVecDuplicate(MboVec x, MboVec *y);
