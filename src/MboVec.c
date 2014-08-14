@@ -749,7 +749,6 @@ int testMboVecDot()
 		  EPS, errs);
 	CHK_CLOSE(result.im, 2.0 * 3.0 - 1.0 * 1.0 + 3.0 * 15.0 - (-1.0) * 10.0,
 		  EPS, errs);
-	printf("result.re == %lf\n", result.re);
 	mboVecDestroy(&x);
 	mboVecDestroy(&y);
 
