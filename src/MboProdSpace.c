@@ -3,7 +3,7 @@
 
 #include "MboProdSpace.h"
 
-struct MboProdSpace {
+struct MboProdSpace_t {
 	int numSpaces;
 	MboLocInd *dims;
 };

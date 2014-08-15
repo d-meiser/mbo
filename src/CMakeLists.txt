@@ -1,7 +1,8 @@
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/../include
-    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${PROJECT_BINARY_DIR}
     )
+
 set(MBO_SRCS
   MboElemOp.c
   MboProdSpace.c
@@ -9,6 +10,7 @@ set(MBO_SRCS
   MboVec.c
   )
 
+add_compiler_export_flags()
 add_library(MBO
     ${MBO_SRCS}
     )

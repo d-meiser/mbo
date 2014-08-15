@@ -9,5 +9,5 @@ set(QUO_HEADERS
     MboVec.h
    )
 
-install(FILES ${QUO_HEADERS} DESTINATION include)
+install(FILES ${QUO_HEADERS} ${PROJECT_BINARY_DIR}/MboExport.h DESTINATION include)
 

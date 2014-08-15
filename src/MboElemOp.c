@@ -5,7 +5,7 @@
 #include <MboElemOp.h>
 #include <MboNonZeroEntry.h>
 
-struct MboElemOp
+struct MboElemOp_t
 {
 	int nOps;
 	struct MboNonZeroEntry *entries;
@@ -13,7 +13,7 @@ struct MboElemOp
 
 void mboElemOpCreate(MboElemOp *eo)
 {
-	*eo = malloc(sizeof(struct MboElemOp));
+	*eo = malloc(sizeof(**eo));
 	(*eo)->nOps = 0;
 	(*eo)->entries = 0;
 }

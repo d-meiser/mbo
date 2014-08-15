@@ -10,7 +10,8 @@ enum MBO_VEC_MAPPING_STATUS {
 	MBO_VEC_MAPPING_STATUS_MAPPED_RW,
 };
 
-struct MboVec {
+struct MboVec_t
+{
 	MboGlobInd dim;
 	enum MBO_VEC_MAPPING_STATUS mapped;
 	struct MboAmplitude *array;

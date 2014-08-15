@@ -75,7 +75,7 @@ static double flopsSimpleTOp(int numSpaces, MboLocInd *dims,
 /**
    Data structure for tensor product operators.
    */
-struct MboTensorOp
+struct MboTensorOp_t
 {
 	/* Product space on which the operator is defined. */
 	MboProdSpace space;

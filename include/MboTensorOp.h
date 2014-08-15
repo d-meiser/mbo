@@ -13,6 +13,7 @@
 #ifndef MBO_TENSOR_OP_H
 #define MBO_TENSOR_OP_H
 
+#include <MboExport.h>
 #include <MboProdSpace.h>
 #include <MboElemOp.h>
 #include <MboErrors.h>
@@ -23,9 +24,9 @@ extern "C" {
 #endif
 
 struct MboAmplitude;
-struct MboTensorOp;
+struct MboTensorOp_t;
 /** Data type for representing tensor operators. */
-typedef struct MboTensorOp *MboTensorOp;
+typedef struct MboTensorOp_t *MboTensorOp;
 
 /** @brief Create a tensor operator corresponding to the Null operator
  * The resources used by the object have to be release with
@@ -34,7 +35,7 @@ typedef struct MboTensorOp *MboTensorOp;
  * @param top The operator produced.
  * @see mboTensorOpDestroy, mboTensorOpIdentity
  * */
-void mboTensorOpNull(MboProdSpace h, MboTensorOp *top);
+MBO_EXPORT void mboTensorOpNull(MboProdSpace h, MboTensorOp *top);
 
 /** @brief Create a tensor operator corresponding to the Identity operator
  * The resources used by the object have to be release with
@@ -43,12 +44,12 @@ void mboTensorOpNull(MboProdSpace h, MboTensorOp *top);
  * @param top The operator produced.
  * @see mboTensorOpDestroy, mboTensorOpNull
  * */
-void mboTensorOpIdentity(MboProdSpace h, MboTensorOp *top);
+MBO_EXPORT void mboTensorOpIdentity(MboProdSpace h, MboTensorOp *top);
 
 /** @brief Destroy a tensor operator object.
  * @see mboTensorOpCreate, mboTensorOpCreateIdentity
 */
-void mboTensorOpDestroy(MboTensorOp *top);
+MBO_EXPORT void mboTensorOpDestroy(MboTensorOp *top);
 
 /** @brief Add an embedding to a tensor operator
  * Takes the elementary operator and embeds it into the product space of
@@ -62,13 +63,13 @@ void mboTensorOpDestroy(MboTensorOp *top);
  *               operators product space.
  * @param top    Tensor operator to which to add the result.
  * */
-void mboTensorOpAddTo(MboElemOp elemop, int i, MboTensorOp top);
+MBO_EXPORT void mboTensorOpAddTo(MboElemOp elemop, int i, MboTensorOp top);
 
 /** @brief Adds scaled version of embedded operator to tensor operator.
  * @see mboTensorOpAddTo
  * */
-void mboTensorOpAddScaledTo(struct MboAmplitude *alpha, MboElemOp elemop, int i,
-			    MboTensorOp top);
+MBO_EXPORT void mboTensorOpAddScaledTo(struct MboAmplitude *alpha,
+				    MboElemOp elemop, int i, MboTensorOp top);
 
 /** @brief Multiply two operators and add result to third
  *      (*c) += a * b
@@ -77,28 +78,29 @@ void mboTensorOpAddScaledTo(struct MboAmplitude *alpha, MboElemOp elemop, int i,
  *      (*a) += a * a?
  *      It should, if it doesn't already.
  * */
-void mboTensorOpMul(MboTensorOp a, MboTensorOp b, MboTensorOp *c);
+MBO_EXPORT void mboTensorOpMul(MboTensorOp a, MboTensorOp b, MboTensorOp *c);
 
 /** @brief Add a tensor operator to another operator
  *      (*b) += a
  * */
-void mboTensorOpPlus(MboTensorOp a, MboTensorOp *b);
+MBO_EXPORT void mboTensorOpPlus(MboTensorOp a, MboTensorOp *b);
 
 /** @brief Scale operator
  * Schematically:   *a *= alpha;
  * */
-void mboTensorOpScale(struct MboAmplitude *alpha, MboTensorOp *a);
+MBO_EXPORT void mboTensorOpScale(struct MboAmplitude *alpha, MboTensorOp *a);
 
 /** @brief Tensor product of two operators.
  *      *c += ops[0] x ops[1] x ... x ops[n] 
  * */
-MBO_STATUS mboTensorOpKron(int n, MboTensorOp *ops, MboTensorOp *c);
+MBO_EXPORT MBO_STATUS mboTensorOpKron(int n, MboTensorOp *ops, MboTensorOp *c);
 
 /**
  * y <- alpha * a * x + beta * y
  * */
-MBO_STATUS mboTensorOpMatVec(struct MboAmplitude *alpha, MboTensorOp a,
-			     MboVec x, struct MboAmplitude *beta, MboVec y);
+MBO_EXPORT MBO_STATUS mboTensorOpMatVec(struct MboAmplitude *alpha, MboTensorOp a,
+				     MboVec x, struct MboAmplitude *beta,
+				     MboVec y);
 
 /** @brief Returns an estimate for the number of floating point operations in a
  *         MatVec.
@@ -106,15 +108,15 @@ MBO_STATUS mboTensorOpMatVec(struct MboAmplitude *alpha, MboTensorOp a,
  * A complex multiply-add is counted as 8 floating point operations.
  *
  * @param a The tensor operator for which the flops are to be computed. */
-double mboTensorOpFlops(MboTensorOp a);
+MBO_EXPORT double mboTensorOpFlops(MboTensorOp a);
 
 /** @brief Check integrity of tensor operator.
  * Returns the number of errors.*/
-int mboTensorOpCheck(MboTensorOp);
+MBO_EXPORT int mboTensorOpCheck(MboTensorOp);
 
 /** @brief Run tensor operator test suite.
  * Returns the number of errors. */
-int mboTensorOpTest();
+MBO_EXPORT int mboTensorOpTest();
 
 #ifdef __cplusplus
 }

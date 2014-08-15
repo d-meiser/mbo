@@ -7,28 +7,29 @@
 #ifndef MBO_PROD_SPACE_H
 #define MBO_PROD_SPACE_H
 
+#include <MboExport.h>
 #include <MboIndices.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-struct MboProdSpace;
+struct MboProdSpace_t;
 /**
  * @brief Type for describing tensor product spaces
  * */
-typedef struct MboProdSpace *MboProdSpace;
+typedef struct MboProdSpace_t *MboProdSpace;
 
-MboProdSpace mboProdSpaceCreate(MboLocInd);
-void mboProdSpaceDestroy(MboProdSpace *);
-void mboProdSpaceMul(MboProdSpace, MboProdSpace *);
-MboProdSpace mboProdSpaceCopy(MboProdSpace);
-MboGlobInd mboProdSpaceDim(MboProdSpace);
-int mboProdSpaceSize(MboProdSpace);
-void mboProdSpaceGetDims(MboProdSpace, int, MboLocInd *);
-int mboProdSpaceEqual(MboProdSpace, MboProdSpace);
-int mboProdSpaceCheck(MboProdSpace);
-int mboProdSpaceTest();
+MBO_EXPORT MboProdSpace mboProdSpaceCreate(MboLocInd);
+MBO_EXPORT void mboProdSpaceDestroy(MboProdSpace *);
+MBO_EXPORT void mboProdSpaceMul(MboProdSpace, MboProdSpace *);
+MBO_EXPORT MboProdSpace mboProdSpaceCopy(MboProdSpace);
+MBO_EXPORT MboGlobInd mboProdSpaceDim(MboProdSpace);
+MBO_EXPORT int mboProdSpaceSize(MboProdSpace);
+MBO_EXPORT void mboProdSpaceGetDims(MboProdSpace, int, MboLocInd *);
+MBO_EXPORT int mboProdSpaceEqual(MboProdSpace, MboProdSpace);
+MBO_EXPORT int mboProdSpaceCheck(MboProdSpace);
+MBO_EXPORT int mboProdSpaceTest();
 
 #ifdef __cplusplus
 }
