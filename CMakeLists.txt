@@ -41,6 +41,7 @@ endif()
 
 if(MBO_BUILD_SHARED_LIBS)
   set(BUILD_SHARED_LIBS ON)
+  add_definitions("-DBUILDING_DLL")
 endif()
 
 add_subdirectory(include)

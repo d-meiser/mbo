@@ -10,6 +10,7 @@
 #ifndef MBO_ELEM_OP_H
 #define MBO_ELEM_OP_H
 
+#include <MboSys.h>
 #include <MboIndices.h>
 
 #ifdef __cplusplus
@@ -21,25 +22,26 @@ typedef struct MboElemOp *MboElemOp;
 
 struct MboAmplitude;
 
-void mboElemOpCreate(MboElemOp *);
-void mboElemOpDestroy(MboElemOp *);
-void mboElemOpAddTo(MboLocInd, MboLocInd, struct MboAmplitude*, MboElemOp *);
-void mboElemOpScale(struct MboAmplitude*, MboElemOp);
-void mboElemOpPlus(MboElemOp, MboElemOp *);
-void mboElemOpMul(MboElemOp, MboElemOp *);
-MboElemOp mboElemOpCopy(MboElemOp);
-int mboElemOpNumEntries(MboElemOp);
-struct MboNonZeroEntry *mboElemOpGetEntries(MboElemOp);
-int mboElemOpCheck(MboElemOp);
-int mboElemOpTest();
+MBO_API void mboElemOpCreate(MboElemOp *);
+MBO_API void mboElemOpDestroy(MboElemOp *);
+MBO_API void mboElemOpAddTo(MboLocInd, MboLocInd, struct MboAmplitude *,
+			       MboElemOp *);
+MBO_API void mboElemOpScale(struct MboAmplitude*, MboElemOp);
+MBO_API void mboElemOpPlus(MboElemOp, MboElemOp *);
+MBO_API void mboElemOpMul(MboElemOp, MboElemOp *);
+MBO_API MboElemOp mboElemOpCopy(MboElemOp);
+MBO_API int mboElemOpNumEntries(MboElemOp);
+MBO_API struct MboNonZeroEntry *mboElemOpGetEntries(MboElemOp);
+MBO_API int mboElemOpCheck(MboElemOp);
+MBO_API int mboElemOpTest();
 
-MboElemOp mboSigmaPlus();
-MboElemOp mboSigmaMinus();
-MboElemOp mboSigmaZ();
-MboElemOp mboEye(MboLocInd);
-MboElemOp mboNumOp(MboLocInd);
-MboElemOp mboAnnihilationOp(MboLocInd);
-MboElemOp mboCreationOp(MboLocInd);
+MBO_API MboElemOp mboSigmaPlus();
+MBO_API MboElemOp mboSigmaMinus();
+MBO_API MboElemOp mboSigmaZ();
+MBO_API MboElemOp mboEye(MboLocInd);
+MBO_API MboElemOp mboNumOp(MboLocInd);
+MBO_API MboElemOp mboAnnihilationOp(MboLocInd);
+MBO_API MboElemOp mboCreationOp(MboLocInd);
 
 #ifdef __cplusplus
 }
