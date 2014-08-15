@@ -7,6 +7,7 @@
 #ifndef MBO_VEC_H
 #define MBO_VEC_H
 
+#include <MboSys.h>
 #include <MboErrors.h>
 #include <MboIndices.h>
 
@@ -21,10 +22,10 @@ typedef struct MboVec *MboVec;
 
 
 /** @brief Create MboVec of dimension dim */
-MBO_STATUS mboVecCreate(MboGlobInd dim, MboVec *v);
+MBO_API MBO_STATUS mboVecCreate(MboGlobInd dim, MboVec *v);
 
 /** @brief Release all resources of a MboVec */
-MBO_STATUS mboVecDestroy(MboVec *v);
+MBO_API MBO_STATUS mboVecDestroy(MboVec *v);
 
 /** @brief Fill vector with nth unit vector
  * Sets the nth entry in the vector to 1 and all other entries to zero.
@@ -33,10 +34,10 @@ MBO_STATUS mboVecDestroy(MboVec *v);
  *          previously created with mboVecCreate.
  * @sa mboVecCreate
  * */
-MBO_STATUS mboVecUnitVector(MboGlobInd n, MboVec v);
+MBO_API MBO_STATUS mboVecUnitVector(MboGlobInd n, MboVec v);
 
 /** @brief Get dimension of vector */
-MboGlobInd mboVecDim(MboVec v);
+MBO_API MboGlobInd mboVecDim(MboVec v);
 
 /** @brief Obtain a read-write view of the vector data
  *
@@ -47,7 +48,7 @@ MboGlobInd mboVecDim(MboVec v);
  *
  * @see mboVecReleaseView, mboVecGetViewR
  * */
-MBO_STATUS mboVecGetViewRW(MboVec v, struct MboAmplitude **array);
+MBO_API MBO_STATUS mboVecGetViewRW(MboVec v, struct MboAmplitude **array);
 
 /** @brief Obtain a read-only view of vector data
  *
@@ -57,28 +58,28 @@ MBO_STATUS mboVecGetViewRW(MboVec v, struct MboAmplitude **array);
  *
  * @see mboVecReleaseView, mboVecGetViewRW
  * */
-MBO_STATUS mboVecGetViewR(MboVec v, struct MboAmplitude **array);
+MBO_API MBO_STATUS mboVecGetViewR(MboVec v, struct MboAmplitude **array);
 
 /** @brief Release a view of the vector data. */
-MBO_STATUS mboVecReleaseView(MboVec v, struct MboAmplitude **array);
+MBO_API MBO_STATUS mboVecReleaseView(MboVec v, struct MboAmplitude **array);
 
 /** @brief y <- a * x + y
  * */
-MBO_STATUS mboVecAXPY(struct MboAmplitude *a, MboVec x, MboVec y);
+MBO_API MBO_STATUS mboVecAXPY(struct MboAmplitude *a, MboVec x, MboVec y);
 
 /** @brief computes the dot product of two vectors
  * @param x vector on left hand side in dot product ("Bra")
  * @param y vector on right hand size in dot product ("Ket")
  * @param result the dot product
  * */
-MBO_STATUS mboVecDot(MboVec x, MboVec y, struct MboAmplitude *result);
+MBO_API MBO_STATUS mboVecDot(MboVec x, MboVec y, struct MboAmplitude *result);
 
-MBO_STATUS mboVecSwap(MboVec x, MboVec y);
+MBO_API MBO_STATUS mboVecSwap(MboVec x, MboVec y);
 
 /** @brief set vector to a constant */
-MBO_STATUS mboVecSet(struct MboAmplitude *a, MboVec x);
+MBO_API MBO_STATUS mboVecSet(struct MboAmplitude *a, MboVec x);
 
-MBO_STATUS mboVecSetRandom(MboVec x);
+MBO_API MBO_STATUS mboVecSetRandom(MboVec x);
 
 /** @brief Add outer product of vectors
  * @param n    Number of arrays.  n can be obtained from an MboProdSpace
@@ -94,8 +95,8 @@ MBO_STATUS mboVecSetRandom(MboVec x);
  *             be added.
  * @see mboProdSpaceSize, mboProdSpaceGetDims
  * */
-MBO_STATUS mboVecKron(int n, MboLocInd *dims, struct MboAmplitude **vecs,
-		      MboVec x);
+MBO_API MBO_STATUS
+mboVecKron(int n, MboLocInd *dims, struct MboAmplitude **vecs, MboVec x);
 
 /** @brief Apply a function to every entry in a vector
  * @param n    Number of dimensions.
@@ -109,19 +110,20 @@ MBO_STATUS mboVecKron(int n, MboLocInd *dims, struct MboAmplitude **vecs,
  *             accessed by mboVecMap.
  * @param x    The vector to which the function is applied.
  * */
-MBO_STATUS mboVecMap(int n, MboLocInd *dims,
-		     void f(int, MboLocInd *, MboLocInd *, void *, struct MboAmplitude *),
-		     void *ctx, MboVec x);
+MBO_API MBO_STATUS
+mboVecMap(int n, MboLocInd *dims,
+	  void f(int, MboLocInd *, MboLocInd *, void *, struct MboAmplitude *),
+	  void *ctx, MboVec x);
 
-MBO_STATUS mboVecDuplicate(MboVec x, MboVec *y);
+MBO_API MBO_STATUS mboVecDuplicate(MboVec x, MboVec *y);
 
 /** @brief Check integrity of MboVec
  * Returns the number of errors enountered. */
-int mboVecCheck();
+MBO_API int mboVecCheck();
 
 /** @brief Run MboVec tests
  * Returns the total number of failures encountered. */
-int mboVecTest();
+MBO_API int mboVecTest();
 
 #ifdef __cplusplus
 }

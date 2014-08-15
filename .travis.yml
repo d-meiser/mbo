@@ -12,6 +12,10 @@ script:
   - cmake -DCMAKE_BUILD_TYPE=Debug -DMBO_ENABLE_COVERAGE=ON ..
   - make -j8
   - ctest -j4 --output-on-failure
+  - rm -rf *
+  - cmake -DCMAKE_BUILD_TYPE=Debug -DMBO_ENABLE_COVERAGE=ON -DMBO_BUILD_SHARED_LIBS=ON ..
+  - make -j8
+  - ctest -j4 --output-on-failure
 after_success:
   - lcov -d tests -d src -d examples -base-directory .. -c -o coverage.info
   - lcov --remove coverage.info '/usr/*' -o coverage.info

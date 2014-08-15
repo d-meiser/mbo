@@ -7,6 +7,7 @@
 #ifndef MBO_PROD_SPACE_H
 #define MBO_PROD_SPACE_H
 
+#include <MboSys.h>
 #include <MboIndices.h>
 
 #ifdef __cplusplus
@@ -19,16 +20,16 @@ struct MboProdSpace;
  * */
 typedef struct MboProdSpace *MboProdSpace;
 
-MboProdSpace mboProdSpaceCreate(MboLocInd);
-void mboProdSpaceDestroy(MboProdSpace *);
-void mboProdSpaceMul(MboProdSpace, MboProdSpace *);
-MboProdSpace mboProdSpaceCopy(MboProdSpace);
-MboGlobInd mboProdSpaceDim(MboProdSpace);
-int mboProdSpaceSize(MboProdSpace);
-void mboProdSpaceGetDims(MboProdSpace, int, MboLocInd *);
-int mboProdSpaceEqual(MboProdSpace, MboProdSpace);
-int mboProdSpaceCheck(MboProdSpace);
-int mboProdSpaceTest();
+MBO_API MboProdSpace mboProdSpaceCreate(MboLocInd);
+MBO_API void mboProdSpaceDestroy(MboProdSpace *);
+MBO_API void mboProdSpaceMul(MboProdSpace, MboProdSpace *);
+MBO_API MboProdSpace mboProdSpaceCopy(MboProdSpace);
+MBO_API MboGlobInd mboProdSpaceDim(MboProdSpace);
+MBO_API int mboProdSpaceSize(MboProdSpace);
+MBO_API void mboProdSpaceGetDims(MboProdSpace, int, MboLocInd *);
+MBO_API int mboProdSpaceEqual(MboProdSpace, MboProdSpace);
+MBO_API int mboProdSpaceCheck(MboProdSpace);
+MBO_API int mboProdSpaceTest();
 
 #ifdef __cplusplus
 }

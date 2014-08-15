@@ -11,6 +11,8 @@ option(MBO_ENABLE_COVERAGE
     "Instrument tests for coverage" ON)
 option(MBO_BUILD_DOCS
     "Whether to build documentation" OFF)
+option(MBO_BUILD_SHARED_LIBS
+    "Whether to build shared libraries" OFF)
 
 if(CMAKE_COMPILER_IS_GNUCC)
   set(WARNING_FLAGS "-Wall")
@@ -35,6 +37,11 @@ elseif("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
       "${CMAKE_C_FLAGS_DEBUG} -fsanitize=address")
 elseif("${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC")
 elseif("${CMAKE_C_COMPILER_ID}" STREQUAL "Intel")
+endif()
+
+if(MBO_BUILD_SHARED_LIBS)
+  set(BUILD_SHARED_LIBS ON)
+  add_definitions("-DBUILDING_DLL")
 endif()
 
 add_subdirectory(include)
