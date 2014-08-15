@@ -231,13 +231,19 @@ MBO_STATUS mboTensorOpKron(int n, MboTensorOp *ops, MboTensorOp *c)
 	MboTensorOp a, b;
 
 	h = mboProdSpaceCreate(0);
-	for (i = 0; i < n; ++i) {
+	/* Below we're multiplying the spaces together starting at the right,
+	 * but the operators are listed from left to right.  Hence we have to
+	 * assemble here starting from the right to check the product space
+	 * equality */
+	for (i = n - 1; i >= 0; --i) {
 		mboProdSpaceMul(ops[i]->space, &h);
 	}
 	spacesEqual = mboProdSpaceEqual(h, (*c)->space);
 	mboProdSpaceDestroy(&h);
 	if (!spacesEqual) return MBO_SPACE_MISMATCH;
 
+	/* fold the operators together using mboTensorOpKronTwo for pairwise
+	 * multiplication */
 	h = mboProdSpaceCreate(0);
 	mboTensorOpIdentity(h, &b);
 	for (i = 0; i < n; ++i) {
@@ -1143,6 +1149,7 @@ static int testMboTensorOpKron()
 	MboProdSpace h1, h2, h3, hTot;
 	MBO_STATUS err;
 	MboElemOp sz;
+	MboLocInd dims[3];
 
 	h1 = mboProdSpaceCreate(2);
 	hTot = mboProdSpaceCreate(0);
@@ -1178,8 +1185,8 @@ static int testMboTensorOpKron()
 	h1 = mboProdSpaceCreate(2);
 	h2 = mboProdSpaceCreate(3);
 	hTot = mboProdSpaceCreate(0);
-	mboProdSpaceMul(h1, &hTot);
 	mboProdSpaceMul(h2, &hTot);
+	mboProdSpaceMul(h1, &hTot);
 	mboTensorOpNull(hTot, &result);
 	n = 2;
 	ops = malloc(n * sizeof(*ops));
@@ -1201,9 +1208,10 @@ static int testMboTensorOpKron()
 	h1 = mboProdSpaceCreate(2);
 	h2 = mboProdSpaceCreate(3);
 	hTot = mboProdSpaceCreate(0);
-	mboProdSpaceMul(h1, &hTot);
 	mboProdSpaceMul(h2, &hTot);
+	mboProdSpaceMul(h1, &hTot);
 	mboTensorOpNull(hTot, &result);
+	mboProdSpaceGetDims(result->space, 3, dims);
 	n = 2;
 	ops = malloc(n * sizeof(*ops));
 	mboTensorOpIdentity(h1, &ops[0]);
@@ -1212,6 +1220,10 @@ static int testMboTensorOpKron()
 	err = mboTensorOpKron(n, ops, &result);
 	CHK_EQUAL(err, MBO_SUCCESS, errs);
 	CHK_EQUAL(result->numTerms, 2, errs);
+	CHK_EQUAL(mboProdSpaceSize(result->space), 2, errs);
+	mboProdSpaceGetDims(result->space, 3, dims);
+	CHK_EQUAL(dims[0], 2, errs);
+	CHK_EQUAL(dims[1], 3, errs);
 	mboTensorOpDestroy(&ops[0]);
 	mboTensorOpDestroy(&ops[1]);
 	free(ops);
