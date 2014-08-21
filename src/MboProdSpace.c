@@ -97,33 +97,6 @@ int mboProdSpaceCheck(MboProdSpace h)
  * */
 #include "TestUtils.h"
 
-static int testMboProdSpaceCreate()
-{
-	int errs = 0;
-	MboProdSpace sp;
-	sp = mboProdSpaceCreate(2);
-	CHK_EQUAL(sp->numSpaces, 1, errs);
-	CHK_TRUE(sp->dims != 0, errs);
-	mboProdSpaceDestroy(&sp);
-
-	sp = mboProdSpaceCreate(0);
-	CHK_EQUAL(sp->numSpaces, 0, errs);
-	CHK_EQUAL(sp->dims, 0, errs);
-	mboProdSpaceDestroy(&sp);
-
-	return errs;
-}
-
-static int testMboProdSpaceDestroy()
-{
-	int errs = 0;
-	MboProdSpace sp;
-
-	sp = mboProdSpaceCreate(1);
-	mboProdSpaceDestroy(&sp);
-	return errs;
-}
-
 static int testMboProdSpaceMul()
 {
 	int errs = 0;
@@ -343,8 +316,6 @@ static int testMboProdSpaceCheck()
 int mboProdSpaceTest()
 {
 	int errs = 0;
-	errs += testMboProdSpaceCreate();
-	errs += testMboProdSpaceDestroy();
 	errs += testMboProdSpaceMul();
 	errs += testBuildSpace();
 	errs += testMultiplyWithSelf();
