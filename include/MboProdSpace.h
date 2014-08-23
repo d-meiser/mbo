@@ -29,7 +29,6 @@ MBO_EXPORT int mboProdSpaceSize(MboProdSpace);
 MBO_EXPORT void mboProdSpaceGetDims(MboProdSpace, int, MboLocInd *);
 MBO_EXPORT int mboProdSpaceEqual(MboProdSpace, MboProdSpace);
 MBO_EXPORT int mboProdSpaceCheck(MboProdSpace);
-MBO_EXPORT int mboProdSpaceTest();
 
 #ifdef __cplusplus
 }

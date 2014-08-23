@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <MboProdSpace.h>
 
-TEST(MboProdSpace, InternalTests) { EXPECT_EQ(0, mboProdSpaceTest()); }
+#include <config.h>
 
 TEST(MboProdSpace, mboProdSpaceCreate) {
   MboProdSpace sp;
@@ -75,9 +75,11 @@ std::vector<MboLocInd> manyDims(20, 2);
 INSTANTIATE_TEST_CASE_P(BuildSpace, MboProdSpaceMulTest,
                         ::testing::Values(manyDims));
 
+#ifdef HAVE_64BIT_INTS
 std::vector<MboLocInd> largeDims(2, 0x7FFFFFFF);
 INSTANTIATE_TEST_CASE_P(LargeDims, MboProdSpaceMulTest,
                         ::testing::Values(largeDims));
+#endif
 
 TEST(MboProdSpace, MultiplyWithSelf)
 {
@@ -132,4 +134,38 @@ TEST(MboProdSpace, CheckFail)
   MboProdSpace h = buildProdSpace(dims);
   EXPECT_NE(mboProdSpaceCheck(h), 0);
   mboProdSpaceDestroy(&h);
+}
+
+TEST(MboProdSpace, EqualCopy)
+{
+	MboProdSpace h1 = mboProdSpaceCreate(2);
+	MboProdSpace h2 = mboProdSpaceCopy(h1);
+	EXPECT_TRUE(mboProdSpaceEqual(h1, h2));
+	mboProdSpaceDestroy(&h1);
+	mboProdSpaceDestroy(&h2);
+}
+
+TEST(MboProdSpace, NotEqual)
+{
+	MboProdSpace h1 = mboProdSpaceCreate(2);
+	MboProdSpace h2 = mboProdSpaceCopy(h1);
+	mboProdSpaceMul(h1, &h2);
+	EXPECT_FALSE(mboProdSpaceEqual(h1, h2));
+	mboProdSpaceDestroy(&h1);
+	mboProdSpaceDestroy(&h2);
+}
+
+TEST(MboProdSpace, Equal)
+{
+	MboProdSpace h1 = mboProdSpaceCreate(2);
+	MboProdSpace h2 = mboProdSpaceCopy(h1);
+	MboProdSpace h3 = mboProdSpaceCopy(h2);
+	mboProdSpaceMul(h1, &h2);
+	mboProdSpaceMul(h1, &h2);
+	mboProdSpaceMul(h1, &h3);
+	mboProdSpaceMul(h1, &h3);
+	EXPECT_TRUE(mboProdSpaceEqual(h2, h3));
+	mboProdSpaceDestroy(&h1);
+	mboProdSpaceDestroy(&h2);
+	mboProdSpaceDestroy(&h3);
 }
