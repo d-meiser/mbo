@@ -118,12 +118,9 @@ mboVecMap(int n, MboLocInd *dims,
 MBO_EXPORT MBO_STATUS mboVecDuplicate(MboVec x, MboVec *y);
 
 /** @brief Check integrity of MboVec
- * Returns the number of errors enountered. */
-MBO_EXPORT int mboVecCheck();
-
-/** @brief Run MboVec tests
- * Returns the total number of failures encountered. */
-MBO_EXPORT int mboVecTest();
+ * @param v The vector to be checked.
+ * @returns The number of errors enountered. */
+MBO_EXPORT int mboVecCheck(MboVec v);
 
 #ifdef __cplusplus
 }
