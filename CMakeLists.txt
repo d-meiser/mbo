@@ -56,7 +56,6 @@ elseif("${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC")
 elseif("${CMAKE_C_COMPILER_ID}" STREQUAL "Intel")
 endif()
 
-message(STATUS "PROJECT_BINARY_DIR==${PROJECT_BINARY_DIR}")
 include_directories(${PROJECT_BINARY_DIR})
 
 add_subdirectory(src)
@@ -69,6 +68,14 @@ endif()
 add_subdirectory(include)
 
 generate_export_header(MBO EXPORT_FILE_NAME MboExport.h)
+
+# Configuration header
+include(CheckTypeSize)
+check_type_size("long long" SizeOfLongLong BUILTIN_TYPES_ONLY)
+if("${SizeOfLongLong}" STREQUAL "8")
+  set(HAVE_64BIT_INTS TRUE)
+endif()
+configure_file(config.h.in config.h)
 
 if(MBO_BUILD_DOCS)
   find_package(Doxygen)
