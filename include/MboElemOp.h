@@ -33,7 +33,6 @@ MBO_EXPORT MboElemOp mboElemOpCopy(MboElemOp);
 MBO_EXPORT int mboElemOpNumEntries(MboElemOp);
 MBO_EXPORT struct MboNonZeroEntry *mboElemOpGetEntries(MboElemOp);
 MBO_EXPORT int mboElemOpCheck(MboElemOp);
-MBO_EXPORT int mboElemOpTest();
 
 MBO_EXPORT MboElemOp mboSigmaPlus();
 MBO_EXPORT MboElemOp mboSigmaMinus();
