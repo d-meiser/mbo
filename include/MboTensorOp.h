@@ -114,10 +114,6 @@ MBO_EXPORT double mboTensorOpFlops(MboTensorOp a);
  * Returns the number of errors.*/
 MBO_EXPORT int mboTensorOpCheck(MboTensorOp);
 
-/** @brief Run tensor operator test suite.
- * Returns the number of errors. */
-MBO_EXPORT int mboTensorOpTest();
-
 #ifdef __cplusplus
 }
 #endif
