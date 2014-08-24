@@ -1,5 +1,6 @@
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/../include
+    ${CMAKE_CURRENT_SOURCE_DIR}
     ${PROJECT_BINARY_DIR}
     )
 
@@ -8,6 +9,9 @@ set(MBO_SRCS
   MboProdSpace.c
   MboTensorOp.c
   MboVec.c
+  Embedding.c
+  SimpleTOp.c
+  Utilities.c
   )
 
 add_compiler_export_flags()
