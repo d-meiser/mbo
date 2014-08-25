@@ -1,14 +1,17 @@
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/../include
+  ${CMAKE_CURRENT_SOURCE_DIR}/../src
   ${PROJECT_BINARY_DIR}
   ${GTEST_INCLUDE_DIRS}
   )
 
 set(TESTS
+  test_Embedding
   test_MboElemOp
   test_MboProdSpace
   test_MboTensorOp
   test_MboVec
+  test_SimpleTOps
   )
 
 foreach(t ${TESTS})
