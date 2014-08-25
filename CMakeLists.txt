@@ -7,13 +7,13 @@ include(AddCCompilerFlagIfSupported)
 include(AddCLinkerFlagIfSupported)
 
 option(RUN_EXAMPLES_AS_TESTS 
-    "Whether to run the examples as part of the test suite" ON)
+    "Whether to run the examples as part of the test suite" OFF)
 option(MBO_ENABLE_COVERAGE
-    "Instrument tests for coverage" ON)
+    "Instrument tests for coverage" OFF)
 option(MBO_BUILD_DOCS
     "Whether to build documentation" OFF)
 option(MBO_BUILD_TESTS
-    "Whether to build tests" ON)
+    "Whether to build tests" OFF)
 
 set(COV_LIBRARIES "")
 if(CMAKE_COMPILER_IS_GNUCC)
