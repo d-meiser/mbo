@@ -251,3 +251,19 @@ int mboTensorOpCheck(MboTensorOp op)
 	return errs;
 }
 
+static void zeroArray(MboGlobInd n, struct MboAmplitude *array)
+{
+	MboGlobInd i;
+	for (i = 0; i < n; ++i) {
+		array[i].re = 0;
+		array[i].im = 0;
+	}
+}
+
+void mboTensorOpDenseMatrix(MboTensorOp a, struct MboAmplitude *mat)
+{
+	MboGlobInd dim;
+	dim = mboProdSpaceDim(a->space);
+
+	zeroArray(dim * dim, mat);
+}
