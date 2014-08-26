@@ -56,6 +56,11 @@ void applyEmbeddings(int i, int numSpaces, MboLocInd *dims,
 			    struct MboAmplitude *xarr,
 			    struct MboAmplitude *yarr);
 
+void embeddingDenseMatrix(int i, int numSpaces, MboLocInd *dims,
+			  MboGlobInd blockSize, MboGlobInd dim,
+			  struct MboAmplitude alpha, int numFactors,
+			  struct Embedding *embeddings,
+			  struct MboAmplitude *mat);
 #ifdef __cplusplus
 }
 #endif

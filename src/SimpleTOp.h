@@ -35,6 +35,9 @@ MBO_STATUS applySimpleTOp(MboProdSpace h, struct MboAmplitude *alpha,
 			  struct SimpleTOp *a, MboVec x, MboVec y);
 double flopsSimpleTOp(int numSpaces, MboLocInd *dims, struct SimpleTOp *op);
 
+void simpleTOpDenseMatrix(MboProdSpace h, struct SimpleTOp *simpleOp,
+			  struct MboAmplitude *mat);
+
 #ifdef __cplusplus
 }
 #endif

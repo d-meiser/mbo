@@ -1,7 +1,8 @@
 #include <gtest/gtest.h>
 #include <SimpleTOp.h>
+#include <vector>
 
-TEST(SimpleTOps, Kron) {
+TEST(SimpleTOp, Kron) {
   struct SimpleTOp a, b, c;
 
   a.numFactors = 0;
@@ -63,3 +64,64 @@ TEST(SimpleTOps, Kron) {
   destroySimpleTOp(&c);
 }
 
+TEST(SimpleTOp, DenseMatrixIdentityOneSpace) {
+  MboLocInd d = 2;
+  MboProdSpace h = mboProdSpaceCreate(d);
+  struct SimpleTOp sto;
+  sto.numFactors = 0;
+  sto.embeddings = 0;
+  std::vector<struct MboAmplitude> mat(d * d);
+
+  simpleTOpDenseMatrix(h, &sto, &mat[0]);
+  for (int i = 0; i < d * d; ++i) {
+    int row = i / d;
+    int col = i % d;
+    struct MboAmplitude expectedResult;
+    if (row == col) {
+      expectedResult.re = 1;
+      expectedResult.im = 0;
+    } else {
+      expectedResult.re = 0;
+      expectedResult.im = 0;
+    }
+    EXPECT_FLOAT_EQ(expectedResult.re, mat[i].re) << "(row, col == (" << row
+                                                  << ", " << col << ")";
+    EXPECT_FLOAT_EQ(expectedResult.im, mat[i].im) << "(row, col == (" << row
+                                                  << ", " << col << ")";
+  }
+
+  destroySimpleTOp(&sto);
+  mboProdSpaceDestroy(&h);
+}
+
+TEST(SimpleTOp, DenseMatrixIdentityTwoSpaces) {
+  MboLocInd d = 2;
+  MboProdSpace h = mboProdSpaceCreate(d);
+  mboProdSpaceMul(h, &h);
+  struct SimpleTOp sto;
+  sto.numFactors = 0;
+  sto.embeddings = 0;
+  MboGlobInd dim = mboProdSpaceDim(h);
+  std::vector<struct MboAmplitude> mat(dim * dim);
+
+  simpleTOpDenseMatrix(h, &sto, &mat[0]);
+  for (int i = 0; i < dim * dim; ++i) {
+    int row = i / dim;
+    int col = i % dim;
+    struct MboAmplitude expectedResult;
+    if (row == col) {
+      expectedResult.re = 1;
+      expectedResult.im = 0;
+    } else {
+      expectedResult.re = 0;
+      expectedResult.im = 0;
+    }
+    EXPECT_FLOAT_EQ(expectedResult.re, mat[i].re) << "(row, col == (" << row
+                                                  << ", " << col << ")";
+    EXPECT_FLOAT_EQ(expectedResult.im, mat[i].im) << "(row, col == (" << row
+                                                  << ", " << col << ")";
+  }
+
+  destroySimpleTOp(&sto);
+  mboProdSpaceDestroy(&h);
+}

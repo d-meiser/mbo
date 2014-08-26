@@ -139,3 +139,21 @@ void sortEmbeddings(int numEmbeddings, struct Embedding *embeddings)
 {
 	qsort(embeddings, numEmbeddings, sizeof(*embeddings), embeddingCmp);
 }
+
+void embeddingDenseMatrix(int i, int numSpaces, MboLocInd *dims,
+			  MboGlobInd blockSize, MboGlobInd dim,
+			  struct MboAmplitude alpha, int numFactors,
+			  struct Embedding *embeddings,
+			  struct MboAmplitude *mat)
+{
+	MboGlobInd n;
+
+	if (numFactors > 0) {
+	} else {
+		for (n = 0; n < blockSize; ++n) {
+			mat[0].re += alpha.re;
+			mat[0].im += alpha.im;
+			mat += dim + 1;
+		}
+	}
+}
