@@ -13,6 +13,7 @@ set(TESTS
   test_MboTensorOp
   test_MboVec
   test_SimpleTOps
+  test_SmallOps
   )
 
 foreach(t ${TESTS})
