@@ -91,11 +91,11 @@ void applyEmbeddings(int i, int numSpaces, MboLocInd *dims,
 		entries = mboElemOpGetEntries(embeddings->op);
 		for (n = 0; n < blockSizeBefore; ++n) {
 			for (e = 0; e < mboElemOpNumEntries(embeddings->op);
-					++e) {
+			     ++e) {
 				tmp.re = alpha.re * entries[e].val.re -
-					       alpha.im * entries[e].val.im;
+					 alpha.im * entries[e].val.im;
 				tmp.im = alpha.re * entries[e].val.im +
-					       alpha.im * entries[e].val.re;
+					 alpha.im * entries[e].val.re;
 				applyEmbeddings(
 				    nextI + 1, numSpaces, dims, blockSizeAfter,
 				    tmp, numFactors - 1, embeddings + 1,
@@ -141,16 +141,39 @@ void sortEmbeddings(int numEmbeddings, struct Embedding *embeddings)
 }
 
 void embeddingDenseMatrix(int i, int numSpaces, MboLocInd *dims,
-			  MboGlobInd blockSize, MboGlobInd dim,
+			  MboGlobInd blockSizeAfter, MboGlobInd dim,
 			  struct MboAmplitude alpha, int numFactors,
 			  struct Embedding *embeddings,
 			  struct MboAmplitude *mat)
 {
-	MboGlobInd n;
+	MboGlobInd blockSizeBefore, n;
+	struct MboNonZeroEntry *entries;
+	int nextI, e;
+	struct MboAmplitude tmp;
 
 	if (numFactors > 0) {
+		nextI = embeddings->i;
+		blockSizeBefore = computeBlockSize(nextI - i, dims + i);
+		blockSizeAfter /= (blockSizeBefore * (MboGlobInd)dims[nextI]);
+		entries = mboElemOpGetEntries(embeddings->op);
+		for (n = 0; n < blockSizeBefore; ++n) {
+			for (e = 0; e < mboElemOpNumEntries(embeddings->op);
+			     ++e) {
+				tmp.re = alpha.re * entries[e].val.re -
+					 alpha.im * entries[e].val.im;
+				tmp.im = alpha.re * entries[e].val.im +
+					 alpha.im * entries[e].val.re;
+				embeddingDenseMatrix(
+				    nextI + 1, numSpaces, dims, blockSizeAfter,
+				    dim, tmp, numFactors - 1, embeddings + 1,
+				    mat + entries[e].n * blockSizeAfter +
+					entries[e].m * blockSizeAfter * dim);
+			}
+			mat += blockSizeAfter * (MboGlobInd)dims[nextI] *
+			       (dim + 1);
+		}
 	} else {
-		for (n = 0; n < blockSize; ++n) {
+		for (n = 0; n < blockSizeAfter; ++n) {
 			mat[0].re += alpha.re;
 			mat[0].im += alpha.im;
 			mat += dim + 1;
