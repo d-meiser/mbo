@@ -267,3 +267,15 @@ void mboTensorOpDenseMatrix(MboTensorOp a, struct MboAmplitude *mat)
 		simpleTOpDenseMatrix(a->space, a->sum + i, mat);
 	}
 }
+
+void mboTensorOpGetNonZerosPerRow(MboTensorOp a, MboGlobInd rmin,
+				  MboGlobInd rmax, int *nnz)
+{
+  int i, r;
+  for (r = 0; r < rmax - rmin; ++r) {
+    nnz[r] = 0;
+  }
+	for (i = 0; i < a->numTerms; ++i) {
+		simpleTOpGetNonZerosPerRow(a->space, a->sum + i, rmin, rmax, nnz);
+	}
+}

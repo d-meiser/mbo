@@ -658,12 +658,12 @@ TEST(MboTensorOp, DenseMatrixNull) {
 
 TEST(MboTensorOp, DenseMatrixIdentity) {
   MboProdSpace h = mboProdSpaceCreate(2);
-  MboTensorOp null;
-  mboTensorOpIdentity(h, &null);
+  MboTensorOp id;
+  mboTensorOpIdentity(h, &id);
 
   MboGlobInd dim = mboProdSpaceDim(h);
   struct MboAmplitude *mat = new struct MboAmplitude[dim * dim];
-  mboTensorOpDenseMatrix(null, mat);
+  mboTensorOpDenseMatrix(id, mat);
   for (int i = 0; i < dim * dim; ++i) {
     struct MboAmplitude expectedResult;
     if (i % mboProdSpaceDim(h) == i / mboProdSpaceDim(h)) {
@@ -678,6 +678,34 @@ TEST(MboTensorOp, DenseMatrixIdentity) {
   }
 
   delete [] mat;
+  mboTensorOpDestroy(&id);
+  mboProdSpaceDestroy(&h);
+}
+
+TEST(MboTensorOp, GetNonZerosPerRowNull) {
+  int dim = 2;
+  MboProdSpace h = mboProdSpaceCreate(dim);
+  MboTensorOp null;
+  mboTensorOpNull(h, &null);
+
+  std::vector<int> nnzs(dim);
+  mboTensorOpGetNonZerosPerRow(null, 0, 2, &nnzs[0]);
+  EXPECT_EQ(0, nnzs[0]);
+  EXPECT_EQ(0, nnzs[1]);
+
   mboTensorOpDestroy(&null);
+  mboProdSpaceDestroy(&h);
+}
+
+TEST(MboTensorOp, GetNonZerosPerRowIdentity) {
+  int dim = 2;
+  MboProdSpace h = mboProdSpaceCreate(dim);
+  MboTensorOp id;
+  mboTensorOpIdentity(h, &id);
+
+  std::vector<int> nnzs(dim);
+  mboTensorOpGetNonZerosPerRow(id, 0, 2, &nnzs[0]);
+
+  mboTensorOpDestroy(&id);
   mboProdSpaceDestroy(&h);
 }

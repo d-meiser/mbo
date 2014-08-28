@@ -131,6 +131,9 @@ MBO_EXPORT double mboTensorOpFlops(MboTensorOp a);
  * */
 MBO_EXPORT void mboTensorOpDenseMatrix(MboTensorOp a, struct MboAmplitude *mat);
 
+MBO_EXPORT void mboTensorOpGetNonZerosPerRow(MboTensorOp a, MboGlobInd rmin,
+					     MboGlobInd rmax, int *nnz);
+
 /** @brief Check integrity of tensor operator.
  * Returns the number of errors.*/
 MBO_EXPORT int mboTensorOpCheck(MboTensorOp);

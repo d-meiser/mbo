@@ -174,3 +174,8 @@ void simpleTOpDenseMatrix(MboProdSpace h, struct SimpleTOp *simpleOp,
 
 	free(dims);
 }
+
+void simpleTOpGetNonZerosPerRow(MboProdSpace h, struct SimpleTOp *simpleOp,
+				MboGlobInd rmin, MboGlobInd rmax, int *nnz)
+{
+}
