@@ -6,6 +6,7 @@ include_directories(
   )
 
 set(TESTS
+  test_DenseMatrices
   test_Embedding
   test_MboElemOp
   test_MboProdSpace
