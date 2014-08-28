@@ -65,6 +65,14 @@ MBO_EXPORT void mboTensorOpDestroy(MboTensorOp *top);
  * */
 MBO_EXPORT void mboTensorOpAddTo(MboElemOp elemop, int i, MboTensorOp top);
 
+/** @brief Get the space on which the operator is defined 
+ *  This method returns a non-owning pointer to the space on which the
+ *  tensor operator is defined.  The caller must not modify the product
+ *  space or destroy it.
+ *  @returns Pointer to product space of operator (non-owning)
+ *  */
+MBO_EXPORT MboProdSpace mboTensorOpGetSpace(MboTensorOp op);
+
 /** @brief Adds scaled version of embedded operator to tensor operator.
  * @see mboTensorOpAddTo
  * */
@@ -109,6 +117,19 @@ MBO_EXPORT MBO_STATUS mboTensorOpMatVec(struct MboAmplitude *alpha, MboTensorOp 
  *
  * @param a The tensor operator for which the flops are to be computed. */
 MBO_EXPORT double mboTensorOpFlops(MboTensorOp a);
+
+/** @brief Dense matrix representation of operator
+ *
+ * This function fills the array mat with the dense matrix
+ * representation of the tensor operator.  The matrix is written in row
+ * major order
+ *
+ * @param a   The tensor operator.
+ * @param mat User allocated array for the dense matrix.  Has to be at
+ *            least of length dim * dim, where dim is the dimension of
+ *            the Hilbert space of the operator.
+ * */
+MBO_EXPORT void mboTensorOpDenseMatrix(MboTensorOp a, struct MboAmplitude *mat);
 
 /** @brief Check integrity of tensor operator.
  * Returns the number of errors.*/

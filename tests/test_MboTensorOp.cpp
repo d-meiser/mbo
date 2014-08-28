@@ -22,6 +22,16 @@ TEST(MboTensorOp, Identity) {
   mboProdSpaceDestroy(&h);
 }
 
+TEST(MboTensorOp, GetSpace) {
+  MboTensorOp op;
+  MboProdSpace h = mboProdSpaceCreate(5);
+  mboTensorOpIdentity(h, &op);
+  MboProdSpace h2 = mboTensorOpGetSpace(op);
+  EXPECT_TRUE(mboProdSpaceEqual(h, h2));
+  mboTensorOpDestroy(&op);
+  mboProdSpaceDestroy(&h);
+}
+
 TEST(MboTensorOp, AddTo) {
   MboTensorOp op;
   MboElemOp eop;
@@ -625,5 +635,49 @@ TEST(MboTensorOp, Check) {
   mboTensorOpIdentity(h, &a);
   EXPECT_EQ(mboTensorOpCheck(a), 0);
   mboTensorOpDestroy(&a);
+  mboProdSpaceDestroy(&h);
+}
+
+TEST(MboTensorOp, DenseMatrixNull) {
+  MboProdSpace h = mboProdSpaceCreate(2);
+  MboTensorOp null;
+  mboTensorOpNull(h, &null);
+
+  MboGlobInd dim = mboProdSpaceDim(h);
+  struct MboAmplitude *mat = new struct MboAmplitude[dim * dim];
+  mboTensorOpDenseMatrix(null, mat);
+  for (int i = 0; i < dim * dim; ++i) {
+    EXPECT_FLOAT_EQ(mat[i].re, 0);
+    EXPECT_FLOAT_EQ(mat[i].im, 0);
+  }
+
+  delete [] mat;
+  mboTensorOpDestroy(&null);
+  mboProdSpaceDestroy(&h);
+}
+
+TEST(MboTensorOp, DenseMatrixIdentity) {
+  MboProdSpace h = mboProdSpaceCreate(2);
+  MboTensorOp null;
+  mboTensorOpIdentity(h, &null);
+
+  MboGlobInd dim = mboProdSpaceDim(h);
+  struct MboAmplitude *mat = new struct MboAmplitude[dim * dim];
+  mboTensorOpDenseMatrix(null, mat);
+  for (int i = 0; i < dim * dim; ++i) {
+    struct MboAmplitude expectedResult;
+    if (i % mboProdSpaceDim(h) == i / mboProdSpaceDim(h)) {
+      expectedResult.re = 1.0;
+      expectedResult.im = 0.0;
+    } else {
+      expectedResult.re = 0.0;
+      expectedResult.im = 0.0;
+    }
+    EXPECT_FLOAT_EQ(mat[i].re, expectedResult.re);
+    EXPECT_FLOAT_EQ(mat[i].im, expectedResult.im);
+  }
+
+  delete [] mat;
+  mboTensorOpDestroy(&null);
   mboProdSpaceDestroy(&h);
 }

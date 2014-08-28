@@ -55,13 +55,9 @@ void mboTensorOpDestroy(MboTensorOp *op)
 	*op = 0;
 }
 
-void destroySimpleTOp(struct SimpleTOp *term)
+MboProdSpace mboTensorOpGetSpace(MboTensorOp op)
 {
-	int i;
-	for (i = 0; i < term->numFactors; ++i) {
-		destroyEmbedding(term->embeddings + i);
-	}
-	free(term->embeddings);
+	return op->space;
 }
 
 void mboTensorOpAddTo(MboElemOp a, int i, MboTensorOp op)
@@ -251,3 +247,23 @@ int mboTensorOpCheck(MboTensorOp op)
 	return errs;
 }
 
+static void zeroArray(MboGlobInd n, struct MboAmplitude *array)
+{
+	MboGlobInd i;
+	for (i = 0; i < n; ++i) {
+		array[i].re = 0;
+		array[i].im = 0;
+	}
+}
+
+void mboTensorOpDenseMatrix(MboTensorOp a, struct MboAmplitude *mat)
+{
+	int i;
+	MboGlobInd dim;
+	dim = mboProdSpaceDim(a->space);
+
+	zeroArray(dim * dim, mat);
+	for (i = 0; i < a->numTerms; ++i) {
+		simpleTOpDenseMatrix(a->space, a->sum + i, mat);
+	}
+}

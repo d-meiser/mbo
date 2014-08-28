@@ -1,6 +1,15 @@
 #include <SimpleTOp.h>
 #include <stdlib.h>
 
+void destroySimpleTOp(struct SimpleTOp *term)
+{
+	int i;
+	for (i = 0; i < term->numFactors; ++i) {
+		destroyEmbedding(term->embeddings + i);
+	}
+	free(term->embeddings);
+}
+
 
 void kronSimpleTOps(struct SimpleTOp *a, int numSpacesInA, struct SimpleTOp *b,
 		    struct SimpleTOp *c)
@@ -141,3 +150,27 @@ double flopsSimpleTOp(int numSpaces, MboLocInd *dims, struct SimpleTOp *a)
 	return flops * 8.0;
 }
 
+void simpleTOpDenseMatrix(MboProdSpace h, struct SimpleTOp *simpleOp,
+			  struct MboAmplitude *mat)
+{
+	MboGlobInd blockSize, dim;
+	MboLocInd *dims;
+	int numSpaces;
+	struct MboAmplitude alpha;
+	
+	gatherAllEmbeddings(&simpleOp->numFactors, &simpleOp->embeddings);
+	sortEmbeddings(simpleOp->numFactors, simpleOp->embeddings);
+
+	blockSize = mboProdSpaceDim(h);
+	dim = blockSize;
+	numSpaces = mboProdSpaceSize(h);
+	dims = malloc(numSpaces * sizeof(*dims));
+	mboProdSpaceGetDims(h, numSpaces, dims);
+
+	alpha.re = 1;
+	alpha.im = 0;
+	embeddingDenseMatrix(0, numSpaces, dims, blockSize, dim, alpha,
+			simpleOp->numFactors, simpleOp->embeddings, mat);
+
+	free(dims);
+}
