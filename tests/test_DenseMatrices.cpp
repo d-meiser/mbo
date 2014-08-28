@@ -25,6 +25,20 @@ class NullBuilder : public TOpBuilder {
   }
 };
 
+class IdentityBuilder : public TOpBuilder {
+ public:
+  virtual MboTensorOp build() const {
+    MboProdSpace h = mboProdSpaceCreate(2);
+    MboTensorOp a;
+    mboTensorOpIdentity(h, &a);
+    mboProdSpaceDestroy(&h);
+    return a;
+  }
+  IdentityBuilder* copy() const {
+    return new IdentityBuilder(*this);
+  }
+};
+
 class BuilderWrapper {
   public:
    BuilderWrapper(const TOpBuilder& b) : builder(b.copy()) {}
@@ -91,4 +105,5 @@ TEST_P(MboTensorOpDenseMatrix, compAgainstNaive) {
 }
 
 INSTANTIATE_TEST_CASE_P(DenseMatrixTests, MboTensorOpDenseMatrix,
-                        ::testing::Values(BuilderWrapper(NullBuilder())));
+                        ::testing::Values(BuilderWrapper(NullBuilder()),
+                                          BuilderWrapper(IdentityBuilder())));
