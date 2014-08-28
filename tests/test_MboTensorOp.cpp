@@ -22,6 +22,16 @@ TEST(MboTensorOp, Identity) {
   mboProdSpaceDestroy(&h);
 }
 
+TEST(MboTensorOp, GetSpace) {
+  MboTensorOp op;
+  MboProdSpace h = mboProdSpaceCreate(5);
+  mboTensorOpIdentity(h, &op);
+  MboProdSpace h2 = mboTensorOpGetSpace(op);
+  EXPECT_TRUE(mboProdSpaceEqual(h, h2));
+  mboTensorOpDestroy(&op);
+  mboProdSpaceDestroy(&h);
+}
+
 TEST(MboTensorOp, AddTo) {
   MboTensorOp op;
   MboElemOp eop;

@@ -65,6 +65,14 @@ MBO_EXPORT void mboTensorOpDestroy(MboTensorOp *top);
  * */
 MBO_EXPORT void mboTensorOpAddTo(MboElemOp elemop, int i, MboTensorOp top);
 
+/** @brief Get the space on which the operator is defined 
+ *  This method returns a non-owning pointer to the space on which the
+ *  tensor operator is defined.  The caller must not modify the product
+ *  space or destroy it.
+ *  @returns Pointer to product space of operator (non-owning)
+ *  */
+MBO_EXPORT MboProdSpace mboTensorOpGetSpace(MboTensorOp op);
+
 /** @brief Adds scaled version of embedded operator to tensor operator.
  * @see mboTensorOpAddTo
  * */

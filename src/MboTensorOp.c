@@ -55,6 +55,11 @@ void mboTensorOpDestroy(MboTensorOp *op)
 	*op = 0;
 }
 
+MboProdSpace mboTensorOpGetSpace(MboTensorOp op)
+{
+	return op->space;
+}
+
 void mboTensorOpAddTo(MboElemOp a, int i, MboTensorOp op)
 {
 	struct SimpleTOp *newTerm;
