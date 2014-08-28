@@ -285,16 +285,13 @@ TEST_P(MboTensorOpDenseMatrix, compAgainstNaive) {
   mboTensorOpDestroy(&op);
 }
 
-INSTANTIATE_TEST_CASE_P(DenseMatrixTests, MboTensorOpDenseMatrix,
-                        ::testing::Values(BuilderWrapper(Null()),
-                                          BuilderWrapper(Identity()),
-                                          BuilderWrapper(SigmaPlus()),
-                                          BuilderWrapper(SigmaMinus()),
-                                          BuilderWrapper(SigmaZ()),
-                                          BuilderWrapper(AnnihilationOp()),
-                                          BuilderWrapper(CreationOp()),
-                                          BuilderWrapper(NumOp()),
-                                          BuilderWrapper(SigmaZEnd()),
-                                          BuilderWrapper(SigmaPEnd()),
-					  BuilderWrapper(SigmaZBegin()),
-					  BuilderWrapper(SigmaZMiddle())));
+INSTANTIATE_TEST_CASE_P(
+    DenseMatrixTests, MboTensorOpDenseMatrix,
+    ::testing::Values(BuilderWrapper(Null()), BuilderWrapper(Identity()),
+                      BuilderWrapper(SigmaPlus()), BuilderWrapper(SigmaMinus()),
+                      BuilderWrapper(SigmaZ()),
+                      BuilderWrapper(AnnihilationOp()),
+                      BuilderWrapper(CreationOp()), BuilderWrapper(NumOp()),
+                      BuilderWrapper(SigmaZEnd()), BuilderWrapper(SigmaPEnd()),
+                      BuilderWrapper(SigmaZBegin()),
+                      BuilderWrapper(SigmaZMiddle())));
