@@ -180,3 +180,20 @@ void embeddingDenseMatrix(int i, int numSpaces, MboLocInd *dims,
 		}
 	}
 }
+
+void embeddingNonZeros(int i, int numSpaces, MboLocInd *dims,
+		       MboGlobInd blockSizeAfter, int numFactors,
+		       struct Embedding *embeddings, MboGlobInd rmin,
+		       MboGlobInd rmax, MboGlobInd offset, int *nnz)
+{
+	MboGlobInd n, nStart, nEnd;
+	if (numFactors > 0) {
+	} else {
+		nStart = (rmin - offset > 0) ? (rmin - offset) : 0;
+		nEnd = (blockSizeAfter < rmax - offset) ? blockSizeAfter
+							: rmax - offset;
+		for (n = nStart; n < nEnd; ++n) {
+			++nnz[n + offset];
+		}
+	}
+}

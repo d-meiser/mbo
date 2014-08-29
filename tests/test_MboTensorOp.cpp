@@ -705,6 +705,8 @@ TEST(MboTensorOp, GetNonZerosPerRowIdentity) {
 
   std::vector<int> nnzs(dim);
   mboTensorOpGetNonZerosPerRow(id, 0, 2, &nnzs[0]);
+  EXPECT_EQ(1, nnzs[0]);
+  EXPECT_EQ(1, nnzs[1]);
 
   mboTensorOpDestroy(&id);
   mboProdSpaceDestroy(&h);

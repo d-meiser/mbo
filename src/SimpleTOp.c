@@ -178,4 +178,21 @@ void simpleTOpDenseMatrix(MboProdSpace h, struct SimpleTOp *simpleOp,
 void simpleTOpGetNonZerosPerRow(MboProdSpace h, struct SimpleTOp *simpleOp,
 				MboGlobInd rmin, MboGlobInd rmax, int *nnz)
 {
+	MboGlobInd blockSize, offset;
+	MboLocInd *dims;
+	int numSpaces;
+	
+	gatherAllEmbeddings(&simpleOp->numFactors, &simpleOp->embeddings);
+	sortEmbeddings(simpleOp->numFactors, simpleOp->embeddings);
+
+	blockSize = mboProdSpaceDim(h);
+	numSpaces = mboProdSpaceSize(h);
+	dims = malloc(numSpaces * sizeof(*dims));
+	mboProdSpaceGetDims(h, numSpaces, dims);
+
+  offset = 0;
+	embeddingNonZeros(0, numSpaces, dims, blockSize, 
+			simpleOp->numFactors, simpleOp->embeddings, rmin, rmax, offset, nnz);
+
+	free(dims);
 }

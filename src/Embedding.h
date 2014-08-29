@@ -61,6 +61,12 @@ void embeddingDenseMatrix(int i, int numSpaces, MboLocInd *dims,
 			  struct MboAmplitude alpha, int numFactors,
 			  struct Embedding *embeddings,
 			  struct MboAmplitude *mat);
+
+void embeddingNonZeros(int i, int numSpaces, MboLocInd *dims,
+		       MboGlobInd blockSizeAfter, int numFactors,
+		       struct Embedding *embeddings, MboGlobInd rmin,
+		       MboGlobInd rmax, MboGlobInd offset, int *nnz);
+
 #ifdef __cplusplus
 }
 #endif
