@@ -729,3 +729,74 @@ TEST(MboTensorOp, GetNonZerosPerRowSigmaPlus) {
   mboTensorOpDestroy(&Sp);
   mboProdSpaceDestroy(&h);
 }
+
+TEST(MboTensorOp, GetNonZerosPerRowInBiggerSpace) {
+  int dim = 2;
+  MboProdSpace h = mboProdSpaceCreate(dim);
+  mboProdSpaceMul(h, &h);
+  mboProdSpaceMul(h, &h);
+  MboTensorOp Sp;
+  mboTensorOpNull(h, &Sp);
+  MboElemOp sp = mboSigmaPlus();
+  mboTensorOpAddTo(sp, 1, Sp);
+
+  MboGlobInd totalDim = mboProdSpaceDim(h);
+  std::vector<int> nnzs(totalDim);
+  mboTensorOpGetNonZerosPerRow(Sp, 0, totalDim, &nnzs[0]);
+  EXPECT_EQ(0, nnzs[0]);
+  EXPECT_EQ(0, nnzs[1]);
+  EXPECT_EQ(0, nnzs[2]);
+  EXPECT_EQ(0, nnzs[3]);
+  EXPECT_EQ(1, nnzs[4]);
+  EXPECT_EQ(1, nnzs[5]);
+  EXPECT_EQ(1, nnzs[6]);
+  EXPECT_EQ(1, nnzs[7]);
+  EXPECT_EQ(0, nnzs[8]);
+  EXPECT_EQ(0, nnzs[9]);
+  EXPECT_EQ(0, nnzs[10]);
+  EXPECT_EQ(0, nnzs[11]);
+  EXPECT_EQ(1, nnzs[12]);
+  EXPECT_EQ(1, nnzs[13]);
+  EXPECT_EQ(1, nnzs[14]);
+  EXPECT_EQ(1, nnzs[15]);
+
+  mboElemOpDestroy(&sp);
+  mboTensorOpDestroy(&Sp);
+  mboProdSpaceDestroy(&h);
+}
+
+TEST(MboTensorOp, GetNonZerosPerRowTwoEmbeddings) {
+  int dim = 2;
+  MboProdSpace h = mboProdSpaceCreate(dim);
+  mboProdSpaceMul(h, &h);
+  mboProdSpaceMul(h, &h);
+  MboTensorOp Sp;
+  mboTensorOpNull(h, &Sp);
+  MboElemOp sp = mboSigmaPlus();
+  mboTensorOpAddTo(sp, 1, Sp);
+  mboTensorOpAddTo(sp, 3, Sp);
+
+  MboGlobInd totalDim = mboProdSpaceDim(h);
+  std::vector<int> nnzs(totalDim);
+  mboTensorOpGetNonZerosPerRow(Sp, 0, totalDim, &nnzs[0]);
+  EXPECT_EQ(0, nnzs[0]);
+  EXPECT_EQ(1, nnzs[1]);
+  EXPECT_EQ(0, nnzs[2]);
+  EXPECT_EQ(1, nnzs[3]);
+  EXPECT_EQ(1, nnzs[4]);
+  EXPECT_EQ(2, nnzs[5]);
+  EXPECT_EQ(1, nnzs[6]);
+  EXPECT_EQ(2, nnzs[7]);
+  EXPECT_EQ(0, nnzs[8]);
+  EXPECT_EQ(1, nnzs[9]);
+  EXPECT_EQ(0, nnzs[10]);
+  EXPECT_EQ(1, nnzs[11]);
+  EXPECT_EQ(1, nnzs[12]);
+  EXPECT_EQ(2, nnzs[13]);
+  EXPECT_EQ(1, nnzs[14]);
+  EXPECT_EQ(2, nnzs[15]);
+
+  mboElemOpDestroy(&sp);
+  mboTensorOpDestroy(&Sp);
+  mboProdSpaceDestroy(&h);
+}

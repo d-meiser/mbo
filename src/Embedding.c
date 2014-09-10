@@ -201,7 +201,7 @@ void embeddingNonZeros(int i, int numSpaces, MboLocInd *dims,
 				embeddingNonZeros(
 				    nextI + 1, numSpaces, dims, blockSizeAfter,
 				    numFactors - 1, embeddings + 1, rmin, rmax,
-				    offset + entries[n].m * blockSizeAfter,
+				    offset + entries[e].m * blockSizeAfter,
 				    nnz);
 			}
 			offset += blockSizeAfter * (MboGlobInd)dims[nextI];
