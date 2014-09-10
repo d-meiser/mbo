@@ -711,3 +711,21 @@ TEST(MboTensorOp, GetNonZerosPerRowIdentity) {
   mboTensorOpDestroy(&id);
   mboProdSpaceDestroy(&h);
 }
+
+TEST(MboTensorOp, GetNonZerosPerRowSigmaPlus) {
+  int dim = 2;
+  MboProdSpace h = mboProdSpaceCreate(dim);
+  MboTensorOp Sp;
+  mboTensorOpNull(h, &Sp);
+  MboElemOp sp = mboSigmaPlus();
+  mboTensorOpAddTo(sp, 0, Sp);
+
+  std::vector<int> nnzs(dim);
+  mboTensorOpGetNonZerosPerRow(Sp, 0, 2, &nnzs[0]);
+  EXPECT_EQ(0, nnzs[0]);
+  EXPECT_EQ(1, nnzs[1]);
+
+  mboElemOpDestroy(&sp);
+  mboTensorOpDestroy(&Sp);
+  mboProdSpaceDestroy(&h);
+}

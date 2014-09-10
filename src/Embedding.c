@@ -186,8 +186,26 @@ void embeddingNonZeros(int i, int numSpaces, MboLocInd *dims,
 		       struct Embedding *embeddings, MboGlobInd rmin,
 		       MboGlobInd rmax, MboGlobInd offset, int *nnz)
 {
-	MboGlobInd n, nStart, nEnd;
+	MboGlobInd blockSizeBefore, n, nStart, nEnd;
+	struct MboNonZeroEntry *entries;
+	int nextI, e;
+
 	if (numFactors > 0) {
+		nextI = embeddings->i;
+		blockSizeBefore = computeBlockSize(nextI - i, dims + i);
+		blockSizeAfter /= (blockSizeBefore * (MboGlobInd)dims[nextI]);
+		entries = mboElemOpGetEntries(embeddings->op);
+		for (n = 0; n < blockSizeBefore; ++n) {
+			for (e = 0; e < mboElemOpNumEntries(embeddings->op);
+			     ++e) {
+				embeddingNonZeros(
+				    nextI + 1, numSpaces, dims, blockSizeAfter,
+				    numFactors - 1, embeddings + 1, rmin, rmax,
+				    offset + entries[n].m * blockSizeAfter,
+				    nnz);
+			}
+			offset += blockSizeAfter * (MboGlobInd)dims[nextI];
+		}
 	} else {
 		nStart = (rmin - offset > 0) ? (rmin - offset) : 0;
 		nEnd = (blockSizeAfter < rmax - offset) ? blockSizeAfter
