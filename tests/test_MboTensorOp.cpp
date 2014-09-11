@@ -682,64 +682,67 @@ TEST(MboTensorOp, DenseMatrixIdentity) {
   mboProdSpaceDestroy(&h);
 }
 
-TEST(MboTensorOp, GetNonZerosPerRowNull) {
+TEST(MboTensorOp, RowOffsetsNull) {
   int dim = 2;
   MboProdSpace h = mboProdSpaceCreate(dim);
   MboTensorOp null;
   mboTensorOpNull(h, &null);
 
-  std::vector<int> nnzs(dim);
-  mboTensorOpGetNonZerosPerRow(null, 0, 2, &nnzs[0]);
-  EXPECT_EQ(0, nnzs[0]);
-  EXPECT_EQ(0, nnzs[1]);
+  std::vector<int> i(dim + 1);
+  mboTensorOpRowOffsets(null, 0, 2, &i[0]);
+  EXPECT_EQ(0, i[0]);
+  EXPECT_EQ(0, i[1]);
+  EXPECT_EQ(0, i[2]);
 
   mboTensorOpDestroy(&null);
   mboProdSpaceDestroy(&h);
 }
 
-TEST(MboTensorOp, GetNonZerosPerRowIdentity) {
+TEST(MboTensorOp, RowOffsetsIdentity) {
   int dim = 2;
   MboProdSpace h = mboProdSpaceCreate(dim);
   MboTensorOp id;
   mboTensorOpIdentity(h, &id);
 
-  std::vector<int> nnzs(dim);
-  mboTensorOpGetNonZerosPerRow(id, 0, 2, &nnzs[0]);
-  EXPECT_EQ(1, nnzs[0]);
-  EXPECT_EQ(1, nnzs[1]);
+  std::vector<int> i(dim + 1);
+  mboTensorOpRowOffsets(id, 0, 2, &i[0]);
+  EXPECT_EQ(0, i[0]);
+  EXPECT_EQ(1, i[1]);
+  EXPECT_EQ(2, i[2]);
 
   mboTensorOpDestroy(&id);
   mboProdSpaceDestroy(&h);
 }
 
-TEST(MboTensorOp, GetNonZerosPerRowIdentityEmptyRange) {
+TEST(MboTensorOp, RowOffsetsIdentityEmptyRange) {
   int dim = 2;
   MboProdSpace h = mboProdSpaceCreate(dim);
   MboTensorOp id;
   mboTensorOpIdentity(h, &id);
-  std::vector<int> nnzs(dim);
-  mboTensorOpGetNonZerosPerRow(id, 3, 2, &nnzs[0]);
-  mboTensorOpGetNonZerosPerRow(id, 2, 2, &nnzs[0]);
+  std::vector<int> i(dim + 1);
+  mboTensorOpRowOffsets(id, 3, 2, &i[0]);
+  mboTensorOpRowOffsets(id, 2, 2, &i[0]);
   mboTensorOpDestroy(&id);
   mboProdSpaceDestroy(&h);
 }
 
-TEST(MboTensorOp, GetNonZerosPerRowIdentitySubrange) {
+TEST(MboTensorOp, RowOffsetsIdentitySubrange) {
   int dim = 5;
   MboProdSpace h = mboProdSpaceCreate(dim);
   MboTensorOp id;
   mboTensorOpIdentity(h, &id);
 
-  std::vector<int> nnzs(2);
-  mboTensorOpGetNonZerosPerRow(id, 2, 4, &nnzs[0]);
-  EXPECT_EQ(1, nnzs[0]);
-  EXPECT_EQ(1, nnzs[1]);
+  std::vector<int> i(3);
+  mboTensorOpRowOffsets(id, 2, 4, &i[0]);
+  EXPECT_EQ(0, i[0]);
+  EXPECT_EQ(1, i[1]);
+  EXPECT_EQ(2, i[2]);
 
   mboTensorOpDestroy(&id);
   mboProdSpaceDestroy(&h);
 }
 
-TEST(MboTensorOp, GetNonZerosPerRowSigmaPlus) {
+TEST(MboTensorOp, RowOffsetsSigmaPlus) {
   int dim = 2;
   MboProdSpace h = mboProdSpaceCreate(dim);
   MboTensorOp Sp;
@@ -747,17 +750,18 @@ TEST(MboTensorOp, GetNonZerosPerRowSigmaPlus) {
   MboElemOp sp = mboSigmaPlus();
   mboTensorOpAddTo(sp, 0, Sp);
 
-  std::vector<int> nnzs(dim);
-  mboTensorOpGetNonZerosPerRow(Sp, 0, 2, &nnzs[0]);
-  EXPECT_EQ(0, nnzs[0]);
-  EXPECT_EQ(1, nnzs[1]);
+  std::vector<int> i(dim + 1);
+  mboTensorOpRowOffsets(Sp, 0, 2, &i[0]);
+  EXPECT_EQ(0, i[0]);
+  EXPECT_EQ(0, i[1]);
+  EXPECT_EQ(1, i[2]);
 
   mboElemOpDestroy(&sp);
   mboTensorOpDestroy(&Sp);
   mboProdSpaceDestroy(&h);
 }
 
-TEST(MboTensorOp, GetNonZerosPerRowInBiggerSpace) {
+TEST(MboTensorOp, RowOffsetsInBiggerSpace) {
   int dim = 2;
   MboProdSpace h = mboProdSpaceCreate(dim);
   mboProdSpaceMul(h, &h);
@@ -768,67 +772,32 @@ TEST(MboTensorOp, GetNonZerosPerRowInBiggerSpace) {
   mboTensorOpAddTo(sp, 1, Sp);
 
   MboGlobInd totalDim = mboProdSpaceDim(h);
-  std::vector<int> nnzs(totalDim);
-  mboTensorOpGetNonZerosPerRow(Sp, 0, totalDim, &nnzs[0]);
-  EXPECT_EQ(0, nnzs[0]);
-  EXPECT_EQ(0, nnzs[1]);
-  EXPECT_EQ(0, nnzs[2]);
-  EXPECT_EQ(0, nnzs[3]);
-  EXPECT_EQ(1, nnzs[4]);
-  EXPECT_EQ(1, nnzs[5]);
-  EXPECT_EQ(1, nnzs[6]);
-  EXPECT_EQ(1, nnzs[7]);
-  EXPECT_EQ(0, nnzs[8]);
-  EXPECT_EQ(0, nnzs[9]);
-  EXPECT_EQ(0, nnzs[10]);
-  EXPECT_EQ(0, nnzs[11]);
-  EXPECT_EQ(1, nnzs[12]);
-  EXPECT_EQ(1, nnzs[13]);
-  EXPECT_EQ(1, nnzs[14]);
-  EXPECT_EQ(1, nnzs[15]);
+  std::vector<int> i(totalDim + 1);
+  mboTensorOpRowOffsets(Sp, 0, totalDim, &i[0]);
+  EXPECT_EQ(0, i[0]);
+  EXPECT_EQ(0, i[1]);
+  EXPECT_EQ(0, i[2]);
+  EXPECT_EQ(0, i[3]);
+  EXPECT_EQ(0, i[4]);
+  EXPECT_EQ(1, i[5]);
+  EXPECT_EQ(2, i[6]);
+  EXPECT_EQ(3, i[7]);
+  EXPECT_EQ(4, i[8]);
+  EXPECT_EQ(4, i[9]);
+  EXPECT_EQ(4, i[10]);
+  EXPECT_EQ(4, i[11]);
+  EXPECT_EQ(4, i[12]);
+  EXPECT_EQ(5, i[13]);
+  EXPECT_EQ(6, i[14]);
+  EXPECT_EQ(7, i[15]);
+  EXPECT_EQ(8, i[16]);
 
   mboElemOpDestroy(&sp);
   mboTensorOpDestroy(&Sp);
   mboProdSpaceDestroy(&h);
 }
 
-TEST(MboTensorOp, GetNonZerosPerRowTwoEmbeddings) {
-  int dim = 2;
-  MboProdSpace h = mboProdSpaceCreate(dim);
-  mboProdSpaceMul(h, &h);
-  mboProdSpaceMul(h, &h);
-  MboTensorOp Sp;
-  mboTensorOpNull(h, &Sp);
-  MboElemOp sp = mboSigmaPlus();
-  mboTensorOpAddTo(sp, 1, Sp);
-  mboTensorOpAddTo(sp, 3, Sp);
-
-  MboGlobInd totalDim = mboProdSpaceDim(h);
-  std::vector<int> nnzs(totalDim);
-  mboTensorOpGetNonZerosPerRow(Sp, 0, totalDim, &nnzs[0]);
-  EXPECT_EQ(0, nnzs[0]);
-  EXPECT_EQ(1, nnzs[1]);
-  EXPECT_EQ(0, nnzs[2]);
-  EXPECT_EQ(1, nnzs[3]);
-  EXPECT_EQ(1, nnzs[4]);
-  EXPECT_EQ(2, nnzs[5]);
-  EXPECT_EQ(1, nnzs[6]);
-  EXPECT_EQ(2, nnzs[7]);
-  EXPECT_EQ(0, nnzs[8]);
-  EXPECT_EQ(1, nnzs[9]);
-  EXPECT_EQ(0, nnzs[10]);
-  EXPECT_EQ(1, nnzs[11]);
-  EXPECT_EQ(1, nnzs[12]);
-  EXPECT_EQ(2, nnzs[13]);
-  EXPECT_EQ(1, nnzs[14]);
-  EXPECT_EQ(2, nnzs[15]);
-
-  mboElemOpDestroy(&sp);
-  mboTensorOpDestroy(&Sp);
-  mboProdSpaceDestroy(&h);
-}
-
-TEST(MboTensorOp, GetNonZerosPerRowSubRange) {
+TEST(MboTensorOp, RowOffsetsTwoEmbeddings) {
   int dim = 2;
   MboProdSpace h = mboProdSpaceCreate(dim);
   mboProdSpaceMul(h, &h);
@@ -840,11 +809,49 @@ TEST(MboTensorOp, GetNonZerosPerRowSubRange) {
   mboTensorOpAddTo(sp, 3, Sp);
 
   MboGlobInd totalDim = mboProdSpaceDim(h);
-  std::vector<int> nnzs(3);
-  mboTensorOpGetNonZerosPerRow(Sp, 5, 8, &nnzs[0]);
-  EXPECT_EQ(2, nnzs[0]);
-  EXPECT_EQ(1, nnzs[1]);
-  EXPECT_EQ(2, nnzs[2]);
+  std::vector<int> i(totalDim + 1);
+  mboTensorOpRowOffsets(Sp, 0, totalDim, &i[0]);
+  EXPECT_EQ(0, i[0]);
+  EXPECT_EQ(0, i[1]);
+  EXPECT_EQ(1, i[2]);
+  EXPECT_EQ(1, i[3]);
+  EXPECT_EQ(2, i[4]);
+  EXPECT_EQ(3, i[5]);
+  EXPECT_EQ(5, i[6]);
+  EXPECT_EQ(6, i[7]);
+  EXPECT_EQ(8, i[8]);
+  EXPECT_EQ(8, i[9]);
+  EXPECT_EQ(9, i[10]);
+  EXPECT_EQ(9, i[11]);
+  EXPECT_EQ(10, i[12]);
+  EXPECT_EQ(11, i[13]);
+  EXPECT_EQ(13, i[14]);
+  EXPECT_EQ(14, i[15]);
+  EXPECT_EQ(16, i[16]);
+
+  mboElemOpDestroy(&sp);
+  mboTensorOpDestroy(&Sp);
+  mboProdSpaceDestroy(&h);
+}
+
+TEST(MboTensorOp, RowOffsetsSubRange) {
+  int dim = 2;
+  MboProdSpace h = mboProdSpaceCreate(dim);
+  mboProdSpaceMul(h, &h);
+  mboProdSpaceMul(h, &h);
+  MboTensorOp Sp;
+  mboTensorOpNull(h, &Sp);
+  MboElemOp sp = mboSigmaPlus();
+  mboTensorOpAddTo(sp, 1, Sp);
+  mboTensorOpAddTo(sp, 3, Sp);
+
+  MboGlobInd totalDim = mboProdSpaceDim(h);
+  std::vector<int> i(4);
+  mboTensorOpRowOffsets(Sp, 5, 8, &i[0]);
+  EXPECT_EQ(0, i[0]);
+  EXPECT_EQ(2, i[1]);
+  EXPECT_EQ(3, i[2]);
+  EXPECT_EQ(5, i[3]);
 
   mboElemOpDestroy(&sp);
   mboTensorOpDestroy(&Sp);

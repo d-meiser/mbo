@@ -131,8 +131,33 @@ MBO_EXPORT double mboTensorOpFlops(MboTensorOp a);
  * */
 MBO_EXPORT void mboTensorOpDenseMatrix(MboTensorOp a, struct MboAmplitude *mat);
 
-MBO_EXPORT void mboTensorOpGetNonZerosPerRow(MboTensorOp a, MboGlobInd rmin,
-					     MboGlobInd rmax, int *nnz);
+/**
+ * @brief Compute row offsets of sparse matrix
+ *
+ * This method computes the row offsets of the sparse matrix representing the
+ * tensor operator. This corresponds to the i array in aij or Yale sparse matrix
+ * format. We have i[0] = 0, i[1] = nnz[rmin], i[2] = nnz[rmin] + nnz[rmin + 1],
+ * etc. In particular, i[rmax - rmin] contains the total number of non-zeros in
+ * the row range [rmin, rmax).  Note that this method, like
+ * mboTensorOpSparseMatrix, counts duplicate entries separately. The i array is
+ *suitable for input to mboTensorOpSparseMatrix.
+ *
+ * @param a    The tensor.
+ * @param rmin Start of row range for which to compute the offsets.
+ * @param rmax End of row range for which to compute the offsets.
+ * @param i    On exit this array contains the row offsets. The offset of the
+ *             first row in the range is set to 0. Thus, in order to obtain the
+ *             global offsets one has to add the global offset of the first row
+ *             to all offsets in i.
+ *
+ * @sa mboTensorOpSparseMatrix
+ **/
+MBO_EXPORT void mboTensorOpRowOffsets(MboTensorOp a, MboGlobInd rmin,
+				      MboGlobInd rmax, int *i);
+
+MBO_EXPORT void mboTensorOpSparseMatrix(MboTensorOp, MboGlobInd rmin,
+					MboGlobInd rmax, int *nnz, int *i,
+					int *j, struct MboAmplitude *a);
 
 /** @brief Check integrity of tensor operator.
  * Returns the number of errors.*/
