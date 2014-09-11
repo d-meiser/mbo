@@ -268,19 +268,24 @@ void mboTensorOpDenseMatrix(MboTensorOp a, struct MboAmplitude *mat)
 	}
 }
 
-void mboTensorOpRowOffsets(MboTensorOp a, MboGlobInd rmin, MboGlobInd rmax,
+void mboTensorOpRowOffsets(MboTensorOp op, MboGlobInd rmin, MboGlobInd rmax,
 			   int *i)
 {
 	int j, r;
 	for (r = 0; r < rmax - rmin; ++r) {
 		i[r] = 0;
 	}
-	for (j = 0; j < a->numTerms; ++j) {
-		simpleTOpGetNonZerosPerRow(a->space, a->sum + j, rmin, rmax,
+	for (j = 0; j < op->numTerms; ++j) {
+		simpleTOpGetNonZerosPerRow(op->space, op->sum + j, rmin, rmax,
 					   i + 1);
 	}
 	i[0] = 0;
 	for (j = 0; j < rmax - rmin; ++j) {
 		i[j + 1] += i[j];
 	}
+}
+
+void mboTensorOpSparseMatrix(MboTensorOp op, MboGlobInd rmin, MboGlobInd rmax,
+			     int *i, int *j, struct MboAmplitude *a)
+{
 }

@@ -857,3 +857,19 @@ TEST(MboTensorOp, RowOffsetsSubRange) {
   mboTensorOpDestroy(&Sp);
   mboProdSpaceDestroy(&h);
 }
+
+TEST(MboTensorOp, SparseMatrixNull) {
+  int dim = 2;
+  MboProdSpace h = mboProdSpaceCreate(dim);
+  MboTensorOp null;
+  mboTensorOpNull(h, &null);
+
+  std::vector<int> i(dim + 1);
+  mboTensorOpRowOffsets(null, 0, 2, &i[0]);
+  std::vector<int> j(i[dim]);
+  std::vector<struct MboAmplitude> a(i[dim]);
+  mboTensorOpSparseMatrix(null, 0, 2, &i[0], &j[0], &a[0]);
+
+  mboTensorOpDestroy(&null);
+  mboProdSpaceDestroy(&h);
+}

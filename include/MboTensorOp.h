@@ -152,12 +152,12 @@ MBO_EXPORT void mboTensorOpDenseMatrix(MboTensorOp a, struct MboAmplitude *mat);
  *
  * @sa mboTensorOpSparseMatrix
  **/
-MBO_EXPORT void mboTensorOpRowOffsets(MboTensorOp a, MboGlobInd rmin,
+MBO_EXPORT void mboTensorOpRowOffsets(MboTensorOp op, MboGlobInd rmin,
 				      MboGlobInd rmax, int *i);
 
-MBO_EXPORT void mboTensorOpSparseMatrix(MboTensorOp, MboGlobInd rmin,
-					MboGlobInd rmax, int *nnz, int *i,
-					int *j, struct MboAmplitude *a);
+MBO_EXPORT void mboTensorOpSparseMatrix(MboTensorOp op, MboGlobInd rmin,
+					MboGlobInd rmax, int *i, int *j,
+					struct MboAmplitude *a);
 
 /** @brief Check integrity of tensor operator.
  * Returns the number of errors.*/
