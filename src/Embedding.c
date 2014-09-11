@@ -207,11 +207,12 @@ void embeddingNonZeros(int i, int numSpaces, MboLocInd *dims,
 			offset += blockSizeAfter * (MboGlobInd)dims[nextI];
 		}
 	} else {
-		nStart = (rmin - offset > 0) ? (rmin - offset) : 0;
-		nEnd = (blockSizeAfter < rmax - offset) ? blockSizeAfter
-							: rmax - offset;
+		nStart = offset - rmin;
+		if (nStart < 0) nStart = 0;
+		nEnd = offset + blockSizeAfter - rmin;
+		if (nEnd > rmax - rmin) nEnd = rmax - rmin;
 		for (n = nStart; n < nEnd; ++n) {
-			++nnz[n + offset];
+			++nnz[n];
 		}
 	}
 }

@@ -712,6 +712,33 @@ TEST(MboTensorOp, GetNonZerosPerRowIdentity) {
   mboProdSpaceDestroy(&h);
 }
 
+TEST(MboTensorOp, GetNonZerosPerRowIdentityEmptyRange) {
+  int dim = 2;
+  MboProdSpace h = mboProdSpaceCreate(dim);
+  MboTensorOp id;
+  mboTensorOpIdentity(h, &id);
+  std::vector<int> nnzs(dim);
+  mboTensorOpGetNonZerosPerRow(id, 3, 2, &nnzs[0]);
+  mboTensorOpGetNonZerosPerRow(id, 2, 2, &nnzs[0]);
+  mboTensorOpDestroy(&id);
+  mboProdSpaceDestroy(&h);
+}
+
+TEST(MboTensorOp, GetNonZerosPerRowIdentitySubrange) {
+  int dim = 5;
+  MboProdSpace h = mboProdSpaceCreate(dim);
+  MboTensorOp id;
+  mboTensorOpIdentity(h, &id);
+
+  std::vector<int> nnzs(2);
+  mboTensorOpGetNonZerosPerRow(id, 2, 4, &nnzs[0]);
+  EXPECT_EQ(1, nnzs[0]);
+  EXPECT_EQ(1, nnzs[1]);
+
+  mboTensorOpDestroy(&id);
+  mboProdSpaceDestroy(&h);
+}
+
 TEST(MboTensorOp, GetNonZerosPerRowSigmaPlus) {
   int dim = 2;
   MboProdSpace h = mboProdSpaceCreate(dim);
@@ -795,6 +822,29 @@ TEST(MboTensorOp, GetNonZerosPerRowTwoEmbeddings) {
   EXPECT_EQ(2, nnzs[13]);
   EXPECT_EQ(1, nnzs[14]);
   EXPECT_EQ(2, nnzs[15]);
+
+  mboElemOpDestroy(&sp);
+  mboTensorOpDestroy(&Sp);
+  mboProdSpaceDestroy(&h);
+}
+
+TEST(MboTensorOp, GetNonZerosPerRowSubRange) {
+  int dim = 2;
+  MboProdSpace h = mboProdSpaceCreate(dim);
+  mboProdSpaceMul(h, &h);
+  mboProdSpaceMul(h, &h);
+  MboTensorOp Sp;
+  mboTensorOpNull(h, &Sp);
+  MboElemOp sp = mboSigmaPlus();
+  mboTensorOpAddTo(sp, 1, Sp);
+  mboTensorOpAddTo(sp, 3, Sp);
+
+  MboGlobInd totalDim = mboProdSpaceDim(h);
+  std::vector<int> nnzs(3);
+  mboTensorOpGetNonZerosPerRow(Sp, 5, 8, &nnzs[0]);
+  EXPECT_EQ(2, nnzs[0]);
+  EXPECT_EQ(1, nnzs[1]);
+  EXPECT_EQ(2, nnzs[2]);
 
   mboElemOpDestroy(&sp);
   mboTensorOpDestroy(&Sp);
