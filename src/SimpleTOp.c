@@ -201,7 +201,7 @@ void simpleTOpSparseMatrix(MboProdSpace h, struct SimpleTOp *simpleOp,
 			   MboGlobInd rmin, MboGlobInd rmax, int *i, int *j,
 			   struct MboAmplitude *a, int *numInserted)
 {
-	MboGlobInd blockSize;
+	MboGlobInd blockSize, offset;
 	MboLocInd *dims;
 	int numSpaces;
 	struct MboAmplitude alpha;
@@ -216,9 +216,10 @@ void simpleTOpSparseMatrix(MboProdSpace h, struct SimpleTOp *simpleOp,
 
 	alpha.re = 1;
 	alpha.im = 0;
+	offset = 0;
 	embeddingSparseMatrix(0, numSpaces, dims, blockSize, alpha,
-			      simpleOp->numFactors, simpleOp->embeddings, i, j,
-			      a, numInserted);
+			      simpleOp->numFactors, simpleOp->embeddings, rmin,
+			      rmax, i, j, a, offset, numInserted);
 
 	free(dims);
 }

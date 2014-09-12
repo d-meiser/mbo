@@ -219,7 +219,23 @@ void embeddingNonZeros(int i, int numSpaces, MboLocInd *dims,
 
 void embeddingSparseMatrix(int i, int numSpaces, MboLocInd *dims,
 			   MboGlobInd blockSizeAfter, struct MboAmplitude alpha,
-			   int numFactors, struct Embedding *embeddings, int *I,
-			   int *J, struct MboAmplitude *A, int *numInserted)
+			   int numFactors, struct Embedding *embeddings,
+			   MboGlobInd rmin, MboGlobInd rmax, int *I,
+			   int *J, struct MboAmplitude *A, MboGlobInd offset,
+			   int *numInserted)
 {
+	MboGlobInd n, nStart, nEnd;
+
+	if (numFactors > 0) {
+	} else {
+		nStart = offset - rmin;
+		if (nStart < 0) nStart = 0;
+		nEnd = offset + blockSizeAfter - rmin;
+		if (nEnd > rmax - rmin) nEnd = rmax - rmin;
+		for (n = nStart; n < nEnd; ++n) {
+			J[I[n] + numInserted[n]] = offset + n;
+			A[I[n] + numInserted[n]] = alpha;
+			++numInserted[n];
+		}
+	}
 }
