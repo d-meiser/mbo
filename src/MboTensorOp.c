@@ -288,4 +288,16 @@ void mboTensorOpRowOffsets(MboTensorOp op, MboGlobInd rmin, MboGlobInd rmax,
 void mboTensorOpSparseMatrix(MboTensorOp op, MboGlobInd rmin, MboGlobInd rmax,
 			     int *i, int *j, struct MboAmplitude *a)
 {
+	int *numInserted, r, s;
+
+	if (rmax <= rmin) return;
+	numInserted = malloc((rmax - rmin) * sizeof(*numInserted));
+	for (r = 0; r < rmax - rmin; ++r) {
+		numInserted[r] = 0;
+	}
+	for (s = 0; s < op->numTerms; ++s) {
+		simpleTOpSparseMatrix(op->space, op->sum + s, rmin, rmax, i, j,
+				a, numInserted);
+	}
+	free(numInserted);
 }

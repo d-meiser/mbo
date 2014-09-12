@@ -216,3 +216,10 @@ void embeddingNonZeros(int i, int numSpaces, MboLocInd *dims,
 		}
 	}
 }
+
+void embeddingSparseMatrix(int i, int numSpaces, MboLocInd *dims,
+			   MboGlobInd blockSizeAfter, struct MboAmplitude alpha,
+			   int numFactors, struct Embedding *embeddings, int *I,
+			   int *J, struct MboAmplitude *A, int *numInserted)
+{
+}

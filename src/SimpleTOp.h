@@ -39,6 +39,9 @@ void simpleTOpDenseMatrix(MboProdSpace h, struct SimpleTOp *simpleOp,
 			  struct MboAmplitude *mat);
 void simpleTOpGetNonZerosPerRow(MboProdSpace h, struct SimpleTOp *simpleOp,
 				MboGlobInd rmin, MboGlobInd rmax, int *nnz);
+void simpleTOpSparseMatrix(MboProdSpace h, struct SimpleTOp *simpleOp,
+			   MboGlobInd rmin, MboGlobInd rmax, int *i, int *j,
+			   struct MboAmplitude *a, int *numInserted);
 
 #ifdef __cplusplus
 }

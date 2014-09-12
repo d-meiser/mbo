@@ -873,3 +873,21 @@ TEST(MboTensorOp, SparseMatrixNull) {
   mboTensorOpDestroy(&null);
   mboProdSpaceDestroy(&h);
 }
+
+TEST(MboTensorOp, SparseMatrixIdentity) {
+  int dim = 2;
+  MboProdSpace h = mboProdSpaceCreate(dim);
+  MboTensorOp identity;
+  mboTensorOpIdentity(h, &identity);
+
+  std::vector<int> i(dim + 1);
+  mboTensorOpRowOffsets(identity, 0, 2, &i[0]);
+  std::vector<int> j(i[dim]);
+  std::vector<struct MboAmplitude> a(i[dim]);
+  mboTensorOpSparseMatrix(identity, 0, 2, &i[0], &j[0], &a[0]);
+  EXPECT_EQ(0, j[0]);
+  EXPECT_EQ(1, j[1]);
+
+  mboTensorOpDestroy(&identity);
+  mboProdSpaceDestroy(&h);
+}

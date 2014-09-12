@@ -196,3 +196,29 @@ void simpleTOpGetNonZerosPerRow(MboProdSpace h, struct SimpleTOp *simpleOp,
 
 	free(dims);
 }
+
+void simpleTOpSparseMatrix(MboProdSpace h, struct SimpleTOp *simpleOp,
+			   MboGlobInd rmin, MboGlobInd rmax, int *i, int *j,
+			   struct MboAmplitude *a, int *numInserted)
+{
+	MboGlobInd blockSize;
+	MboLocInd *dims;
+	int numSpaces;
+	struct MboAmplitude alpha;
+	
+	gatherAllEmbeddings(&simpleOp->numFactors, &simpleOp->embeddings);
+	sortEmbeddings(simpleOp->numFactors, simpleOp->embeddings);
+
+	blockSize = mboProdSpaceDim(h);
+	numSpaces = mboProdSpaceSize(h);
+	dims = malloc(numSpaces * sizeof(*dims));
+	mboProdSpaceGetDims(h, numSpaces, dims);
+
+	alpha.re = 1;
+	alpha.im = 0;
+	embeddingSparseMatrix(0, numSpaces, dims, blockSize, alpha,
+			      simpleOp->numFactors, simpleOp->embeddings, i, j,
+			      a, numInserted);
+
+	free(dims);
+}
