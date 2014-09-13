@@ -265,3 +265,49 @@ void embeddingSparseMatrix(int i, int numSpaces, MboLocInd *dims,
 		}
 	}
 }
+
+void embeddingDiagonal(int i, int numSpaces, MboLocInd *dims,
+		       MboGlobInd blockSizeAfter, struct MboAmplitude alpha,
+		       int numFactors, struct Embedding *embeddings,
+		       MboGlobInd rmin, MboGlobInd rmax,
+		       struct MboAmplitude *diag, MboGlobInd offsetR,
+		       MboGlobInd offsetC)
+{
+	MboGlobInd blockSizeBefore, n, nStart, nEnd;
+	struct MboAmplitude tmp;
+	struct MboNonZeroEntry *entries;
+	int nextI, e;
+
+	if (numFactors > 0) {
+		nextI = embeddings->i;
+		blockSizeBefore = computeBlockSize(nextI - i, dims + i);
+		blockSizeAfter /= (blockSizeBefore * (MboGlobInd)dims[nextI]);
+		entries = mboElemOpGetEntries(embeddings->op);
+		for (n = 0; n < blockSizeBefore; ++n) {
+			for (e = 0; e < mboElemOpNumEntries(embeddings->op);
+			     ++e) {
+				if (entries[e].m != entries[e].n) continue;
+				tmp.re = alpha.re * entries[e].val.re -
+					 alpha.im * entries[e].val.im;
+				tmp.im = alpha.re * entries[e].val.im +
+					 alpha.im * entries[e].val.re;
+				embeddingDiagonal(
+				    nextI + 1, numSpaces, dims, blockSizeAfter,
+				    tmp, numFactors - 1, embeddings + 1, rmin,
+				    rmax, diag,
+				    offsetR + entries[e].m * blockSizeAfter,
+				    offsetC + entries[e].n * blockSizeAfter);
+			}
+			offsetR += blockSizeAfter * (MboGlobInd)dims[nextI];
+			offsetC += blockSizeAfter * (MboGlobInd)dims[nextI];
+		}
+	} else {
+		nStart = offsetR - rmin;
+		if (nStart < 0) nStart = 0;
+		nEnd = offsetR + blockSizeAfter - rmin;
+		if (nEnd > rmax - rmin) nEnd = rmax - rmin;
+		for (n = nStart; n < nEnd; ++n) {
+			diag[n] = alpha;
+		}
+	}
+}

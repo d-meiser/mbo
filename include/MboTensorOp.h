@@ -159,6 +159,18 @@ MBO_EXPORT void mboTensorOpSparseMatrix(MboTensorOp op, MboGlobInd rmin,
 					MboGlobInd rmax, int *i, int *j,
 					struct MboAmplitude *a);
 
+/**
+ * @brief Get diagonal entries from Tensor operator
+ *
+ * @param op   The operator.
+ * @param rmin First row for which to get the diagonal.
+ * @param rmax Last row for which to get the diagonal.
+ * @param diag The diagonal. Has to point to memory for at least rmax - rmin
+ *             entries.
+ * */
+MBO_EXPORT void mboTensorOpDiagonal(MboTensorOp op, MboGlobInd rmin,
+				    MboGlobInd rmax, struct MboAmplitude *diag);
+
 /** @brief Check integrity of tensor operator.
  * Returns the number of errors.*/
 MBO_EXPORT int mboTensorOpCheck(MboTensorOp);

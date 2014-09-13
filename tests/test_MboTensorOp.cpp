@@ -1056,3 +1056,106 @@ TEST(MboTensorOp, SparseMatrixTwoEmbeddingsSubrange) {
   mboTensorOpDestroy(&Sp);
   mboProdSpaceDestroy(&h);
 }
+
+TEST(MboTensorOp, GetDiagonalNull) {
+  int dim = 4;
+  MboProdSpace h = mboProdSpaceCreate(dim);
+  MboTensorOp null;
+  mboTensorOpNull(h, &null);
+
+  std::vector<struct MboAmplitude> diag(dim);
+  mboTensorOpDiagonal(null, 0, dim, &diag[0]);
+
+  mboTensorOpDestroy(&null);
+  mboProdSpaceDestroy(&h);
+}
+
+TEST(MboTensorOp, GetDiagonalIdentity) {
+  int dim = 4;
+  MboProdSpace h = mboProdSpaceCreate(dim);
+  MboTensorOp identity;
+  mboTensorOpIdentity(h, &identity);
+
+  std::vector<struct MboAmplitude> diag(dim);
+  mboTensorOpDiagonal(identity, 0, dim, &diag[0]);
+  for (int i = 0; i < dim; ++i) {
+    EXPECT_FLOAT_EQ(1.0, diag[i].re) << "i = " << i;
+    EXPECT_FLOAT_EQ(0.0, diag[i].im) << "i = " << i;
+  }
+
+  mboTensorOpDestroy(&identity);
+  mboProdSpaceDestroy(&h);
+}
+
+TEST(MboTensorOp, GetDiagonalSigmaPlus) {
+  int dim = 2;
+  MboProdSpace h = mboProdSpaceCreate(dim);
+  MboTensorOp Sp;
+  mboTensorOpNull(h, &Sp);
+  MboElemOp sp = mboSigmaPlus();
+  mboTensorOpAddTo(sp, 0, Sp);
+
+  std::vector<struct MboAmplitude> diag(dim);
+  mboTensorOpDiagonal(Sp, 0, dim, &diag[0]);
+  EXPECT_FLOAT_EQ(0.0, diag[0].re);
+  EXPECT_FLOAT_EQ(0.0, diag[0].im);
+  EXPECT_FLOAT_EQ(0.0, diag[1].re);
+  EXPECT_FLOAT_EQ(0.0, diag[1].im);
+
+  mboElemOpDestroy(&sp);
+  mboTensorOpDestroy(&Sp);
+  mboProdSpaceDestroy(&h);
+}
+
+TEST(MboTensorOp, GetDiagonalSigmaZ) {
+  int dim = 2;
+  MboProdSpace h = mboProdSpaceCreate(dim);
+  MboTensorOp Sz;
+  mboTensorOpNull(h, &Sz);
+  MboElemOp sz = mboSigmaZ();
+  mboTensorOpAddTo(sz, 0, Sz);
+
+  std::vector<struct MboAmplitude> diag(dim);
+  mboTensorOpDiagonal(Sz, 0, dim, &diag[0]);
+  EXPECT_FLOAT_EQ(-1.0, diag[0].re);
+  EXPECT_FLOAT_EQ(0.0, diag[0].im);
+  EXPECT_FLOAT_EQ(1.0, diag[1].re);
+  EXPECT_FLOAT_EQ(0.0, diag[1].im);
+
+  mboElemOpDestroy(&sz);
+  mboTensorOpDestroy(&Sz);
+  mboProdSpaceDestroy(&h);
+}
+
+TEST(MboTensorOp, GetDiagonalSigmaZInBiggerSpace) {
+  int dim = 2;
+  MboProdSpace h = mboProdSpaceCreate(dim);
+  mboProdSpaceMul(h, &h);
+  mboProdSpaceMul(h, &h);
+  MboTensorOp Sz;
+  mboTensorOpNull(h, &Sz);
+  MboElemOp sz = mboSigmaZ();
+  mboTensorOpAddTo(sz, 2, Sz);
+
+  std::vector<struct MboAmplitude> diag(mboProdSpaceDim(h));
+  mboTensorOpDiagonal(Sz, 0, mboProdSpaceDim(h), &diag[0]);
+  for (int i = 0; i < 4; ++i) {
+    for (int j = 0; j < 4; ++j) {
+      if (j / 2 == 0) {
+        EXPECT_FLOAT_EQ(-1.0, diag[i * 4 + j].re) << " i == " << i
+                                                  << " j == " << j;
+        EXPECT_FLOAT_EQ(0.0, diag[i * 4 + j].im) << " i == " << i
+                                                 << " j == " << j;
+      } else {
+        EXPECT_FLOAT_EQ(1.0, diag[i * 4 + j].re) << " i == " << i
+                                                 << " j == " << j;
+        EXPECT_FLOAT_EQ(0.0, diag[i * 4 + j].im) << " i == " << i
+                                                 << " j == " << j;
+      }
+    }
+  }
+
+  mboElemOpDestroy(&sz);
+  mboTensorOpDestroy(&Sz);
+  mboProdSpaceDestroy(&h);
+}

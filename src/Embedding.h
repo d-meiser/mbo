@@ -74,6 +74,13 @@ void embeddingSparseMatrix(int i, int numSpaces, MboLocInd *dims,
 			   struct MboAmplitude *A, MboGlobInd offsetR,
 			   MboGlobInd offsetC, int *numInserted);
 
+void embeddingDiagonal(int i, int numSpaces, MboLocInd *dims,
+		       MboGlobInd blockSizeAfter, struct MboAmplitude alphak,
+		       int numFactors, struct Embedding *embeddings,
+		       MboGlobInd rmin, MboGlobInd rmax,
+		       struct MboAmplitude *diag, MboGlobInd offsetR,
+		       MboGlobInd offsetC);
+
 #ifdef __cplusplus
 }
 #endif

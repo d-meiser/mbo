@@ -42,6 +42,9 @@ void simpleTOpGetNonZerosPerRow(MboProdSpace h, struct SimpleTOp *simpleOp,
 void simpleTOpSparseMatrix(MboProdSpace h, struct SimpleTOp *simpleOp,
 			   MboGlobInd rmin, MboGlobInd rmax, int *i, int *j,
 			   struct MboAmplitude *a, int *numInserted);
+void simpleTOpDiagonal(MboProdSpace h, struct SimpleTOp *simpleOp,
+		       MboGlobInd rmin, MboGlobInd rmax,
+		       struct MboAmplitude *diag);
 
 #ifdef __cplusplus
 }
