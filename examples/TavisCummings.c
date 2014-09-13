@@ -5,7 +5,7 @@
 static const int nAtoms = 10;
 static const int nPhotons = 30;
 static const double omegaC = 2.345e0;
-static const int numIter = 0;
+static const int numIter = 2;
 
 static double omega(int i);
 
