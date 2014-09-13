@@ -222,3 +222,28 @@ void simpleTOpSparseMatrix(MboProdSpace h, struct SimpleTOp *simpleOp,
 
 	free(dims);
 }
+
+void simpleTOpDiagonal(MboProdSpace h, struct SimpleTOp *simpleOp,
+		       MboGlobInd rmin, MboGlobInd rmax,
+		       struct MboAmplitude *diag)
+{
+	struct MboAmplitude alpha;
+	MboGlobInd blockSize;
+	int numSpaces;
+	MboLocInd *dims;
+
+	gatherAllEmbeddings(&simpleOp->numFactors, &simpleOp->embeddings);
+	sortEmbeddings(simpleOp->numFactors, simpleOp->embeddings);
+
+	blockSize = mboProdSpaceDim(h);
+	numSpaces = mboProdSpaceSize(h);
+	dims = malloc(numSpaces * sizeof(*dims));
+	mboProdSpaceGetDims(h, numSpaces, dims);
+
+	alpha.re = 1;
+	alpha.im = 0;
+	embeddingDiagonal(0, numSpaces, dims, blockSize, alpha,
+			  simpleOp->numFactors, simpleOp->embeddings, rmin,
+			  rmax, diag, 0, 0);
+	free(dims);
+}
