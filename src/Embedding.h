@@ -71,8 +71,8 @@ void embeddingSparseMatrix(int i, int numSpaces, MboLocInd *dims,
 			   MboGlobInd blockSizeAfter, struct MboAmplitude alpha,
 			   int numFactors, struct Embedding *embeddings,
 			   MboGlobInd rmin, MboGlobInd rmax, int *I, int *J,
-			   struct MboAmplitude *A, MboGlobInd offset,
-			   int *numInserted);
+			   struct MboAmplitude *A, MboGlobInd offsetR,
+			   MboGlobInd offsetC, int *numInserted);
 
 #ifdef __cplusplus
 }

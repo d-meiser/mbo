@@ -887,7 +887,172 @@ TEST(MboTensorOp, SparseMatrixIdentity) {
   mboTensorOpSparseMatrix(identity, 0, 2, &i[0], &j[0], &a[0]);
   EXPECT_EQ(0, j[0]);
   EXPECT_EQ(1, j[1]);
+  EXPECT_FLOAT_EQ(1.0, a[0].re);
+  EXPECT_FLOAT_EQ(0.0, a[0].im);
+  EXPECT_FLOAT_EQ(1.0, a[1].re);
+  EXPECT_FLOAT_EQ(0.0, a[1].im);
 
   mboTensorOpDestroy(&identity);
+  mboProdSpaceDestroy(&h);
+}
+
+TEST(MboTensorOp, SparseMatrixSigmaPlus) {
+  int dim = 2;
+  MboProdSpace h = mboProdSpaceCreate(dim);
+  MboTensorOp Sp;
+  mboTensorOpNull(h, &Sp);
+  MboElemOp sp = mboSigmaPlus();
+  mboTensorOpAddTo(sp, 0, Sp);
+
+  std::vector<int> i(dim + 1);
+  mboTensorOpRowOffsets(Sp, 0, 2, &i[0]);
+  std::vector<int> j(i[dim]);
+  std::vector<struct MboAmplitude> a(i[dim]);
+  mboTensorOpSparseMatrix(Sp, 0, 2, &i[0], &j[0], &a[0]);
+  EXPECT_EQ(0, j[0]);
+  EXPECT_FLOAT_EQ(1.0, a[0].re);
+  EXPECT_FLOAT_EQ(0.0, a[0].im);
+
+  mboElemOpDestroy(&sp);
+  mboTensorOpDestroy(&Sp);
+  mboProdSpaceDestroy(&h);
+}
+
+TEST(MboTensorOp, SparseMatrixInBiggerSpace) {
+  int dim = 2;
+  MboProdSpace h = mboProdSpaceCreate(dim);
+  mboProdSpaceMul(h, &h);
+  mboProdSpaceMul(h, &h);
+  MboTensorOp Sp;
+  mboTensorOpNull(h, &Sp);
+  MboElemOp sp = mboSigmaPlus();
+  mboTensorOpAddTo(sp, 1, Sp);
+
+  MboGlobInd totalDim = mboProdSpaceDim(h);
+  std::vector<int> i(totalDim + 1);
+  mboTensorOpRowOffsets(Sp, 0, totalDim, &i[0]);
+  std::vector<int> j(i[mboProdSpaceDim(h)]);
+  std::vector<struct MboAmplitude> a(i[mboProdSpaceDim(h)]);
+  mboTensorOpSparseMatrix(Sp, 0, mboProdSpaceDim(h), &i[0], &j[0], &a[0]);
+  EXPECT_EQ(8, j.size());
+  EXPECT_EQ(0, j[0]);
+  EXPECT_EQ(1, j[1]);
+  EXPECT_EQ(2, j[2]);
+  EXPECT_EQ(3, j[3]);
+  EXPECT_EQ(8, j[4]);
+  EXPECT_EQ(9, j[5]);
+  EXPECT_EQ(10, j[6]);
+  EXPECT_EQ(11, j[7]);
+  EXPECT_EQ(8, a.size());
+  for (size_t i = 0; i < a.size(); ++i) {
+	  EXPECT_FLOAT_EQ(1.0, a[i].re) << "i = " << i;
+	  EXPECT_FLOAT_EQ(0.0, a[i].im) << "i = " << i;
+  }
+
+  mboElemOpDestroy(&sp);
+  mboTensorOpDestroy(&Sp);
+  mboProdSpaceDestroy(&h);
+}
+
+static void printMatrixPattern(MboTensorOp op) {
+  MboGlobInd dim = mboProdSpaceDim(mboTensorOpGetSpace(op));
+  std::vector<struct MboAmplitude> mat(dim * dim);
+  mboTensorOpDenseMatrix(op, &mat[0]);
+  std::cout << "\n\n";
+  for (size_t i = 0; i < dim; ++i) {
+    for (size_t j = 0; j < dim; ++j) {
+      if (mat[i * dim + j].re * mat[i * dim + j].re +
+          mat[i * dim + j].im * mat[i * dim + j].im > 1.0e-16) {
+	      std::cout << "x";
+      } else {
+	      std::cout << ".";
+      }
+    }
+    std::cout << "\n";
+  }
+  std::cout << "\n\n";
+}
+
+TEST(MboTensorOp, SparseMatrixTwoEmbeddings) {
+  int dim = 2;
+  MboProdSpace h = mboProdSpaceCreate(dim);
+  mboProdSpaceMul(h, &h);
+  mboProdSpaceMul(h, &h);
+  MboTensorOp Sp;
+  mboTensorOpNull(h, &Sp);
+  MboElemOp sp = mboSigmaPlus();
+  mboTensorOpAddTo(sp, 1, Sp);
+  mboTensorOpAddTo(sp, 3, Sp);
+
+  MboGlobInd totalDim = mboProdSpaceDim(h);
+  std::vector<int> i(totalDim + 1);
+  mboTensorOpRowOffsets(Sp, 0, totalDim, &i[0]);
+  std::vector<int> j(i[mboProdSpaceDim(h)]);
+  std::vector<struct MboAmplitude> a(i[mboProdSpaceDim(h)]);
+  mboTensorOpSparseMatrix(Sp, 0, mboProdSpaceDim(h), &i[0], &j[0], &a[0]);
+  EXPECT_EQ(16, j.size());
+  EXPECT_EQ(0, j[0]);
+  EXPECT_EQ(2, j[1]);
+  EXPECT_EQ(0, j[2]);
+  EXPECT_EQ(1, j[3]);
+  EXPECT_EQ(4, j[4]);
+  EXPECT_EQ(2, j[5]);
+  EXPECT_EQ(3, j[6]);
+  EXPECT_EQ(6, j[7]);
+  EXPECT_EQ(8, j[8]);
+  EXPECT_EQ(10, j[9]);
+  EXPECT_EQ(8, j[10]);
+  EXPECT_EQ(9, j[11]);
+  EXPECT_EQ(12, j[12]);
+  EXPECT_EQ(10, j[13]);
+  EXPECT_EQ(11, j[14]);
+  EXPECT_EQ(14, j[15]);
+  EXPECT_EQ(16, a.size());
+  for (size_t i = 0; i < a.size(); ++i) {
+    EXPECT_FLOAT_EQ(1.0, a[i].re) << "i = " << i;
+    EXPECT_FLOAT_EQ(0.0, a[i].im) << "i = " << i;
+  }
+
+  mboElemOpDestroy(&sp);
+  mboTensorOpDestroy(&Sp);
+  mboProdSpaceDestroy(&h);
+}
+
+TEST(MboTensorOp, SparseMatrixTwoEmbeddingsSubrange) {
+  int dim = 2;
+  MboProdSpace h = mboProdSpaceCreate(dim);
+  mboProdSpaceMul(h, &h);
+  mboProdSpaceMul(h, &h);
+  MboTensorOp Sp;
+  mboTensorOpNull(h, &Sp);
+  MboElemOp sp = mboSigmaPlus();
+  mboTensorOpAddTo(sp, 1, Sp);
+  mboTensorOpAddTo(sp, 3, Sp);
+
+  MboGlobInd totalDim = mboProdSpaceDim(h);
+  std::vector<int> i(totalDim + 1);
+  MboGlobInd rmin = 3;
+  MboGlobInd rmax = 11;
+  mboTensorOpRowOffsets(Sp, rmin, rmax, &i[0]);
+  std::vector<int> j(i[rmax - rmin]);
+  std::vector<struct MboAmplitude> a(i[rmax - rmin]);
+  mboTensorOpSparseMatrix(Sp, rmin, rmax, &i[0], &j[0], &a[0]);
+  EXPECT_EQ(8, j.size());
+  EXPECT_EQ(2, j[0]);
+  EXPECT_EQ(0, j[1]);
+  EXPECT_EQ(1, j[2]);
+  EXPECT_EQ(4, j[3]);
+  EXPECT_EQ(2, j[4]);
+  EXPECT_EQ(3, j[5]);
+  EXPECT_EQ(6, j[6]);
+  EXPECT_EQ(8, j[7]);
+  EXPECT_EQ(8, a.size());
+  for (size_t i = 0; i < a.size(); ++i) {
+    EXPECT_FLOAT_EQ(1.0, a[i].re) << "i = " << i;
+    EXPECT_FLOAT_EQ(0.0, a[i].im) << "i = " << i;
+  }
+
+  mboElemOpDestroy(&sp);
+  mboTensorOpDestroy(&Sp);
   mboProdSpaceDestroy(&h);
 }

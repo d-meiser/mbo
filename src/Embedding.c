@@ -220,20 +220,46 @@ void embeddingNonZeros(int i, int numSpaces, MboLocInd *dims,
 void embeddingSparseMatrix(int i, int numSpaces, MboLocInd *dims,
 			   MboGlobInd blockSizeAfter, struct MboAmplitude alpha,
 			   int numFactors, struct Embedding *embeddings,
-			   MboGlobInd rmin, MboGlobInd rmax, int *I,
-			   int *J, struct MboAmplitude *A, MboGlobInd offset,
-			   int *numInserted)
+			   MboGlobInd rmin, MboGlobInd rmax, int *I, int *J,
+			   struct MboAmplitude *A, MboGlobInd offsetR,
+			   MboGlobInd offsetC, int *numInserted)
 {
-	MboGlobInd n, nStart, nEnd;
+	MboGlobInd blockSizeBefore, n, nStart, nEnd;
+	struct MboAmplitude tmp;
+	struct MboNonZeroEntry *entries;
+	int nextI, e;
 
 	if (numFactors > 0) {
+		nextI = embeddings->i;
+		blockSizeBefore = computeBlockSize(nextI - i, dims + i);
+		blockSizeAfter /= (blockSizeBefore * (MboGlobInd)dims[nextI]);
+		entries = mboElemOpGetEntries(embeddings->op);
+		for (n = 0; n < blockSizeBefore; ++n) {
+			for (e = 0; e < mboElemOpNumEntries(embeddings->op);
+			     ++e) {
+				tmp.re = alpha.re * entries[e].val.re -
+					 alpha.im * entries[e].val.im;
+				tmp.im = alpha.re * entries[e].val.im +
+					 alpha.im * entries[e].val.re;
+				embeddingSparseMatrix(
+				    nextI + 1, numSpaces, dims, blockSizeAfter,
+				    tmp, numFactors - 1, embeddings + 1, rmin,
+				    rmax,
+				    I, J, A,
+				    offsetR + entries[e].m * blockSizeAfter,
+				    offsetC + entries[e].n * blockSizeAfter,
+				    numInserted);
+			}
+			offsetR += blockSizeAfter * (MboGlobInd)dims[nextI];
+			offsetC += blockSizeAfter * (MboGlobInd)dims[nextI];
+		}
 	} else {
-		nStart = offset - rmin;
+		nStart = offsetR - rmin;
 		if (nStart < 0) nStart = 0;
-		nEnd = offset + blockSizeAfter - rmin;
+		nEnd = offsetR + blockSizeAfter - rmin;
 		if (nEnd > rmax - rmin) nEnd = rmax - rmin;
 		for (n = nStart; n < nEnd; ++n) {
-			J[I[n] + numInserted[n]] = offset + n;
+			J[I[n] + numInserted[n]] = rmin + offsetC - offsetR + n;
 			A[I[n] + numInserted[n]] = alpha;
 			++numInserted[n];
 		}
