@@ -81,6 +81,8 @@ void embeddingDiagonal(int i, int numSpaces, MboLocInd *dims,
 		       struct MboAmplitude *diag, MboGlobInd offsetR,
 		       MboGlobInd offsetC);
 
+void embeddingDeleteDiagonal(struct Embedding *embedding);
+
 #ifdef __cplusplus
 }
 #endif

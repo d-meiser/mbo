@@ -311,3 +311,21 @@ void embeddingDiagonal(int i, int numSpaces, MboLocInd *dims,
 		}
 	}
 }
+
+void embeddingDeleteDiagonal(struct Embedding *embedding)
+{
+	int e, numEntries;
+	struct MboNonZeroEntry *entries;
+
+	numEntries = mboElemOpNumEntries(embedding->op);
+	e = 0;
+	while (e < numEntries) {
+		entries = mboElemOpGetEntries(embedding->op);
+		if (entries[e].m == entries[e].n) {
+			mboElemOpDeleteEntry(embedding->op, e);
+			numEntries = mboElemOpNumEntries(embedding->op);
+		} else {
+			++e;
+		}
+	}
+}

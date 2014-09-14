@@ -230,3 +230,12 @@ MboElemOp mboElemOpCopy(MboElemOp a)
 	return copy;
 }
 
+void mboElemOpDeleteEntry(MboElemOp op, int e)
+{
+	if (e < op->nOps) {
+		op->entries[e] = op->entries[op->nOps - 1];
+		--op->nOps;
+		op->entries =
+		    realloc(op->entries, op->nOps * sizeof(*op->entries));
+	}
+}

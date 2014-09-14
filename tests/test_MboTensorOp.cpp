@@ -1195,3 +1195,64 @@ TEST(MboTensorOp, DeleteDiagonalIdentity) {
   mboTensorOpDestroy(&identity);
   mboProdSpaceDestroy(&h);
 }
+
+TEST(MboTensorOp, DeleteDiagonalSz) {
+  int dim = 2;
+  MboProdSpace h = mboProdSpaceCreate(dim);
+  mboProdSpaceMul(h, &h);
+  mboProdSpaceMul(h, &h);
+  MboTensorOp Op;
+  mboTensorOpNull(h, &Op);
+  MboElemOp sz = mboSigmaZ();
+  mboTensorOpAddTo(sz, 1, Op);
+
+  mboTensorOpDeleteDiagonal(Op);
+  int D = mboProdSpaceDim(h);
+  std::vector<struct MboAmplitude> mat(D * D);
+  mboTensorOpDenseMatrix(Op, &mat[0]);
+  for (int i = 0; i < D * D; ++i) {
+    EXPECT_FLOAT_EQ(0, mat[i].re) << " i == " << i;
+    EXPECT_FLOAT_EQ(0, mat[i].im) << " i == " << i;
+  }
+
+  mboElemOpDestroy(&sz);
+  mboTensorOpDestroy(&Op);
+  mboProdSpaceDestroy(&h);
+}
+
+TEST(MboTensorOp, DeleteDiagonalSp) {
+  int dim = 2;
+  MboProdSpace h = mboProdSpaceCreate(dim);
+  mboProdSpaceMul(h, &h);
+  mboProdSpaceMul(h, &h);
+  MboTensorOp Op;
+  mboTensorOpNull(h, &Op);
+  MboElemOp sp = mboSigmaPlus();
+  mboTensorOpAddTo(sp, 1, Op);
+
+  mboTensorOpDeleteDiagonal(Op);
+  int D = mboProdSpaceDim(h);
+  std::vector<int> I(D + 1);
+  mboTensorOpRowOffsets(Op, 0, D, &I[0]);
+  EXPECT_EQ(0, I[0]);
+  EXPECT_EQ(0, I[1]);
+  EXPECT_EQ(0, I[2]);
+  EXPECT_EQ(0, I[3]);
+  EXPECT_EQ(0, I[4]);
+  EXPECT_EQ(1, I[5]);
+  EXPECT_EQ(2, I[6]);
+  EXPECT_EQ(3, I[7]);
+  EXPECT_EQ(4, I[8]);
+  EXPECT_EQ(4, I[9]);
+  EXPECT_EQ(4, I[10]);
+  EXPECT_EQ(4, I[11]);
+  EXPECT_EQ(4, I[12]);
+  EXPECT_EQ(5, I[13]);
+  EXPECT_EQ(6, I[14]);
+  EXPECT_EQ(7, I[15]);
+  EXPECT_EQ(8, I[16]);
+
+  mboElemOpDestroy(&sp);
+  mboTensorOpDestroy(&Op);
+  mboProdSpaceDestroy(&h);
+}
