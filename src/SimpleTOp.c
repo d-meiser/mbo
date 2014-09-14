@@ -247,3 +247,17 @@ void simpleTOpDiagonal(MboProdSpace h, struct SimpleTOp *simpleOp,
 			  rmax, diag, 0, 0);
 	free(dims);
 }
+
+void simpleTOpDeleteDiagonal(struct SimpleTOp *simpleOp)
+{
+	MboElemOp null;
+	if (simpleOp->numFactors == 0) {
+		simpleOp->numFactors = 1;
+		simpleOp->embeddings = realloc(simpleOp->embeddings,
+				sizeof(*simpleOp->embeddings));
+		simpleOp->embeddings[0].i = 0;
+		mboElemOpCreate(&null);
+		simpleOp->embeddings[0].op = null;
+	} else {
+	}
+}

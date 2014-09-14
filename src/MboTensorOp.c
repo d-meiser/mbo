@@ -316,3 +316,11 @@ void mboTensorOpDiagonal(MboTensorOp op, MboGlobInd rmin, MboGlobInd rmax,
 		simpleTOpDiagonal(op->space, op->sum + s, rmin, rmax, diag);
 	}
 }
+
+void mboTensorOpDeleteDiagonal(MboTensorOp op)
+{
+	int s;
+	for (s = 0; s < op->numTerms; ++s) {
+		simpleTOpDeleteDiagonal(op->sum + s);
+	}
+}

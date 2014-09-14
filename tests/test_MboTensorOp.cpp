@@ -1159,3 +1159,39 @@ TEST(MboTensorOp, GetDiagonalSigmaZInBiggerSpace) {
   mboTensorOpDestroy(&Sz);
   mboProdSpaceDestroy(&h);
 }
+
+TEST(MboTensorOp, DeleteDiagonalNull) {
+  int dim = 4;
+  MboProdSpace h = mboProdSpaceCreate(dim);
+  MboTensorOp null;
+  mboTensorOpNull(h, &null);
+
+  mboTensorOpDeleteDiagonal(null);
+  std::vector<struct MboAmplitude> mat(dim * dim);
+  mboTensorOpDenseMatrix(null, &mat[0]);
+  for (int i = 0; i < dim * dim; ++i) {
+    EXPECT_FLOAT_EQ(0, mat[i].re) << " i == " << i;
+    EXPECT_FLOAT_EQ(0, mat[i].im) << " i == " << i;
+  }
+
+  mboTensorOpDestroy(&null);
+  mboProdSpaceDestroy(&h);
+}
+
+TEST(MboTensorOp, DeleteDiagonalIdentity) {
+  int dim = 3;
+  MboProdSpace h = mboProdSpaceCreate(dim);
+  MboTensorOp identity;
+  mboTensorOpIdentity(h, &identity);
+
+  mboTensorOpDeleteDiagonal(identity);
+  std::vector<struct MboAmplitude> mat(dim * dim);
+  mboTensorOpDenseMatrix(identity, &mat[0]);
+  for (int i = 0; i < dim * dim; ++i) {
+    EXPECT_FLOAT_EQ(0, mat[i].re) << " i == " << i;
+    EXPECT_FLOAT_EQ(0, mat[i].im) << " i == " << i;
+  }
+
+  mboTensorOpDestroy(&identity);
+  mboProdSpaceDestroy(&h);
+}

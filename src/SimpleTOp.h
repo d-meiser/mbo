@@ -45,6 +45,7 @@ void simpleTOpSparseMatrix(MboProdSpace h, struct SimpleTOp *simpleOp,
 void simpleTOpDiagonal(MboProdSpace h, struct SimpleTOp *simpleOp,
 		       MboGlobInd rmin, MboGlobInd rmax,
 		       struct MboAmplitude *diag);
+void simpleTOpDeleteDiagonal(struct SimpleTOp *simpleOp);
 
 #ifdef __cplusplus
 }

@@ -171,6 +171,8 @@ MBO_EXPORT void mboTensorOpSparseMatrix(MboTensorOp op, MboGlobInd rmin,
 MBO_EXPORT void mboTensorOpDiagonal(MboTensorOp op, MboGlobInd rmin,
 				    MboGlobInd rmax, struct MboAmplitude *diag);
 
+MBO_EXPORT void mboTensorOpDeleteDiagonal(MboTensorOp);
+
 /** @brief Check integrity of tensor operator.
  * Returns the number of errors.*/
 MBO_EXPORT int mboTensorOpCheck(MboTensorOp);
