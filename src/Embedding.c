@@ -77,7 +77,8 @@ int findEmbedding(int i, int numEmbeddings, struct Embedding *emb)
 void applyEmbeddings(int i, int numSpaces, MboLocInd *dims,
 		     MboGlobInd blockSizeAfter, struct MboAmplitude alpha,
 		     int numFactors, struct Embedding *embeddings,
-		     struct MboAmplitude *xarr, struct MboAmplitude *yarr)
+		     struct MboAmplitude *x, struct MboAmplitude *y,
+		     MboGlobInd rmin, MboGlobInd rmax)
 {
 	int nextI, e;
 	MboGlobInd blockSizeBefore, n;
@@ -99,18 +100,17 @@ void applyEmbeddings(int i, int numSpaces, MboLocInd *dims,
 				applyEmbeddings(
 				    nextI + 1, numSpaces, dims, blockSizeAfter,
 				    tmp, numFactors - 1, embeddings + 1,
-				    xarr + entries[e].n * blockSizeAfter,
-				    yarr + entries[e].m * blockSizeAfter);
+				    x + entries[e].n * blockSizeAfter,
+				    y + entries[e].m * blockSizeAfter, rmin,
+				    rmax);
 			}
-			xarr += blockSizeAfter * (MboGlobInd)dims[nextI];
-			yarr += blockSizeAfter * (MboGlobInd)dims[nextI];
+			x += blockSizeAfter * (MboGlobInd)dims[nextI];
+			y += blockSizeAfter * (MboGlobInd)dims[nextI];
 		}
 	} else {
 		for (n = 0; n < blockSizeAfter; ++n) {
-			yarr[n].re +=
-			    alpha.re * xarr[n].re - alpha.im * xarr[n].im;
-			yarr[n].im +=
-			    alpha.re * xarr[n].im + alpha.im * xarr[n].re;
+			y[n].re += alpha.re * x[n].re - alpha.im * x[n].im;
+			y[n].im += alpha.re * x[n].im + alpha.im * x[n].re;
 		}
 	}
 }

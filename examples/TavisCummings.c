@@ -1,4 +1,5 @@
 #include <Mbo.h>
+#include <MboVec.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -15,7 +16,7 @@ int main()
 	MboElemOp sm, sp, sz, a, ad, numberOp;
 	MboTensorOp inhomogeneousJz, jPlus, jMinus, idField, idAtoms, A, Ad, N,
 	    H, *factors;
-	struct MboAmplitude tmp;
+	struct MboAmplitude tmp, *xarr, *yarr;
 	MboVec x, y;
 	int i;
 
@@ -94,10 +95,15 @@ int main()
 
 	tmp.re = 1.0;
 	tmp.im = 0.0;
-	mboTensorOpMatVec(&tmp, H, x, &tmp, y);
+	mboVecGetViewR(x, &xarr);
+	mboVecGetViewR(y, &yarr);
+	mboTensorOpMatVec(tmp, H, xarr, tmp, yarr, 0, mboProdSpaceDim(hTot));
 	for (i = 0; i < numIter; ++i) {
-		mboTensorOpMatVec(&tmp, H, x, &tmp, y);
+		mboTensorOpMatVec(tmp, H, xarr, tmp, yarr, 0,
+				  mboProdSpaceDim(hTot));
 	}
+	mboVecReleaseView(x, &xarr);
+	mboVecReleaseView(y, &yarr);
 
 	/* Release all resources */
 	mboElemOpDestroy(&sm);

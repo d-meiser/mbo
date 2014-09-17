@@ -17,7 +17,6 @@
 #include <MboProdSpace.h>
 #include <MboElemOp.h>
 #include <MboErrors.h>
-#include <MboVec.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -106,9 +105,11 @@ MBO_EXPORT MBO_STATUS mboTensorOpKron(int n, MboTensorOp *ops, MboTensorOp *c);
 /**
  * y <- alpha * a * x + beta * y
  * */
-MBO_EXPORT MBO_STATUS mboTensorOpMatVec(struct MboAmplitude *alpha, MboTensorOp a,
-				     MboVec x, struct MboAmplitude *beta,
-				     MboVec y);
+MBO_EXPORT MBO_STATUS
+mboTensorOpMatVec(struct MboAmplitude alpha, MboTensorOp a,
+		  struct MboAmplitude *restrict x, struct MboAmplitude beta,
+		  struct MboAmplitude *restrict y, MboGlobInd rmin,
+		  MboGlobInd rmax);
 
 /** @brief Returns an estimate for the number of floating point operations in a
  *         MatVec.
