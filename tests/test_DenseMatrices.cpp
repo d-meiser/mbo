@@ -254,16 +254,25 @@ static void computeMatrix(MboTensorOp op, struct MboAmplitude* mat) {
   mboVecCreate(dim, &x);
   MboVec y;
   mboVecCreate(dim, &y);
+  MboVec result;
+  mboVecCreate(dim, &result);
   for (MboGlobInd i = 0; i < dim; ++i) {
     mboVecUnitVector(i, x);
     for (MboGlobInd j = 0; j < dim; ++j) {
       mboVecUnitVector(j, y);
-      mboTensorOpMatVec(&one, op, y, &zero, y);
-      mboVecDot(x, y, &mat[i * dim + j]);
+      struct MboAmplitude *yarr;
+      mboVecGetViewR(y, &yarr);
+      struct MboAmplitude *resultarr;
+      mboVecGetViewRW(result, &resultarr);
+      mboTensorOpMatVec(one, op, yarr, zero, resultarr, 0, dim);
+      mboVecReleaseView(y, &yarr);
+      mboVecReleaseView(result, &resultarr);
+      mboVecDot(x, result, &mat[i * dim + j]);
     }
   }
   mboVecDestroy(&x);
   mboVecDestroy(&y);
+  mboVecDestroy(&result);
 }
 
 // The tests compare our results agains the reference solution
