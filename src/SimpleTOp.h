@@ -31,8 +31,8 @@ void scaleSimpleTOp(struct MboAmplitude *alpha, MboProdSpace h,
 		    struct SimpleTOp *op);
 int checkSimpleTOp(struct SimpleTOp *sa);
 MBO_STATUS applySimpleTOp(MboProdSpace h, struct MboAmplitude alpha,
-			  struct SimpleTOp *a, struct MboAmplitude *restrict x,
-			  struct MboAmplitude *restrict y, MboGlobInd rmin,
+			  struct SimpleTOp *a, struct MboAmplitude *x,
+			  struct MboAmplitude *y, MboGlobInd rmin,
 			  MboGlobInd rmax);
 double flopsSimpleTOp(int numSpaces, MboLocInd *dims, struct SimpleTOp *op);
 

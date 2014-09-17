@@ -194,9 +194,8 @@ MBO_STATUS mboTensorOpKron(int n, MboTensorOp *ops, MboTensorOp *c)
 }
 
 MBO_STATUS mboTensorOpMatVec(struct MboAmplitude alpha, MboTensorOp a,
-			     struct MboAmplitude *restrict x,
-			     struct MboAmplitude beta,
-			     struct MboAmplitude *restrict y, MboGlobInd rmin,
+			     struct MboAmplitude *x, struct MboAmplitude beta,
+			     struct MboAmplitude *y, MboGlobInd rmin,
 			     MboGlobInd rmax)
 {
 	int i;
