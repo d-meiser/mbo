@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <MboTensorOp.h>
 #include <MboAmplitude.h>
+#include <vector>
 
 TEST(MboTensorOp, Null) {
   MboTensorOp op;
@@ -388,9 +389,9 @@ TEST(MboTensorOp, MatVec) {
   MboGlobInd i;
   MboLocInd *dims;
   MboProdSpace h1, h2;
-  MboVec x, y;
   MboTensorOp A, B, C;
   struct MboAmplitude a, b, one, result, *arr, expectedResult;
+  std::vector<struct MboAmplitude> x, y;
   MboElemOp eop;
   MBO_STATUS err;
 
@@ -411,125 +412,104 @@ TEST(MboTensorOp, MatVec) {
   h1 = mboProdSpaceCreate(2);
   mboProdSpaceMul(h1, &h2);
 
-  /* mismatching dimensions */
-  mboVecCreate(1l + mboProdSpaceDim(h2), &x);
-  mboTensorOpIdentity(h2, &A);
-  err = mboTensorOpMatVec(&a, A, x, &b, x);
-  EXPECT_EQ(err, MBO_DIMENSIONS_MISMATCH);
-  mboTensorOpDestroy(&A);
-  mboVecDestroy(&x);
-
   /* x <- I * x + 0 * x */
-  mboVecCreate(mboProdSpaceDim(h2), &x);
-  mboVecSet(&one, x);
+  x.resize(mboProdSpaceDim(h2));
+  std::fill(x.begin(), x.end(), one);
+  y.resize(mboProdSpaceDim(h2));
+  std::fill(y.begin(), y.end(), one);
   mboTensorOpIdentity(h2, &A);
-  err = mboTensorOpMatVec(&a, A, x, &b, x);
-  EXPECT_EQ(err, MBO_SUCCESS);
-  err = mboVecGetViewR(x, &arr);
+  err = mboTensorOpMatVec(a, A, &x[0], b, &y[0], 0, mboProdSpaceDim(h2));
   EXPECT_EQ(err, MBO_SUCCESS);
   for (i = 0; i < mboProdSpaceDim(h2); ++i) {
-    EXPECT_FLOAT_EQ(arr[i].re, 1.0);
-    EXPECT_FLOAT_EQ(arr[i].im, 0.0);
+    EXPECT_FLOAT_EQ(y[i].re, 1.0);
+    EXPECT_FLOAT_EQ(y[i].im, 0.0);
   }
   mboTensorOpDestroy(&A);
-  mboVecDestroy(&x);
 
   /* y <- a * I * x + b * y
    * expected result:
    * a * one * one + b * b */
-  mboVecCreate(mboProdSpaceDim(h2), &x);
+  x.resize(mboProdSpaceDim(h2));
   a.re = 2.5;
   a.im = 22.0;
-  mboVecSet(&one, x);
-  mboVecCreate(mboProdSpaceDim(h2), &y);
+  std::fill(x.begin(), x.end(), one);
   b.re = 3.0;
   b.im = -1.7;
-  mboVecSet(&b, y);
+  y.resize(mboProdSpaceDim(h2));
+  std::fill(y.begin(), y.end(), b);
   result.re = a.re + b.re * b.re - b.im * b.im;
   result.im = a.im + b.re * b.im + b.im * b.re;
   mboTensorOpIdentity(h2, &A);
-  err = mboTensorOpMatVec(&a, A, x, &b, y);
-  EXPECT_EQ(err, MBO_SUCCESS);
-  err = mboVecGetViewR(y, &arr);
+  err = mboTensorOpMatVec(a, A, &x[0], b, &y[0], 0, mboProdSpaceDim(h2));
   EXPECT_EQ(err, MBO_SUCCESS);
   for (i = 0; i < mboProdSpaceDim(h2); ++i) {
-    EXPECT_FLOAT_EQ(arr[i].re, result.re);
-    EXPECT_FLOAT_EQ(arr[i].im, result.im);
+    EXPECT_FLOAT_EQ(y[i].re, result.re);
+    EXPECT_FLOAT_EQ(y[i].im, result.im);
   }
   mboTensorOpDestroy(&A);
-  mboVecDestroy(&x);
-  mboVecDestroy(&y);
 
   /* y <-  s_minus(0) * x */
-  mboVecCreate(mboProdSpaceDim(h2), &x);
+  x.resize(mboProdSpaceDim(h2));
   a.re = 2.5;
   a.im = 22.0;
-  mboVecSet(&a, x);
-  mboVecCreate(mboProdSpaceDim(h2), &y);
+  std::fill(x.begin(), x.end(), a);
   b.re = 3.0;
   b.im = -1.7;
-  mboVecSet(&b, y);
+  y.resize(mboProdSpaceDim(h2));
+  std::fill(y.begin(), y.end(), b);
   mboTensorOpNull(h2, &A);
   eop = mboSigmaMinus();
   mboTensorOpAddTo(eop, 0, A);
   b.re = 0.0;
   b.im = 0.0;
-  err = mboTensorOpMatVec(&one, A, x, &b, y);
-  EXPECT_EQ(err, MBO_SUCCESS);
-  err = mboVecGetViewR(y, &arr);
+  err = mboTensorOpMatVec(one, A, &x[0], b, &y[0], 0, mboProdSpaceDim(h2));
   EXPECT_EQ(err, MBO_SUCCESS);
   for (i = 0; i < mboProdSpaceDim(h2) / 2; ++i) {
-    EXPECT_FLOAT_EQ(arr[i].re, a.re);
-    EXPECT_FLOAT_EQ(arr[i].im, a.im);
+    EXPECT_FLOAT_EQ(a.re, y[i].re);
+    EXPECT_FLOAT_EQ(a.im, y[i].im);
   }
   for (i = mboProdSpaceDim(h2) / 2; i < mboProdSpaceDim(h2); ++i) {
-    EXPECT_FLOAT_EQ(arr[i].re, 0);
-    EXPECT_FLOAT_EQ(arr[i].im, 0);
+    EXPECT_FLOAT_EQ(0, y[i].re);
+    EXPECT_FLOAT_EQ(0, y[i].im);
   }
   mboTensorOpDestroy(&A);
-  mboVecDestroy(&x);
-  mboVecDestroy(&y);
   mboElemOpDestroy(&eop);
 
   /* y <-  (I + s_minus(0)) * x */
-  mboVecCreate(mboProdSpaceDim(h2), &x);
+  x.resize(mboProdSpaceDim(h2));
   a.re = 2.5;
   a.im = 22.0;
-  mboVecSet(&a, x);
-  mboVecCreate(mboProdSpaceDim(h2), &y);
+  std::fill(x.begin(), x.end(), a);
   b.re = 3.0;
   b.im = -1.7;
-  mboVecSet(&b, y);
+  y.resize(mboProdSpaceDim(h2));
+  std::fill(y.begin(), y.end(), b);
   mboTensorOpIdentity(h2, &A);
   eop = mboSigmaMinus();
   mboTensorOpAddTo(eop, 0, A);
   b.re = 0.0;
   b.im = 0.0;
-  err = mboTensorOpMatVec(&one, A, x, &b, y);
-  EXPECT_EQ(err, MBO_SUCCESS);
-  err = mboVecGetViewR(y, &arr);
+  err = mboTensorOpMatVec(one, A, &x[0], b, &y[0], 0, mboProdSpaceDim(h2));
   EXPECT_EQ(err, MBO_SUCCESS);
   for (i = 0; i < mboProdSpaceDim(h2) / 2; ++i) {
-    EXPECT_FLOAT_EQ(arr[i].re, 2.0 * a.re);
-    EXPECT_FLOAT_EQ(arr[i].im, 2.0 * a.im);
+    EXPECT_FLOAT_EQ(y[i].re, 2.0 * a.re);
+    EXPECT_FLOAT_EQ(y[i].im, 2.0 * a.im);
   }
   for (i = mboProdSpaceDim(h2) / 2; i < mboProdSpaceDim(h2); ++i) {
-    EXPECT_FLOAT_EQ(arr[i].re, a.re);
-    EXPECT_FLOAT_EQ(arr[i].im, a.im);
+    EXPECT_FLOAT_EQ(y[i].re, a.re);
+    EXPECT_FLOAT_EQ(y[i].im, a.im);
   }
   mboTensorOpDestroy(&A);
-  mboVecDestroy(&x);
-  mboVecDestroy(&y);
   mboElemOpDestroy(&eop);
 
-  mboVecCreate(mboProdSpaceDim(h2), &x);
+  x.resize(mboProdSpaceDim(h2));
   a.re = 2.5;
   a.im = 22.0;
-  mboVecSet(&a, x);
-  mboVecCreate(mboProdSpaceDim(h2), &y);
+  std::fill(x.begin(), x.end(), a);
   b.re = 3.0;
   b.im = -1.7;
-  mboVecSet(&b, y);
+  y.resize(mboProdSpaceDim(h2));
+  std::fill(y.begin(), y.end(), b);
   mboTensorOpNull(h2, &A);
   eop = mboSigmaMinus();
   mboTensorOpAddTo(eop, 0, A);
@@ -542,9 +522,7 @@ TEST(MboTensorOp, MatVec) {
   mboTensorOpMul(A, B, &C);
   mboTensorOpDestroy(&A);
   mboTensorOpDestroy(&B);
-  err = mboTensorOpMatVec(&one, C, x, &b, y);
-  EXPECT_EQ(err, MBO_SUCCESS);
-  err = mboVecGetViewR(y, &arr);
+  err = mboTensorOpMatVec(one, C, &x[0], b, &y[0], 0, mboProdSpaceDim(h2));
   EXPECT_EQ(err, MBO_SUCCESS);
   dims = (MboLocInd *)malloc(3 * sizeof(*dims));
   mboProdSpaceGetDims(h2, 3, dims);
@@ -556,12 +534,10 @@ TEST(MboTensorOp, MatVec) {
       expectedResult.re += a.re;
       expectedResult.im += a.im;
     }
-    EXPECT_FLOAT_EQ(arr[i].re, expectedResult.re);
-    EXPECT_FLOAT_EQ(arr[i].im, expectedResult.im);
+    EXPECT_FLOAT_EQ(y[i].re, expectedResult.re);
+    EXPECT_FLOAT_EQ(y[i].im, expectedResult.im);
   }
   free(dims);
-  mboVecDestroy(&x);
-  mboVecDestroy(&y);
   mboTensorOpDestroy(&C);
   mboProdSpaceDestroy(&h1);
   mboProdSpaceDestroy(&h2);
