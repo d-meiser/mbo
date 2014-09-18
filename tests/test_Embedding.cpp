@@ -107,7 +107,8 @@ TEST(Embedding, ApplyEmbeddings) {
   memset(y, 0, sizeof(*y) * computeBlockSize(4, dims));
 
   blockSize = computeBlockSize(3, dims + 1);
-  applyEmbeddings(0, 4, dims, blockSize, x[0], 0, 0, x, y);
+  applyEmbeddings(0, 4, dims, blockSize, x[0], 0, 0, x, y, 0,
+                  computeBlockSize(4, dims));
   for (int i = 0; i < computeBlockSize(4, dims); ++i) {
     EXPECT_FLOAT_EQ(y[i].re, 0);
     EXPECT_FLOAT_EQ(y[i].im, 0);
@@ -123,7 +124,7 @@ TEST(Embedding, ApplyEmbeddings) {
     x[i].im = 0.0;
   }
   applyEmbeddings(0, 4, dims, computeBlockSize(4, dims), alpha, 1, embeddings,
-                  x, y);
+                  x, y, 0, computeBlockSize(4, dims));
   for (int i = 0; i < computeBlockSize(4, dims); ++i) {
     if (i & 1l) {
       expectedResult.re = alpha.re;
@@ -151,7 +152,7 @@ TEST(Embedding, ApplyEmbeddings) {
     y[i].im = 0.0;
   }
   applyEmbeddings(0, 4, dims, computeBlockSize(4, dims), alpha, 1, embeddings,
-                  x, y);
+                  x, y, 0, computeBlockSize(4, dims));
   for (int i = 0; i < computeBlockSize(4, dims); ++i) {
     switch ((i / computeBlockSize(2, dims + 2)) % dims[1]) {
       case 0:
@@ -187,7 +188,7 @@ TEST(Embedding, ApplyEmbeddings) {
     y[i].im = 0.0;
   }
   applyEmbeddings(0, 4, dims, computeBlockSize(4, dims), alpha, 2, embeddings,
-                  x, y);
+                  x, y, 0, computeBlockSize(4, dims));
   /* Make sure that dim of first space is 2.  Otherwise the expected
    * results are not calculated correctly. */
   EXPECT_EQ(dims[0], 2);
