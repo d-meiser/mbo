@@ -102,13 +102,14 @@ int checkSimpleTOp(struct SimpleTOp *sa)
 	return errs;
 }
 
-MBO_STATUS applySimpleTOp(MboProdSpace h, struct MboAmplitude *alpha,
-			  struct SimpleTOp *a, MboVec x, MboVec y)
+MBO_STATUS applySimpleTOp(MboProdSpace h, struct MboAmplitude alpha,
+			  struct SimpleTOp *a, struct MboAmplitude *x,
+			  struct MboAmplitude *y, MboGlobInd rmin,
+			  MboGlobInd rmax)
 {
 	int numSpaces;
 	MboLocInd *dims;
 	MboGlobInd blockSize;
-	struct MboAmplitude *xarr, *yarr;
 
 	dims = malloc(mboProdSpaceSize(h) * sizeof(*dims));
 	gatherAllEmbeddings(&a->numFactors, &a->embeddings);
@@ -118,12 +119,8 @@ MBO_STATUS applySimpleTOp(MboProdSpace h, struct MboAmplitude *alpha,
 	blockSize = mboProdSpaceDim(h);
 	mboProdSpaceGetDims(h, mboProdSpaceSize(h), dims);
 
-	mboVecGetViewR(x, &xarr);
-	mboVecGetViewRW(y, &yarr);
-	applyEmbeddings(0, numSpaces, dims, blockSize, *alpha, a->numFactors,
-			a->embeddings, xarr, yarr);
-	mboVecReleaseView(x, &xarr);
-	mboVecReleaseView(y, &yarr);
+	applyEmbeddings(0, numSpaces, dims, blockSize, alpha, a->numFactors,
+			a->embeddings, x, y, rmin, rmax);
 
 	free(dims);
 

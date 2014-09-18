@@ -5,7 +5,6 @@
 #include <MboNonZeroEntry.h>
 #include <MboProdSpace.h>
 #include <MboErrors.h>
-#include <MboVec.h>
 #include <Embedding.h>
 
 #ifdef __cplusplus
@@ -31,8 +30,10 @@ void copySimpleTOp(struct SimpleTOp *dest, struct SimpleTOp *src);
 void scaleSimpleTOp(struct MboAmplitude *alpha, MboProdSpace h,
 		    struct SimpleTOp *op);
 int checkSimpleTOp(struct SimpleTOp *sa);
-MBO_STATUS applySimpleTOp(MboProdSpace h, struct MboAmplitude *alpha,
-			  struct SimpleTOp *a, MboVec x, MboVec y);
+MBO_STATUS applySimpleTOp(MboProdSpace h, struct MboAmplitude alpha,
+			  struct SimpleTOp *a, struct MboAmplitude *x,
+			  struct MboAmplitude *y, MboGlobInd rmin,
+			  MboGlobInd rmax);
 double flopsSimpleTOp(int numSpaces, MboLocInd *dims, struct SimpleTOp *op);
 
 void simpleTOpDenseMatrix(MboProdSpace h, struct SimpleTOp *simpleOp,

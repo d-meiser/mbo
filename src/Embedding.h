@@ -51,10 +51,11 @@ void sortEmbeddings(int numEmbeddings, struct Embedding *a);
 /**
  * @brief Apply a product of embeddings to a vector */
 void applyEmbeddings(int i, int numSpaces, MboLocInd *dims,
-			    MboGlobInd blockSize, struct MboAmplitude alpha,
-			    int numFactors, struct Embedding *embeddings,
-			    struct MboAmplitude *xarr,
-			    struct MboAmplitude *yarr);
+		     MboGlobInd blockSize, struct MboAmplitude alpha,
+		     int numFactors, struct Embedding *embeddings,
+		     struct MboAmplitude *x,
+		     struct MboAmplitude *y, MboGlobInd rmin,
+		     MboGlobInd rmax);
 
 void embeddingDenseMatrix(int i, int numSpaces, MboLocInd *dims,
 			  MboGlobInd blockSize, MboGlobInd dim,

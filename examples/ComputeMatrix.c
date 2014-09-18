@@ -7,11 +7,11 @@ static const int numSpins = 4;
 int main()
 {
 	int i, j;
-	MboVec x, y;
+	MboVec x, y, result;
 	MboElemOp sp, sm;
 	MboTensorOp Jx;
 	MboProdSpace h1, hTot;
-	struct MboAmplitude pointFive, one, zero, dotProduct;
+	struct MboAmplitude pointFive, one, zero, dotProduct, *yarr, *resultarr;
 
 	/* Build Hilbert space */
 	h1 = mboProdSpaceCreate(2);
@@ -41,13 +41,20 @@ int main()
 	zero.im = 0.0;
 	mboVecCreate(mboProdSpaceDim(hTot), &x);
 	mboVecCreate(mboProdSpaceDim(hTot), &y);
+	mboVecCreate(mboProdSpaceDim(hTot), &result);
+
 	printf("\nMatrix entries:\n");
 	for (i = 0; i < mboProdSpaceDim(hTot); ++i) {
 		mboVecUnitVector(i, x);
 		for (j = 0; j < mboProdSpaceDim(hTot); ++j) {
 			mboVecUnitVector(j, y);
-			mboTensorOpMatVec(&one, Jx, y, &zero, y); 
-			mboVecDot(x, y, &dotProduct);
+			mboVecGetViewR(y, &yarr);
+			mboVecGetViewRW(result, &resultarr);
+			mboTensorOpMatVec(one, Jx, yarr, zero, resultarr, 0,
+					mboProdSpaceDim(hTot)); 
+			mboVecReleaseView(y, &yarr);
+			mboVecReleaseView(result, &resultarr);
+			mboVecDot(x, result, &dotProduct);
 			printf("%1.1lf %1.1lf  ", dotProduct.re, dotProduct.im);
 		}
 		printf("\n");
@@ -57,8 +64,13 @@ int main()
 		mboVecUnitVector(i, x);
 		for (j = 0; j < mboProdSpaceDim(hTot); ++j) {
 			mboVecUnitVector(j, y);
-			mboTensorOpMatVec(&one, Jx, y, &zero, y); 
-			mboVecDot(x, y, &dotProduct);
+			mboVecGetViewR(y, &yarr);
+			mboVecGetViewRW(result, &resultarr);
+			mboTensorOpMatVec(one, Jx, yarr, zero, resultarr, 0,
+					mboProdSpaceDim(hTot)); 
+			mboVecReleaseView(y, &yarr);
+			mboVecReleaseView(result, &resultarr);
+			mboVecDot(x, result, &dotProduct);
 			if (dotProduct.re * dotProduct.re +
 				dotProduct.im * dotProduct.im >
 			    1.0e-6) {
@@ -71,6 +83,7 @@ int main()
 	}
 	mboVecDestroy(&x);
 	mboVecDestroy(&y);
+	mboVecDestroy(&result);
 
 	/* Deallocate remaining resources */
 	mboTensorOpDestroy(&Jx);

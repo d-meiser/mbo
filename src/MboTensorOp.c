@@ -193,30 +193,27 @@ MBO_STATUS mboTensorOpKron(int n, MboTensorOp *ops, MboTensorOp *c)
 	return MBO_SUCCESS;
 }
 
-
-MBO_STATUS mboTensorOpMatVec(struct MboAmplitude *alpha, MboTensorOp a,
-			     MboVec x, struct MboAmplitude *beta, MboVec y)
+MBO_STATUS mboTensorOpMatVec(struct MboAmplitude alpha, MboTensorOp a,
+			     struct MboAmplitude *x, struct MboAmplitude beta,
+			     struct MboAmplitude *y, MboGlobInd rmin,
+			     MboGlobInd rmax)
 {
 	int i;
+  MboGlobInd r;
 	MBO_STATUS err;
-	MboVec tmp;
-	struct MboAmplitude zero;
+	struct MboAmplitude tmp;
 
-	if (mboProdSpaceDim(a->space) != mboVecDim(x) ||
-	    mboProdSpaceDim(a->space) != mboVecDim(y)) {
-		return MBO_DIMENSIONS_MISMATCH;
-	}
-	mboVecCreate(mboVecDim(y), &tmp);
-	zero.re = 0;
-	zero.im = 0;
-	mboVecSet(&zero, tmp);
+  for (r = 0; r < rmax - rmin; ++r) {
+    tmp.re = beta.re * y[r].re - beta.im * y[r].im;
+    tmp.im = beta.re * y[r].im + beta.im * y[r].re;
+    y[r].re = tmp.re;
+    y[r].im = tmp.im;
+  }
+
 	for (i = 0; i < a->numTerms; ++i) {
-		err = applySimpleTOp(a->space, alpha, a->sum + i, x, tmp);
+		err = applySimpleTOp(a->space, alpha, a->sum + i, x, y, rmin, rmax);
 		if (err != MBO_SUCCESS) return err;
 	}
-	mboVecAXPY(beta, y, tmp);
-	mboVecSwap(tmp, y);
-	mboVecDestroy(&tmp);
 	return MBO_SUCCESS;
 }
 
