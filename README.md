@@ -4,15 +4,41 @@
 mbo
 ===
 
-Many body operators
+The many body operators (mbo) library provides functions for the
+numerical solution of quantum mechanical many body problems.  It is
+designed to be efficient both in terms of space usage and execution
+time.
 
-TODO:
-=====
+The latest version of mbo can be obtained from the github repository at
 
-- Control of exported symbols (static, hidden, and exported)
-- Move mboVecGetViewR, mboVecGetViewRW, mboVecReleaseView to private
-  APIs
-- Add mboVecFill method.
-- Work on examples
-- Refactor and cleanup MboTensorOp.c
-- Implement OpenCL accelerated version of MatVec
+(https://github.com/d-meiser/mbo)
+
+
+Build instructions
+==================
+
+mbo uses [cmake](http://www.cmake.org/) for cross platform
+configuration.
+
+Linux
+-----
+
+On linux, mbo can be downloaded, configured, and installed with the
+following steps:
+
+```
+git clone https://github.com/d-meiser/mbo
+cd mbo
+mkdir build
+cd build
+cmake ..
+make -j4
+sudo make install
+```
+Note that the last step typically requires super user privileges.
+
+Windows
+-------
+
+On windows mbo can be built with the microsoft visual studio compilers.
+The free version (visual studio express) is sufficient.
