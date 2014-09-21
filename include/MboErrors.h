@@ -23,6 +23,9 @@ with mbo.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef MBO_ERRORS_H
 #define MBO_ERRORS_H
 
+/**
+ * @brief Error codes used by the MBO library.
+ * */
 enum MBO_STATUS {
 	MBO_SUCCESS = 0,
 	MBO_OUT_OF_MEMORY,
@@ -32,6 +35,9 @@ enum MBO_STATUS {
 	MBO_INVALID_ARGUMENT,
 	MBO_ILLEGAL_DIMENSION
 };
+/**
+ * @brief Error codes used by the MBO library.
+ * */
 typedef enum MBO_STATUS MBO_STATUS;
 
 #endif
