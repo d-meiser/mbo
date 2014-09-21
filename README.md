@@ -50,11 +50,7 @@ Questions and Comments
 
 We'd love to hear how you're using mbo, what you find good, and what not
 so good.  The preferred way for leaving feedback is via the github issue
-tracker for the mbo repository:
-
-```
-https://github.com/d-meiser/mbo/issues
-```
+tracker for the mbo repository [https://github.com/d-meiser/mbo/issues](https://github.com/d-meiser/mbo/issues).
 
 You can also contact me directly at dmeiser79@gmail.com.
 
