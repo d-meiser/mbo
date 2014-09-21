@@ -92,11 +92,19 @@ MBO_EXPORT MBO_STATUS mboVecAXPY(struct MboAmplitude *a, MboVec x, MboVec y);
  * */
 MBO_EXPORT MBO_STATUS mboVecDot(MboVec x, MboVec y, struct MboAmplitude *result);
 
+/** @brief swap contents of two vectors.
+ *
+ * The dimensions of the two vectors must match.
+ *
+ * @param x First vector to swap.
+ * @param y Second vector to swap.
+ * */
 MBO_EXPORT MBO_STATUS mboVecSwap(MboVec x, MboVec y);
 
 /** @brief set vector to a constant */
 MBO_EXPORT MBO_STATUS mboVecSet(struct MboAmplitude *a, MboVec x);
 
+/** @brief Fill a vector with random numbers */
 MBO_EXPORT MBO_STATUS mboVecSetRandom(MboVec x);
 
 /** @brief Add outer product of vectors
@@ -133,11 +141,23 @@ mboVecMap(int n, MboLocInd *dims,
 	  void f(int, MboLocInd *, MboLocInd *, void *, struct MboAmplitude *),
 	  void *ctx, MboVec x);
 
+/** @brief Duplicate a vector
+ *
+ * Generates a copy of x.  The new vector must be destroyed with
+ * mboVecDestroy.
+ *
+ * @param x Vector to copy
+ * @param y Upon exit contains the duplicate vector.
+ *
+ * @sa mboVecDestroy, MboVec
+ * */
 MBO_EXPORT MBO_STATUS mboVecDuplicate(MboVec x, MboVec *y);
 
 /** @brief Check integrity of MboVec
  * @param v The vector to be checked.
- * @returns The number of errors enountered. */
+ * @returns The number of errors enountered. 
+ *
+ * @sa MboVec*/
 MBO_EXPORT int mboVecCheck(MboVec v);
 
 #ifdef __cplusplus

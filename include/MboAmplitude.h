@@ -28,8 +28,8 @@ extern "C" {
 #endif
 
 struct MboAmplitude {
-	double re;
-	double im;
+	double re; /**< Real part */
+	double im; /**< Imaginary part */
 };
 
 #ifdef __cplusplus
