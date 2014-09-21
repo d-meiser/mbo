@@ -31,9 +31,9 @@ with mbo.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 struct MboNonZeroEntry {
-	MboLocInd m;
-	MboLocInd n;
-	struct MboAmplitude val;
+	MboLocInd m;             /**< Row index of matrix entry */
+	MboLocInd n;             /**< Column index of matrix entry */
+	struct MboAmplitude val; /**< Value of matrix entry */
 };
 
 #endif
