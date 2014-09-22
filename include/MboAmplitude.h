@@ -27,6 +27,9 @@ with mbo.  If not, see <http://www.gnu.org/licenses/>.
 extern "C" {
 #endif
 
+/**
+ * @brief Minimal complex numbers.
+ * */
 struct MboAmplitude {
 	double re; /**< Real part */
 	double im; /**< Imaginary part */

@@ -26,7 +26,7 @@ with mbo.  If not, see <http://www.gnu.org/licenses/>.
 #include <MboIndices.h>
 #include <MboAmplitude.h>
 
-/*
+/**
  * @brief A sparse matrix entry
  *
  */
