@@ -1,0 +1,31 @@
+/**
+\mainpage MBO documentation
+
+\section intro_sec Introduction
+
+MBO is a library for the efficient numerical treatment of quantum
+mechanical many body operators.  Quantum mechanical many body operators
+are linear operators constructed from small matrices (single body
+operators) that are embedded into a tensor product space.  For example,
+in a system of \f$N\f$ spin 1/2 systems we have the operator
+\f$\sigma_-^{(j)}\f$, the spin lowering operator for particle \f$j\f$.
+Mathematically, \f$\sigma_-^{(j)}\f$ is obtained from the single
+particle two by two matrix, \f$\sigma_-\f$, by taking Kronecker products
+with identity operators for particle other than particle \f$j\f$.
+
+This leads to the three core concepts of MBO:
+
+- Small sparce matrices corresponding to single particle operators
+  (represented by #MboElemOp)
+- Tensor product spaces to (represented by #MboProdSpace)
+- and many particle operators obtained by embedding single particle
+  operators into tensor product spaces (represented by #MboTensorOp)
+
+MBO was designed to deal with these three concepts as efficiently as
+possible.
+
+
+\section getting_started Getting started
+
+
+*/
