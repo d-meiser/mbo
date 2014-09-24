@@ -25,7 +25,25 @@ MBO was designed to deal with these three concepts as efficiently as
 possible.
 
 
-\section getting_started Getting started
+\section quick_start Quick start guide
+
+Download, configure, build, and install the library:
+
+\verbatim
+git clone https://github.com/d-meiser/mbo
+cd mbo
+mkdir build
+cd build
+cmake ..
+make
+sudo make install
+\endverbatim
+
+A simple example:
+
+\include SimpleExample.c
+
+To get an idea of how to use MBO check out the examples.
 
 
 */

@@ -16,6 +16,10 @@ for more details.
 You should have received a copy of the GNU General Public License along
 with mbo.  If not, see <http://www.gnu.org/licenses/>.
 */
+/**
+ * \example ComputeMatrix
+ * Illustrates the conversion of a MBO operator to a dense matrix.
+ * */
 #include <stdio.h>
 #include "MboVec.h"
 #include "Mbo.h"

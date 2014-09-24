@@ -16,6 +16,10 @@ for more details.
 You should have received a copy of the GNU General Public License along
 with mbo.  If not, see <http://www.gnu.org/licenses/>.
 */
+/**
+ * \example Vectors.c
+ * Illustrates the use of vectors in MBO.
+ * */
 #include <MboVec.h>
 #include <MboAmplitude.h>
 

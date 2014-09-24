@@ -1,3 +1,8 @@
+/**
+ * \example TavisCummings.c
+ * Illustrates the construction of the Tavis-Cummings Hamiltonian using
+ * MBO.
+ * */
 #include <Mbo.h>
 #include <MboVec.h>
 #include <stdio.h>

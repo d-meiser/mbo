@@ -65,6 +65,7 @@ if(MBO_BUILD_TESTS)
   include_directories(${gtest_SOURCE_DIR}/include)
   add_subdirectory(tests)
 endif()
+add_subdirectory(doc)
 add_subdirectory(include)
 
 generate_export_header(MBO EXPORT_FILE_NAME MboExport.h)

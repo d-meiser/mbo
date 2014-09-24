@@ -1,7 +1,5 @@
 set(EXAMPLES
-    ComputeMatrix
-    TavisCummings
-    Vectors
+    SimpleExample
    )
 
 include_directories(
