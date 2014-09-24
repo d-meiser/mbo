@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>MBO: Data Fields</title>
+<title>MBO: Vectors.c</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javaScript" src="search/search.js"></script>
@@ -18,7 +18,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="tabs">
     <ul>
       <li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
-      <li class="current"><a href="annotated.html"><span>Data&nbsp;Structures</span></a></li>
+      <li><a href="annotated.html"><span>Data&nbsp;Structures</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li><a href="examples.html"><span>Examples</span></a></li>
       <li>
@@ -36,38 +36,50 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </li>
     </ul>
   </div>
-  <div class="tabs">
-    <ul>
-      <li><a href="annotated.html"><span>Data&nbsp;Structures</span></a></li>
-      <li class="current"><a href="functions.html"><span>Data&nbsp;Fields</span></a></li>
-    </ul>
-  </div>
-  <div class="tabs">
-    <ul>
-      <li class="current"><a href="functions.html"><span>All</span></a></li>
-      <li><a href="functions_vars.html"><span>Variables</span></a></li>
-    </ul>
-  </div>
 </div>
 <div class="contents">
-Here is a list of all documented struct and union fields with links to the struct/union documentation for each field:<ul>
-<li>im
-: <a class="el" href="structMboAmplitude.html#a4792b57f80d371bf308de5a683838cc0">MboAmplitude</a>
-</li>
-<li>m
-: <a class="el" href="structMboNonZeroEntry.html#a277a6a783ad596b58a33a32da34cd1cc">MboNonZeroEntry</a>
-</li>
-<li>n
-: <a class="el" href="structMboNonZeroEntry.html#af3bd4cbb091142e66ceefe2fb9a51b0f">MboNonZeroEntry</a>
-</li>
-<li>re
-: <a class="el" href="structMboAmplitude.html#aba099cb22559d3830ba3761eb4f12587">MboAmplitude</a>
-</li>
-<li>val
-: <a class="el" href="structMboNonZeroEntry.html#afcc67b3ad0612df2aab7a7c4990e34a6">MboNonZeroEntry</a>
-</li>
-</ul>
-</div>
+<h1>Vectors.c</h1><p>Illustrates the use of vectors in MBO.</p>
+<div class="fragment"><pre class="fragment"><span class="comment">/*</span>
+<span class="comment">Copyright 2014 Dominic Meiser</span>
+<span class="comment"></span>
+<span class="comment">This file is part of mbo.</span>
+<span class="comment"></span>
+<span class="comment">mbo is free software: you can redistribute it and/or modify it under</span>
+<span class="comment">the terms of the GNU General Public License as published by the Free</span>
+<span class="comment">Software Foundation, either version 3 of the License, or (at your</span>
+<span class="comment">option) any later version.</span>
+<span class="comment"></span>
+<span class="comment">mbo is distributed in the hope that it will be useful, but WITHOUT</span>
+<span class="comment">ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or</span>
+<span class="comment">FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License</span>
+<span class="comment">for more details.</span>
+<span class="comment"></span>
+<span class="comment">You should have received a copy of the GNU General Public License along</span>
+<span class="comment">with mbo.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="comment">*/</span>
+<span class="preprocessor">#include &lt;<a class="code" href="MboVec_8h.html" title="The MboVec API.">MboVec.h</a>&gt;</span>
+<span class="preprocessor">#include &lt;<a class="code" href="MboAmplitude_8h.html" title="Definition of the complex amplitude type.">MboAmplitude.h</a>&gt;</span>
+
+<span class="keywordtype">int</span> main()
+{
+        <span class="keyword">struct </span><a name="_a0"></a><a class="code" href="structMboAmplitude.html" title="Minimal complex numbers.">MboAmplitude</a> alpha = {2.0, 3.0};
+        <span class="keywordtype">long</span> d = 10l;
+        <span class="keywordtype">int</span> i;
+        <a name="a1"></a><a class="code" href="MboVec_8h.html#ae209fb42963e225faa2ec58390ead4c1" title="Data type for representing vectors.">MboVec</a> x;
+        <a class="code" href="MboVec_8h.html#ae209fb42963e225faa2ec58390ead4c1" title="Data type for representing vectors.">MboVec</a> y;
+        <a name="a2"></a><a class="code" href="MboVec_8h.html#a519f9c4991430613de01c3539afb1b2c" title="Create MboVec of dimension dim.">mboVecCreate</a>(d, &amp;x);
+        <a class="code" href="MboVec_8h.html#a519f9c4991430613de01c3539afb1b2c" title="Create MboVec of dimension dim.">mboVecCreate</a>(d, &amp;y);
+
+        <span class="keywordflow">for</span> (i = 0; i &lt; 10; ++i) {
+                <a name="a3"></a><a class="code" href="MboVec_8h.html#a70e8b3fb3743cabac8134a198ff1678e" title="y &amp;lt;- a * x + y">mboVecAXPY</a>(&amp;alpha, x, y);
+        }
+
+        <a name="a4"></a><a class="code" href="MboVec_8h.html#ad17607371e864e6522cca3e146083c29" title="Release all resources of a MboVec.">mboVecDestroy</a>(&amp;x);
+        <a class="code" href="MboVec_8h.html#ad17607371e864e6522cca3e146083c29" title="Release all resources of a MboVec.">mboVecDestroy</a>(&amp;y);
+        <span class="keywordflow">return</span> 0;
+}
+
+</pre></div> </div>
 <!--- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"

@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>MBO: Todo List</title>
+<title>MBO: SimpleExample.c</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javaScript" src="search/search.js"></script>
@@ -18,9 +18,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="tabs">
     <ul>
       <li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
-      <li class="current"><a href="pages.html"><span>Related&nbsp;Pages</span></a></li>
       <li><a href="annotated.html"><span>Data&nbsp;Structures</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
+      <li><a href="examples.html"><span>Examples</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <img id="MSearchSelect" src="search/search.png"
@@ -38,14 +38,33 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
 </div>
 <div class="contents">
+<h1>SimpleExample.c</h1><p>Basic example: embed spin lowering operator into a many particle space.</p>
+<div class="fragment"><pre class="fragment">
+<span class="preprocessor">#include &lt;Mbo.h&gt;</span>
 
+<span class="keywordtype">int</span> main()
+{
+        <a name="a0"></a><a class="code" href="MboElemOp_8h.html#a3bc079fb6656f649809d7cd7d6e8ddb5" title="Type for representing elementary operators.">MboElemOp</a> sm = <a name="a1"></a><a class="code" href="MboElemOp_8h.html#ab97be6f5030d00bd0328c1bc0efc26e2" title="Spin lowering operator.">mboSigmaMinus</a>();
+        <a name="a2"></a><a class="code" href="MboProdSpace_8h.html#a9ef2073619247462727165ef6f2f436f" title="Type for describing tensor product spaces.">MboProdSpace</a> singleParticleSpace = <a name="a3"></a><a class="code" href="MboProdSpace_8h.html#a9bc4dc9dea009614fb28072287b4d04c" title="Create a MboProdSpace.">mboProdSpaceCreate</a>(2);
+        <a class="code" href="MboProdSpace_8h.html#a9ef2073619247462727165ef6f2f436f" title="Type for describing tensor product spaces.">MboProdSpace</a> manyParticleSpace = <a class="code" href="MboProdSpace_8h.html#a9bc4dc9dea009614fb28072287b4d04c" title="Create a MboProdSpace.">mboProdSpaceCreate</a>(0);
+        <span class="keywordtype">int</span> N = 20;
+        <span class="keywordtype">int</span> i;
+        <span class="keywordflow">for</span> (i = 0; i &lt; N; ++i) {
+                <a name="a4"></a><a class="code" href="MboProdSpace_8h.html#ac4a23fb7961b9e3d59b98da7e7fcd7f5" title="Kronecker product of two spaces.">mboProdSpaceMul</a>(singleParticleSpace, &amp;manyParticleSpace);
+        }
 
-<h1><a class="anchor" id="todo">Todo List </a></h1><p><a class="anchor" id="_todo000001"></a> </p>
-<dl>
-<dt>Global <a class="el" href="MboTensorOp_8h.html#aac98e2225c1125b5843a5c20022ea4dc">mboTensorOpMul</a>  </dt>
-<dd>: Does this allow for aliasing? (*b) += a * b? (*a) += a * a? It should, if it doesn't already. </dd>
-</dl>
-</div>
+        <a name="a5"></a><a class="code" href="MboTensorOp_8h.html#a80e92cba3a8e5df5f0cee2132f5bf50a">MboTensorOp</a> smj;
+        <a name="a6"></a><a class="code" href="MboTensorOp_8h.html#af9e342dc31acaf8b38f842c990e185be" title="Create a tensor operator corresponding to the Null operator.">mboTensorOpNull</a>(manyParticleSpace, &amp;smj);
+        <span class="keywordtype">int</span> j = 7;
+        <a name="a7"></a><a class="code" href="MboTensorOp_8h.html#a0ed0e1991025ca578bd335cb806c8161" title="Add an embedding to a tensor operator.">mboTensorOpAddTo</a>(sm, j, smj);
+
+        <a name="a8"></a><a class="code" href="MboTensorOp_8h.html#a834e3a69aec1dbaf1c1e712a3d308e59" title="Destroy a tensor operator object.">mboTensorOpDestroy</a>(&amp;smj);
+        <a name="a9"></a><a class="code" href="MboProdSpace_8h.html#af85a2ef200e7de8ace7f2cefc73e5feb" title="Destroy a MboProdSpace.">mboProdSpaceDestroy</a>(&amp;singleParticleSpace);
+        <a class="code" href="MboProdSpace_8h.html#af85a2ef200e7de8ace7f2cefc73e5feb" title="Destroy a MboProdSpace.">mboProdSpaceDestroy</a>(&amp;manyParticleSpace);
+        <a name="a10"></a><a class="code" href="MboElemOp_8h.html#ab8cef26a5c6ef8eed05a6666bf439917" title="Destroy a MboElemOp object.">mboElemOpDestroy</a>(&amp;sm);
+}
+
+</pre></div> </div>
 <!--- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -60,7 +79,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<hr size="1"/><address style="text-align: right;"><small>Generated on 21 Sep 2014 for MBO by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 24 Sep 2014 for MBO by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

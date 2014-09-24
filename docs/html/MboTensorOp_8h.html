@@ -20,6 +20,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
       <li><a href="annotated.html"><span>Data&nbsp;Structures</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
+      <li><a href="examples.html"><span>Examples</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <img id="MSearchSelect" src="search/search.png"
@@ -110,7 +111,8 @@ MBO_EXPORT void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el"
 </div>
 <div class="memdoc">
 <p>Data type for representing tensor operators. </p>
-
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="SimpleExample_8c-example.html#a5">SimpleExample.c</a>, and <a class="el" href="TavisCummings_8c-example.html#a2">TavisCummings.c</a>.</dd>
+</dl>
 </div>
 </div>
 <hr/><h2>Function Documentation</h2>
@@ -153,7 +155,8 @@ MBO_EXPORT void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el"
 
 <p>Adds scaled version of embedded operator to tensor operator. </p>
 <dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="MboTensorOp_8h.html#a0ed0e1991025ca578bd335cb806c8161" title="Add an embedding to a tensor operator.">mboTensorOpAddTo</a> </dd></dl>
-
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="TavisCummings_8c-example.html#a11">TavisCummings.c</a>.</dd>
+</dl>
 </div>
 </div>
 <a class="anchor" id="a0ed0e1991025ca578bd335cb806c8161"></a><!-- doxytag: member="MboTensorOp.h::mboTensorOpAddTo" ref="a0ed0e1991025ca578bd335cb806c8161" args="(MboElemOp elemop, int i, MboTensorOp top)" -->
@@ -198,7 +201,8 @@ MBO_EXPORT void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el"
   </table>
   </dd>
 </dl>
-
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="SimpleExample_8c-example.html#a7">SimpleExample.c</a>, and <a class="el" href="TavisCummings_8c-example.html#a12">TavisCummings.c</a>.</dd>
+</dl>
 </div>
 </div>
 <a class="anchor" id="a14a7e8c9d57ec6bd71c183390df87a63"></a><!-- doxytag: member="MboTensorOp.h::mboTensorOpCheck" ref="a14a7e8c9d57ec6bd71c183390df87a63" args="(MboTensorOp op)" -->
@@ -311,7 +315,8 @@ MBO_EXPORT void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el"
 
 <p>Destroy a tensor operator object. </p>
 <dl class="see"><dt><b>See also:</b></dt><dd>mboTensorOpCreate, mboTensorOpCreateIdentity </dd></dl>
-
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="SimpleExample_8c-example.html#a8">SimpleExample.c</a>, and <a class="el" href="TavisCummings_8c-example.html#a26">TavisCummings.c</a>.</dd>
+</dl>
 </div>
 </div>
 <a class="anchor" id="a51d10f95c9acd6e4f4a72d9b1433de70"></a><!-- doxytag: member="MboTensorOp.h::mboTensorOpDiagonal" ref="a51d10f95c9acd6e4f4a72d9b1433de70" args="(MboTensorOp op, MboGlobInd rmin, MboGlobInd rmax, struct MboAmplitude *diag)" -->
@@ -389,7 +394,8 @@ MBO_EXPORT void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el"
   </table>
   </dd>
 </dl>
-
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="TavisCummings_8c-example.html#a19">TavisCummings.c</a>.</dd>
+</dl>
 </div>
 </div>
 <a class="anchor" id="ab84626657c9e016e8a4a7f3a9ae435c0"></a><!-- doxytag: member="MboTensorOp.h::mboTensorOpGetSpace" ref="ab84626657c9e016e8a4a7f3a9ae435c0" args="(MboTensorOp op)" -->
@@ -448,7 +454,8 @@ MBO_EXPORT void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el"
   </dd>
 </dl>
 <dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="MboTensorOp_8h.html#a834e3a69aec1dbaf1c1e712a3d308e59" title="Destroy a tensor operator object.">mboTensorOpDestroy</a>, <a class="el" href="MboTensorOp_8h.html#af9e342dc31acaf8b38f842c990e185be" title="Create a tensor operator corresponding to the Null operator.">mboTensorOpNull</a> </dd></dl>
-
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="TavisCummings_8c-example.html#a13">TavisCummings.c</a>.</dd>
+</dl>
 </div>
 </div>
 <a class="anchor" id="ae2f2756990a2473f2bf70a22a0d2ff08"></a><!-- doxytag: member="MboTensorOp.h::mboTensorOpKron" ref="ae2f2756990a2473f2bf70a22a0d2ff08" args="(int n, MboTensorOp *ops, MboTensorOp *c)" -->
@@ -484,7 +491,8 @@ MBO_EXPORT void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el"
 
 <p>Tensor product of two operators. </p>
 <p>*c += ops[0] x ops[1] x ... x ops[n] </p>
-
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="TavisCummings_8c-example.html#a17">TavisCummings.c</a>.</dd>
+</dl>
 </div>
 </div>
 <a class="anchor" id="a7e52994a65df9bd30345f5ef91ff0f6a"></a><!-- doxytag: member="MboTensorOp.h::mboTensorOpMatVec" ref="a7e52994a65df9bd30345f5ef91ff0f6a" args="(struct MboAmplitude alpha, MboTensorOp a, struct MboAmplitude *x, struct MboAmplitude beta, struct MboAmplitude *y, MboGlobInd rmin, MboGlobInd rmax)" -->
@@ -542,7 +550,8 @@ MBO_EXPORT void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el"
 </div>
 <div class="memdoc">
 <p>y &lt;- alpha * a * x + beta * y </p>
-
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="TavisCummings_8c-example.html#a22">TavisCummings.c</a>.</dd>
+</dl>
 </div>
 </div>
 <a class="anchor" id="af9e342dc31acaf8b38f842c990e185be"></a><!-- doxytag: member="MboTensorOp.h::mboTensorOpNull" ref="af9e342dc31acaf8b38f842c990e185be" args="(MboProdSpace h, MboTensorOp *top)" -->
@@ -580,7 +589,8 @@ MBO_EXPORT void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el"
   </dd>
 </dl>
 <dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="MboTensorOp_8h.html#a834e3a69aec1dbaf1c1e712a3d308e59" title="Destroy a tensor operator object.">mboTensorOpDestroy</a>, <a class="el" href="MboTensorOp_8h.html#a4987a0d58e37b003218c1b19fa4c5532" title="Create a tensor operator corresponding to the Identity operator.">mboTensorOpIdentity</a> </dd></dl>
-
+<dl><dt><b>Examples: </b></dt><dd><a class="el" href="SimpleExample_8c-example.html#a6">SimpleExample.c</a>, and <a class="el" href="TavisCummings_8c-example.html#a10">TavisCummings.c</a>.</dd>
+</dl>
 </div>
 </div>
 <a class="anchor" id="a702d25057a715af94acba5916d4914bc"></a><!-- doxytag: member="MboTensorOp.h::mboTensorOpRowOffsets" ref="a702d25057a715af94acba5916d4914bc" args="(MboTensorOp op, MboGlobInd rmin, MboGlobInd rmax, int *i)" -->
@@ -746,7 +756,7 @@ MBO_EXPORT void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el"
 </iframe>
 </div>
 
-<hr size="1"/><address style="text-align: right;"><small>Generated on 23 Sep 2014 for MBO by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 24 Sep 2014 for MBO by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>
