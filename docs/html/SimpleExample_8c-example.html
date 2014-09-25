@@ -18,6 +18,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="tabs">
     <ul>
       <li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+      <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Data&nbsp;Structures</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li><a href="examples.html"><span>Examples</span></a></li>
@@ -44,24 +45,24 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <span class="keywordtype">int</span> main()
 {
-        <a name="a0"></a><a class="code" href="MboElemOp_8h.html#a3bc079fb6656f649809d7cd7d6e8ddb5" title="Type for representing elementary operators.">MboElemOp</a> sm = <a name="a1"></a><a class="code" href="MboElemOp_8h.html#ab97be6f5030d00bd0328c1bc0efc26e2" title="Spin lowering operator.">mboSigmaMinus</a>();
-        <a name="a2"></a><a class="code" href="MboProdSpace_8h.html#a9ef2073619247462727165ef6f2f436f" title="Type for describing tensor product spaces.">MboProdSpace</a> singleParticleSpace = <a name="a3"></a><a class="code" href="MboProdSpace_8h.html#a9bc4dc9dea009614fb28072287b4d04c" title="Create a MboProdSpace.">mboProdSpaceCreate</a>(2);
-        <a class="code" href="MboProdSpace_8h.html#a9ef2073619247462727165ef6f2f436f" title="Type for describing tensor product spaces.">MboProdSpace</a> manyParticleSpace = <a class="code" href="MboProdSpace_8h.html#a9bc4dc9dea009614fb28072287b4d04c" title="Create a MboProdSpace.">mboProdSpaceCreate</a>(0);
+        <a name="a0"></a><a class="code" href="group__mbo__elemop.html#ga3bc079fb6656f649809d7cd7d6e8ddb5" title="Type for representing elementary operators.">MboElemOp</a> sm = <a name="a1"></a><a class="code" href="group__mbo__elemop.html#gab97be6f5030d00bd0328c1bc0efc26e2" title="Spin lowering operator.">mboSigmaMinus</a>();
+        <a name="a2"></a><a class="code" href="group__mbo__prodspace.html#ga9ef2073619247462727165ef6f2f436f" title="Type for describing tensor product spaces.">MboProdSpace</a> singleParticleSpace = <a name="a3"></a><a class="code" href="group__mbo__prodspace.html#ga9bc4dc9dea009614fb28072287b4d04c" title="Create a MboProdSpace.">mboProdSpaceCreate</a>(2);
+        <a class="code" href="group__mbo__prodspace.html#ga9ef2073619247462727165ef6f2f436f" title="Type for describing tensor product spaces.">MboProdSpace</a> manyParticleSpace = <a class="code" href="group__mbo__prodspace.html#ga9bc4dc9dea009614fb28072287b4d04c" title="Create a MboProdSpace.">mboProdSpaceCreate</a>(0);
         <span class="keywordtype">int</span> N = 20;
         <span class="keywordtype">int</span> i;
         <span class="keywordflow">for</span> (i = 0; i &lt; N; ++i) {
-                <a name="a4"></a><a class="code" href="MboProdSpace_8h.html#ac4a23fb7961b9e3d59b98da7e7fcd7f5" title="Kronecker product of two spaces.">mboProdSpaceMul</a>(singleParticleSpace, &amp;manyParticleSpace);
+                <a name="a4"></a><a class="code" href="group__mbo__prodspace.html#gac4a23fb7961b9e3d59b98da7e7fcd7f5" title="Kronecker product of two spaces.">mboProdSpaceMul</a>(singleParticleSpace, &amp;manyParticleSpace);
         }
 
-        <a name="a5"></a><a class="code" href="MboTensorOp_8h.html#a80e92cba3a8e5df5f0cee2132f5bf50a">MboTensorOp</a> smj;
-        <a name="a6"></a><a class="code" href="MboTensorOp_8h.html#af9e342dc31acaf8b38f842c990e185be" title="Create a tensor operator corresponding to the Null operator.">mboTensorOpNull</a>(manyParticleSpace, &amp;smj);
+        <a name="a5"></a><a class="code" href="group__mbo__tensorop.html#ga80e92cba3a8e5df5f0cee2132f5bf50a">MboTensorOp</a> smj;
+        <a name="a6"></a><a class="code" href="group__mbo__tensorop.html#gaf9e342dc31acaf8b38f842c990e185be" title="Create a tensor operator corresponding to the Null operator.">mboTensorOpNull</a>(manyParticleSpace, &amp;smj);
         <span class="keywordtype">int</span> j = 7;
-        <a name="a7"></a><a class="code" href="MboTensorOp_8h.html#a0ed0e1991025ca578bd335cb806c8161" title="Add an embedding to a tensor operator.">mboTensorOpAddTo</a>(sm, j, smj);
+        <a name="a7"></a><a class="code" href="group__mbo__tensorop.html#ga0ed0e1991025ca578bd335cb806c8161" title="Add an embedding to a tensor operator.">mboTensorOpAddTo</a>(sm, j, smj);
 
-        <a name="a8"></a><a class="code" href="MboTensorOp_8h.html#a834e3a69aec1dbaf1c1e712a3d308e59" title="Destroy a tensor operator object.">mboTensorOpDestroy</a>(&amp;smj);
-        <a name="a9"></a><a class="code" href="MboProdSpace_8h.html#af85a2ef200e7de8ace7f2cefc73e5feb" title="Destroy a MboProdSpace.">mboProdSpaceDestroy</a>(&amp;singleParticleSpace);
-        <a class="code" href="MboProdSpace_8h.html#af85a2ef200e7de8ace7f2cefc73e5feb" title="Destroy a MboProdSpace.">mboProdSpaceDestroy</a>(&amp;manyParticleSpace);
-        <a name="a10"></a><a class="code" href="MboElemOp_8h.html#ab8cef26a5c6ef8eed05a6666bf439917" title="Destroy a MboElemOp object.">mboElemOpDestroy</a>(&amp;sm);
+        <a name="a8"></a><a class="code" href="group__mbo__tensorop.html#ga834e3a69aec1dbaf1c1e712a3d308e59" title="Destroy a tensor operator object.">mboTensorOpDestroy</a>(&amp;smj);
+        <a name="a9"></a><a class="code" href="group__mbo__prodspace.html#gaf85a2ef200e7de8ace7f2cefc73e5feb" title="Destroy a MboProdSpace.">mboProdSpaceDestroy</a>(&amp;singleParticleSpace);
+        <a class="code" href="group__mbo__prodspace.html#gaf85a2ef200e7de8ace7f2cefc73e5feb" title="Destroy a MboProdSpace.">mboProdSpaceDestroy</a>(&amp;manyParticleSpace);
+        <a name="a10"></a><a class="code" href="group__mbo__elemop.html#gab8cef26a5c6ef8eed05a6666bf439917" title="Destroy a MboElemOp object.">mboElemOpDestroy</a>(&amp;sm);
 }
 
 </pre></div> </div>

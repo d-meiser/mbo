@@ -18,6 +18,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="tabs">
     <ul>
       <li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+      <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Data&nbsp;Structures</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li><a href="examples.html"><span>Examples</span></a></li>
@@ -53,326 +54,32 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p><a href="MboProdSpace_8h_source.html">Go to the source code of this file.</a></p>
 <table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Typedefs</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9ef2073619247462727165ef6f2f436f"></a><!-- doxytag: member="MboProdSpace.h::MboProdSpace" ref="a9ef2073619247462727165ef6f2f436f" args="" -->
-typedef struct MboProdSpace_t *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="MboProdSpace_8h.html#a9ef2073619247462727165ef6f2f436f">MboProdSpace</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga9ef2073619247462727165ef6f2f436f"></a><!-- doxytag: member="MboProdSpace.h::MboProdSpace" ref="ga9ef2073619247462727165ef6f2f436f" args="" -->
+typedef struct MboProdSpace_t *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mbo__prodspace.html#ga9ef2073619247462727165ef6f2f436f">MboProdSpace</a></td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Type for describing tensor product spaces. <br/></td></tr>
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">MBO_EXPORT <a class="el" href="MboProdSpace_8h.html#a9ef2073619247462727165ef6f2f436f">MboProdSpace</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="MboProdSpace_8h.html#a9bc4dc9dea009614fb28072287b4d04c">mboProdSpaceCreate</a> (<a class="el" href="MboIndices_8h.html#a0b1d081a169ef61bd1bdf0cec6b0630e">MboLocInd</a> dim)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Create a MboProdSpace.  <a href="#a9bc4dc9dea009614fb28072287b4d04c"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">MBO_EXPORT void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="MboProdSpace_8h.html#af85a2ef200e7de8ace7f2cefc73e5feb">mboProdSpaceDestroy</a> (<a class="el" href="MboProdSpace_8h.html#a9ef2073619247462727165ef6f2f436f">MboProdSpace</a> *h)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Destroy a MboProdSpace.  <a href="#af85a2ef200e7de8ace7f2cefc73e5feb"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">MBO_EXPORT void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="MboProdSpace_8h.html#ac4a23fb7961b9e3d59b98da7e7fcd7f5">mboProdSpaceMul</a> (<a class="el" href="MboProdSpace_8h.html#a9ef2073619247462727165ef6f2f436f">MboProdSpace</a> h1, <a class="el" href="MboProdSpace_8h.html#a9ef2073619247462727165ef6f2f436f">MboProdSpace</a> *h2)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Kronecker product of two spaces.  <a href="#ac4a23fb7961b9e3d59b98da7e7fcd7f5"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">MBO_EXPORT <a class="el" href="MboProdSpace_8h.html#a9ef2073619247462727165ef6f2f436f">MboProdSpace</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="MboProdSpace_8h.html#a1c0b6ee3f23a8fb783d9789b8d9ab548">mboProdSpaceCopy</a> (<a class="el" href="MboProdSpace_8h.html#a9ef2073619247462727165ef6f2f436f">MboProdSpace</a> h)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Create a copy of a product space.  <a href="#a1c0b6ee3f23a8fb783d9789b8d9ab548"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">MBO_EXPORT <a class="el" href="MboIndices_8h.html#aa1d8f92a1a73cbb37e322162120ea917">MboGlobInd</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="MboProdSpace_8h.html#a5a7beb3bfd56e91a294c30aa6912d0ed">mboProdSpaceDim</a> (<a class="el" href="MboProdSpace_8h.html#a9ef2073619247462727165ef6f2f436f">MboProdSpace</a> h)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Dimension of a tensor product space.  <a href="#a5a7beb3bfd56e91a294c30aa6912d0ed"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">MBO_EXPORT int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="MboProdSpace_8h.html#a9e7ce61466bb3c331e21ff5481841e34">mboProdSpaceSize</a> (<a class="el" href="MboProdSpace_8h.html#a9ef2073619247462727165ef6f2f436f">MboProdSpace</a> h)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Number of factor spaces.  <a href="#a9e7ce61466bb3c331e21ff5481841e34"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">MBO_EXPORT void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="MboProdSpace_8h.html#a8dd238ec00be43a6855c6732ee2186ef">mboProdSpaceGetDims</a> (<a class="el" href="MboProdSpace_8h.html#a9ef2073619247462727165ef6f2f436f">MboProdSpace</a> h, int n, <a class="el" href="MboIndices_8h.html#a0b1d081a169ef61bd1bdf0cec6b0630e">MboLocInd</a> *dims)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Returns the dimensions of the elementary subspaces of h.  <a href="#a8dd238ec00be43a6855c6732ee2186ef"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">MBO_EXPORT int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="MboProdSpace_8h.html#ac80f1333ffdfa0c24953d666ec039925">mboProdSpaceEqual</a> (<a class="el" href="MboProdSpace_8h.html#a9ef2073619247462727165ef6f2f436f">MboProdSpace</a> h1, <a class="el" href="MboProdSpace_8h.html#a9ef2073619247462727165ef6f2f436f">MboProdSpace</a> h2)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Check product spaces for equality.  <a href="#ac80f1333ffdfa0c24953d666ec039925"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">MBO_EXPORT int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="MboProdSpace_8h.html#ad911e532bb4da615a292f4980c31aa79">mboProdSpaceCheck</a> (<a class="el" href="MboProdSpace_8h.html#a9ef2073619247462727165ef6f2f436f">MboProdSpace</a> h)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Check internal integrety of a product space.  <a href="#ad911e532bb4da615a292f4980c31aa79"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">MBO_EXPORT <a class="el" href="group__mbo__prodspace.html#ga9ef2073619247462727165ef6f2f436f">MboProdSpace</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mbo__prodspace.html#ga9bc4dc9dea009614fb28072287b4d04c">mboProdSpaceCreate</a> (<a class="el" href="group__mbo__indices.html#ga0b1d081a169ef61bd1bdf0cec6b0630e">MboLocInd</a> dim)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Create a MboProdSpace.  <a href="group__mbo__prodspace.html#ga9bc4dc9dea009614fb28072287b4d04c"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">MBO_EXPORT void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mbo__prodspace.html#gaf85a2ef200e7de8ace7f2cefc73e5feb">mboProdSpaceDestroy</a> (<a class="el" href="group__mbo__prodspace.html#ga9ef2073619247462727165ef6f2f436f">MboProdSpace</a> *h)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Destroy a MboProdSpace.  <a href="group__mbo__prodspace.html#gaf85a2ef200e7de8ace7f2cefc73e5feb"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">MBO_EXPORT void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mbo__prodspace.html#gac4a23fb7961b9e3d59b98da7e7fcd7f5">mboProdSpaceMul</a> (<a class="el" href="group__mbo__prodspace.html#ga9ef2073619247462727165ef6f2f436f">MboProdSpace</a> h1, <a class="el" href="group__mbo__prodspace.html#ga9ef2073619247462727165ef6f2f436f">MboProdSpace</a> *h2)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Kronecker product of two spaces.  <a href="group__mbo__prodspace.html#gac4a23fb7961b9e3d59b98da7e7fcd7f5"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">MBO_EXPORT <a class="el" href="group__mbo__prodspace.html#ga9ef2073619247462727165ef6f2f436f">MboProdSpace</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mbo__prodspace.html#ga1c0b6ee3f23a8fb783d9789b8d9ab548">mboProdSpaceCopy</a> (<a class="el" href="group__mbo__prodspace.html#ga9ef2073619247462727165ef6f2f436f">MboProdSpace</a> h)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Create a copy of a product space.  <a href="group__mbo__prodspace.html#ga1c0b6ee3f23a8fb783d9789b8d9ab548"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">MBO_EXPORT <a class="el" href="group__mbo__indices.html#gaa1d8f92a1a73cbb37e322162120ea917">MboGlobInd</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mbo__prodspace.html#ga5a7beb3bfd56e91a294c30aa6912d0ed">mboProdSpaceDim</a> (<a class="el" href="group__mbo__prodspace.html#ga9ef2073619247462727165ef6f2f436f">MboProdSpace</a> h)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Dimension of a tensor product space.  <a href="group__mbo__prodspace.html#ga5a7beb3bfd56e91a294c30aa6912d0ed"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">MBO_EXPORT int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mbo__prodspace.html#ga9e7ce61466bb3c331e21ff5481841e34">mboProdSpaceSize</a> (<a class="el" href="group__mbo__prodspace.html#ga9ef2073619247462727165ef6f2f436f">MboProdSpace</a> h)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Number of factor spaces.  <a href="group__mbo__prodspace.html#ga9e7ce61466bb3c331e21ff5481841e34"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">MBO_EXPORT void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mbo__prodspace.html#ga8dd238ec00be43a6855c6732ee2186ef">mboProdSpaceGetDims</a> (<a class="el" href="group__mbo__prodspace.html#ga9ef2073619247462727165ef6f2f436f">MboProdSpace</a> h, int n, <a class="el" href="group__mbo__indices.html#ga0b1d081a169ef61bd1bdf0cec6b0630e">MboLocInd</a> *dims)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Returns the dimensions of the elementary subspaces of h.  <a href="group__mbo__prodspace.html#ga8dd238ec00be43a6855c6732ee2186ef"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">MBO_EXPORT int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mbo__prodspace.html#gac80f1333ffdfa0c24953d666ec039925">mboProdSpaceEqual</a> (<a class="el" href="group__mbo__prodspace.html#ga9ef2073619247462727165ef6f2f436f">MboProdSpace</a> h1, <a class="el" href="group__mbo__prodspace.html#ga9ef2073619247462727165ef6f2f436f">MboProdSpace</a> h2)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Check product spaces for equality.  <a href="group__mbo__prodspace.html#gac80f1333ffdfa0c24953d666ec039925"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">MBO_EXPORT int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mbo__prodspace.html#gad911e532bb4da615a292f4980c31aa79">mboProdSpaceCheck</a> (<a class="el" href="group__mbo__prodspace.html#ga9ef2073619247462727165ef6f2f436f">MboProdSpace</a> h)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Check internal integrety of a product space.  <a href="group__mbo__prodspace.html#gad911e532bb4da615a292f4980c31aa79"></a><br/></td></tr>
 </table>
 <hr/><a name="_details"></a><h2>Detailed Description</h2>
 <p>The MboProdSpace API. </p>
 <p>MboProdSpaces are used to describe tensor product spaces. </p>
-<hr/><h2>Function Documentation</h2>
-<a class="anchor" id="ad911e532bb4da615a292f4980c31aa79"></a><!-- doxytag: member="MboProdSpace.h::mboProdSpaceCheck" ref="ad911e532bb4da615a292f4980c31aa79" args="(MboProdSpace h)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">MBO_EXPORT int mboProdSpaceCheck </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="MboProdSpace_8h.html#a9ef2073619247462727165ef6f2f436f">MboProdSpace</a>&nbsp;</td>
-          <td class="paramname"> <em>h</em></td>
-          <td>&nbsp;)&nbsp;</td>
-          <td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>Check internal integrety of a product space. </p>
-<dl><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>h</em>&nbsp;</td><td></td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="return"><dt><b>Returns:</b></dt><dd>The number of errors found in h.</dd></dl>
-<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="MboProdSpace_8h.html#a9ef2073619247462727165ef6f2f436f" title="Type for describing tensor product spaces.">MboProdSpace</a> </dd></dl>
-
-</div>
-</div>
-<a class="anchor" id="a1c0b6ee3f23a8fb783d9789b8d9ab548"></a><!-- doxytag: member="MboProdSpace.h::mboProdSpaceCopy" ref="a1c0b6ee3f23a8fb783d9789b8d9ab548" args="(MboProdSpace h)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">MBO_EXPORT <a class="el" href="MboProdSpace_8h.html#a9ef2073619247462727165ef6f2f436f">MboProdSpace</a> mboProdSpaceCopy </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="MboProdSpace_8h.html#a9ef2073619247462727165ef6f2f436f">MboProdSpace</a>&nbsp;</td>
-          <td class="paramname"> <em>h</em></td>
-          <td>&nbsp;)&nbsp;</td>
-          <td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>Create a copy of a product space. </p>
-<p>The returned MboProdSpace must be destroyed with mboProdSpaceDestroy.</p>
-<dl><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>h</em>&nbsp;</td><td>The product space to copy. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="return"><dt><b>Returns:</b></dt><dd>The copy of h.</dd></dl>
-<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="MboProdSpace_8h.html#af85a2ef200e7de8ace7f2cefc73e5feb" title="Destroy a MboProdSpace.">mboProdSpaceDestroy</a>, <a class="el" href="MboProdSpace_8h.html#a9ef2073619247462727165ef6f2f436f" title="Type for describing tensor product spaces.">MboProdSpace</a> </dd></dl>
-
-</div>
-</div>
-<a class="anchor" id="a9bc4dc9dea009614fb28072287b4d04c"></a><!-- doxytag: member="MboProdSpace.h::mboProdSpaceCreate" ref="a9bc4dc9dea009614fb28072287b4d04c" args="(MboLocInd dim)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">MBO_EXPORT <a class="el" href="MboProdSpace_8h.html#a9ef2073619247462727165ef6f2f436f">MboProdSpace</a> mboProdSpaceCreate </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="MboIndices_8h.html#a0b1d081a169ef61bd1bdf0cec6b0630e">MboLocInd</a>&nbsp;</td>
-          <td class="paramname"> <em>dim</em></td>
-          <td>&nbsp;)&nbsp;</td>
-          <td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>Create a MboProdSpace. </p>
-<p>The created product space has to be destroyed with mboProdSpaceDestroy.</p>
-<dl><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>dim</em>&nbsp;</td><td>Dimension of the product space. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="return"><dt><b>Returns:</b></dt><dd>Produc space</dd></dl>
-<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="MboProdSpace_8h.html#a9ef2073619247462727165ef6f2f436f" title="Type for describing tensor product spaces.">MboProdSpace</a>, <a class="el" href="MboProdSpace_8h.html#af85a2ef200e7de8ace7f2cefc73e5feb" title="Destroy a MboProdSpace.">mboProdSpaceDestroy</a> </dd></dl>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="SimpleExample_8c-example.html#a3">SimpleExample.c</a>, and <a class="el" href="TavisCummings_8c-example.html#a5">TavisCummings.c</a>.</dd>
-</dl>
-</div>
-</div>
-<a class="anchor" id="af85a2ef200e7de8ace7f2cefc73e5feb"></a><!-- doxytag: member="MboProdSpace.h::mboProdSpaceDestroy" ref="af85a2ef200e7de8ace7f2cefc73e5feb" args="(MboProdSpace *h)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">MBO_EXPORT void mboProdSpaceDestroy </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="MboProdSpace_8h.html#a9ef2073619247462727165ef6f2f436f">MboProdSpace</a> *&nbsp;</td>
-          <td class="paramname"> <em>h</em></td>
-          <td>&nbsp;)&nbsp;</td>
-          <td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>Destroy a MboProdSpace. </p>
-<dl><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>h</em>&nbsp;</td><td>Space to be destroyed.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="MboProdSpace_8h.html#a9ef2073619247462727165ef6f2f436f" title="Type for describing tensor product spaces.">MboProdSpace</a>, <a class="el" href="MboProdSpace_8h.html#a9bc4dc9dea009614fb28072287b4d04c" title="Create a MboProdSpace.">mboProdSpaceCreate</a> </dd></dl>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="SimpleExample_8c-example.html#a9">SimpleExample.c</a>, and <a class="el" href="TavisCummings_8c-example.html#a25">TavisCummings.c</a>.</dd>
-</dl>
-</div>
-</div>
-<a class="anchor" id="a5a7beb3bfd56e91a294c30aa6912d0ed"></a><!-- doxytag: member="MboProdSpace.h::mboProdSpaceDim" ref="a5a7beb3bfd56e91a294c30aa6912d0ed" args="(MboProdSpace h)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">MBO_EXPORT <a class="el" href="MboIndices_8h.html#aa1d8f92a1a73cbb37e322162120ea917">MboGlobInd</a> mboProdSpaceDim </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="MboProdSpace_8h.html#a9ef2073619247462727165ef6f2f436f">MboProdSpace</a>&nbsp;</td>
-          <td class="paramname"> <em>h</em></td>
-          <td>&nbsp;)&nbsp;</td>
-          <td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>Dimension of a tensor product space. </p>
-<dl><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>h</em>&nbsp;</td><td>The dimension of this space is computed. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="return"><dt><b>Returns:</b></dt><dd>The global dimension of h.</dd></dl>
-<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="MboProdSpace_8h.html#a9ef2073619247462727165ef6f2f436f" title="Type for describing tensor product spaces.">MboProdSpace</a> </dd></dl>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="TavisCummings_8c-example.html#a18">TavisCummings.c</a>.</dd>
-</dl>
-</div>
-</div>
-<a class="anchor" id="ac80f1333ffdfa0c24953d666ec039925"></a><!-- doxytag: member="MboProdSpace.h::mboProdSpaceEqual" ref="ac80f1333ffdfa0c24953d666ec039925" args="(MboProdSpace h1, MboProdSpace h2)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">MBO_EXPORT int mboProdSpaceEqual </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="MboProdSpace_8h.html#a9ef2073619247462727165ef6f2f436f">MboProdSpace</a>&nbsp;</td>
-          <td class="paramname"> <em>h1</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="MboProdSpace_8h.html#a9ef2073619247462727165ef6f2f436f">MboProdSpace</a>&nbsp;</td>
-          <td class="paramname"> <em>h2</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>Check product spaces for equality. </p>
-<dl><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>h1</em>&nbsp;</td><td>First space. </td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>h2</em>&nbsp;</td><td>Second space. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="return"><dt><b>Returns:</b></dt><dd>A non-zero value if h1 == h2.</dd></dl>
-<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="MboProdSpace_8h.html#a9ef2073619247462727165ef6f2f436f" title="Type for describing tensor product spaces.">MboProdSpace</a> </dd></dl>
-
-</div>
-</div>
-<a class="anchor" id="a8dd238ec00be43a6855c6732ee2186ef"></a><!-- doxytag: member="MboProdSpace.h::mboProdSpaceGetDims" ref="a8dd238ec00be43a6855c6732ee2186ef" args="(MboProdSpace h, int n, MboLocInd *dims)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">MBO_EXPORT void mboProdSpaceGetDims </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="MboProdSpace_8h.html#a9ef2073619247462727165ef6f2f436f">MboProdSpace</a>&nbsp;</td>
-          <td class="paramname"> <em>h</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&nbsp;</td>
-          <td class="paramname"> <em>n</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="MboIndices_8h.html#a0b1d081a169ef61bd1bdf0cec6b0630e">MboLocInd</a> *&nbsp;</td>
-          <td class="paramname"> <em>dims</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>Returns the dimensions of the elementary subspaces of h. </p>
-<dl><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>h</em>&nbsp;</td><td>The space. </td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>n</em>&nbsp;</td><td>Number of dimensions desired. The first n dimensions are returned in dims. If mboProdSpaceSize(h) is smaller than n only mboProdSpaceSize(h) values are written to dims. </td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>dims</em>&nbsp;</td><td>On exit dims contains the first n dimensions. dims should point to space for n or mboProdSpaceSize(h) integers - whichever is smaller. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="MboProdSpace_8h.html#a9ef2073619247462727165ef6f2f436f" title="Type for describing tensor product spaces.">MboProdSpace</a> </dd></dl>
-
-</div>
-</div>
-<a class="anchor" id="ac4a23fb7961b9e3d59b98da7e7fcd7f5"></a><!-- doxytag: member="MboProdSpace.h::mboProdSpaceMul" ref="ac4a23fb7961b9e3d59b98da7e7fcd7f5" args="(MboProdSpace h1, MboProdSpace *h2)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">MBO_EXPORT void mboProdSpaceMul </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="MboProdSpace_8h.html#a9ef2073619247462727165ef6f2f436f">MboProdSpace</a>&nbsp;</td>
-          <td class="paramname"> <em>h1</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="MboProdSpace_8h.html#a9ef2073619247462727165ef6f2f436f">MboProdSpace</a> *&nbsp;</td>
-          <td class="paramname"> <em>h2</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>Kronecker product of two spaces. </p>
-<p>h2 &lt;- h1 * h2</p>
-<dl><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>h1</em>&nbsp;</td><td>First operator for Kronecker product. </td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>h2</em>&nbsp;</td><td>On input, the second operator for Kronecker product. On exit, h2 contains the product of h1 and h2.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="see"><dt><b>See also:</b></dt><dd>MboProdspace </dd></dl>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="SimpleExample_8c-example.html#a4">SimpleExample.c</a>, and <a class="el" href="TavisCummings_8c-example.html#a6">TavisCummings.c</a>.</dd>
-</dl>
-</div>
-</div>
-<a class="anchor" id="a9e7ce61466bb3c331e21ff5481841e34"></a><!-- doxytag: member="MboProdSpace.h::mboProdSpaceSize" ref="a9e7ce61466bb3c331e21ff5481841e34" args="(MboProdSpace h)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">MBO_EXPORT int mboProdSpaceSize </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="MboProdSpace_8h.html#a9ef2073619247462727165ef6f2f436f">MboProdSpace</a>&nbsp;</td>
-          <td class="paramname"> <em>h</em></td>
-          <td>&nbsp;)&nbsp;</td>
-          <td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>Number of factor spaces. </p>
-<dl><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>h</em>&nbsp;</td><td>The space. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="return"><dt><b>Returns:</b></dt><dd>Number of spaces.</dd></dl>
-<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="MboProdSpace_8h.html#a9ef2073619247462727165ef6f2f436f" title="Type for describing tensor product spaces.">MboProdSpace</a> </dd></dl>
-
-</div>
-</div>
 </div>
 <!--- window showing the filter options -->
 <div id="MSearchSelectWindow"

@@ -18,6 +18,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="tabs">
     <ul>
       <li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+      <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Data&nbsp;Structures</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li><a href="examples.html"><span>Examples</span></a></li>
@@ -60,62 +61,62 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00016"></a>00016 <span class="comment">You should have received a copy of the GNU General Public License along</span>
 <a name="l00017"></a>00017 <span class="comment">with mbo.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
 <a name="l00018"></a>00018 <span class="comment">*/</span>
-<a name="l00028"></a>00028 <span class="preprocessor">#ifndef MBO_ELEM_OP_H</span>
-<a name="l00029"></a>00029 <span class="preprocessor"></span><span class="preprocessor">#define MBO_ELEM_OP_H</span>
-<a name="l00030"></a>00030 <span class="preprocessor"></span>
-<a name="l00031"></a>00031 <span class="preprocessor">#include &lt;MboExport.h&gt;</span>
-<a name="l00032"></a>00032 <span class="preprocessor">#include &lt;<a class="code" href="MboIndices_8h.html" title="Integer types for indices used in mbo library.">MboIndices.h</a>&gt;</span>
-<a name="l00033"></a>00033 
-<a name="l00034"></a>00034 <span class="preprocessor">#ifdef __cplusplus</span>
-<a name="l00035"></a>00035 <span class="preprocessor"></span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {
-<a name="l00036"></a>00036 <span class="preprocessor">#endif</span>
-<a name="l00037"></a>00037 <span class="preprocessor"></span>
-<a name="l00038"></a>00038 <span class="keyword">struct </span>MboElemOp_t;
-<a name="l00051"></a><a class="code" href="MboElemOp_8h.html#a3bc079fb6656f649809d7cd7d6e8ddb5">00051</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>MboElemOp_t *<a class="code" href="MboElemOp_8h.html#a3bc079fb6656f649809d7cd7d6e8ddb5" title="Type for representing elementary operators.">MboElemOp</a>;
-<a name="l00052"></a>00052 
-<a name="l00053"></a>00053 <span class="keyword">struct </span><a class="code" href="structMboAmplitude.html" title="Minimal complex numbers.">MboAmplitude</a>;
-<a name="l00054"></a>00054 
-<a name="l00063"></a>00063 MBO_EXPORT <span class="keywordtype">void</span> <a class="code" href="MboElemOp_8h.html#a28d1649b52dcf4e9acae4c322cfba19f" title="Create a MboElemOp object.">mboElemOpCreate</a>(MboElemOp *elemOp);
-<a name="l00064"></a>00064 
-<a name="l00070"></a>00070 MBO_EXPORT <span class="keywordtype">void</span> <a class="code" href="MboElemOp_8h.html#ab8cef26a5c6ef8eed05a6666bf439917" title="Destroy a MboElemOp object.">mboElemOpDestroy</a>(MboElemOp *elemOp);
-<a name="l00071"></a>00071 
-<a name="l00082"></a>00082 MBO_EXPORT <span class="keywordtype">void</span> <a class="code" href="MboElemOp_8h.html#a34d0fbc1cfcc48392ab8a76f3ff6755a" title="Add a non-zero entry to an MboElemOp.">mboElemOpAddTo</a>(<a class="code" href="MboIndices_8h.html#a0b1d081a169ef61bd1bdf0cec6b0630e" title="Local indices.">MboLocInd</a> r, <a class="code" href="MboIndices_8h.html#a0b1d081a169ef61bd1bdf0cec6b0630e" title="Local indices.">MboLocInd</a> c, <span class="keyword">struct</span> <a class="code" href="structMboAmplitude.html" title="Minimal complex numbers.">MboAmplitude</a> *a,
-<a name="l00083"></a>00083                                MboElemOp *elemOp);
-<a name="l00094"></a>00094 MBO_EXPORT <span class="keywordtype">void</span> <a class="code" href="MboElemOp_8h.html#a609ad6ecbc76a3fb777ec2dd7ece41b3" title="Rescale an elementary operator.">mboElemOpScale</a>(<span class="keyword">struct</span> <a class="code" href="structMboAmplitude.html" title="Minimal complex numbers.">MboAmplitude</a>* a, MboElemOp elemOp);
-<a name="l00095"></a>00095 
-<a name="l00106"></a>00106 MBO_EXPORT <span class="keywordtype">void</span> <a class="code" href="MboElemOp_8h.html#ae858f7f4cefc47987b891899a1d8aea2" title="Add elementary operators.">mboElemOpPlus</a>(MboElemOp elemOpA, MboElemOp *elemOpB);
-<a name="l00107"></a>00107 
-<a name="l00118"></a>00118 MBO_EXPORT <span class="keywordtype">void</span> <a class="code" href="MboElemOp_8h.html#a97e517172b47a747f297e99c8584e85c" title="Add elementary operators.">mboElemOpMul</a>(MboElemOp elemOpA, MboElemOp *elemOpB);
-<a name="l00119"></a>00119 
-<a name="l00131"></a>00131 MBO_EXPORT MboElemOp <a class="code" href="MboElemOp_8h.html#ad86e5808fbb059044ac773b6acce1ffd" title="copy an elementary operator">mboElemOpCopy</a>(MboElemOp elemOp);
-<a name="l00132"></a>00132 
-<a name="l00144"></a>00144 MBO_EXPORT <span class="keywordtype">int</span> <a class="code" href="MboElemOp_8h.html#aa3b3d7d76ba3b3de6fd10641a93916a3" title="Get the number of non-zero entries.">mboElemOpNumEntries</a>(MboElemOp elemOp);
-<a name="l00145"></a>00145 
-<a name="l00159"></a>00159 MBO_EXPORT <span class="keyword">struct </span><a class="code" href="structMboNonZeroEntry.html" title="A sparse matrix entry.">MboNonZeroEntry</a> *<a class="code" href="MboElemOp_8h.html#a4cd158caea2c50d760a3adf5b94df2b6" title="Get the non-zero entries in the operator.">mboElemOpGetEntries</a>(MboElemOp elemOp);
-<a name="l00160"></a>00160 
-<a name="l00171"></a>00171 MBO_EXPORT <span class="keywordtype">void</span> <a class="code" href="MboElemOp_8h.html#ac8ffe233bf9dbb8c3c7136c68cf99776" title="Delete a non-zero entry from an operator.">mboElemOpDeleteEntry</a>(MboElemOp elemOp, <span class="keywordtype">int</span> e);
-<a name="l00172"></a>00172 
-<a name="l00180"></a>00180 MBO_EXPORT <span class="keywordtype">int</span> <a class="code" href="MboElemOp_8h.html#aed8665f5766fca28c59f89a5fea74798" title="Check internal integrity of an elementary operator.">mboElemOpCheck</a>(MboElemOp elemOp);
-<a name="l00181"></a>00181 
-<a name="l00192"></a>00192 MBO_EXPORT MboElemOp <a class="code" href="MboElemOp_8h.html#abe936a829bea9d2f0e380a66e39b473a" title="Spin raising operator.">mboSigmaPlus</a>();
-<a name="l00193"></a>00193 
-<a name="l00204"></a>00204 MBO_EXPORT MboElemOp <a class="code" href="MboElemOp_8h.html#ab97be6f5030d00bd0328c1bc0efc26e2" title="Spin lowering operator.">mboSigmaMinus</a>();
-<a name="l00205"></a>00205 
-<a name="l00216"></a>00216 MBO_EXPORT MboElemOp <a class="code" href="MboElemOp_8h.html#a654bd5824a574a137fb084ee81e4f6bd" title="Sigma z Pauli spin matrix.">mboSigmaZ</a>();
-<a name="l00217"></a>00217 
-<a name="l00230"></a>00230 MBO_EXPORT MboElemOp <a class="code" href="MboElemOp_8h.html#acaf2d025bf271a3a19ce2bce1e3fbc74" title="Identity operator.">mboEye</a>(<a class="code" href="MboIndices_8h.html#a0b1d081a169ef61bd1bdf0cec6b0630e" title="Local indices.">MboLocInd</a> dim);
-<a name="l00231"></a>00231 
-<a name="l00244"></a>00244 MBO_EXPORT MboElemOp <a class="code" href="MboElemOp_8h.html#a75157e8a6f777f5e84e85d49cb4cc55c" title="Quantum mechanical harmonic oscillator number operator.">mboNumOp</a>(<a class="code" href="MboIndices_8h.html#a0b1d081a169ef61bd1bdf0cec6b0630e" title="Local indices.">MboLocInd</a> dim);
-<a name="l00245"></a>00245 
-<a name="l00258"></a>00258 MBO_EXPORT MboElemOp <a class="code" href="MboElemOp_8h.html#af983a154011c3e23f28f459efb776365" title="Quantum mechanical harmonic oscillator annihilation operator.">mboAnnihilationOp</a>(<a class="code" href="MboIndices_8h.html#a0b1d081a169ef61bd1bdf0cec6b0630e" title="Local indices.">MboLocInd</a> dim);
-<a name="l00259"></a>00259 
-<a name="l00272"></a>00272 MBO_EXPORT MboElemOp <a class="code" href="MboElemOp_8h.html#a8c5c957be261e580e7d8a834899a99fb" title="Quantum mechanical harmonic oscillator creation operator.">mboCreationOp</a>(<a class="code" href="MboIndices_8h.html#a0b1d081a169ef61bd1bdf0cec6b0630e" title="Local indices.">MboLocInd</a> dim);
-<a name="l00273"></a>00273 
-<a name="l00274"></a>00274 <span class="preprocessor">#ifdef __cplusplus</span>
-<a name="l00275"></a>00275 <span class="preprocessor"></span>}
-<a name="l00276"></a>00276 <span class="preprocessor">#endif</span>
-<a name="l00277"></a>00277 <span class="preprocessor"></span>
-<a name="l00278"></a>00278 <span class="preprocessor">#endif</span>
+<a name="l00032"></a>00032 <span class="preprocessor">#ifndef MBO_ELEM_OP_H</span>
+<a name="l00033"></a>00033 <span class="preprocessor"></span><span class="preprocessor">#define MBO_ELEM_OP_H</span>
+<a name="l00034"></a>00034 <span class="preprocessor"></span>
+<a name="l00035"></a>00035 <span class="preprocessor">#include &lt;MboExport.h&gt;</span>
+<a name="l00036"></a>00036 <span class="preprocessor">#include &lt;<a class="code" href="MboIndices_8h.html" title="Integer types for indices used in mbo library.">MboIndices.h</a>&gt;</span>
+<a name="l00037"></a>00037 
+<a name="l00038"></a>00038 <span class="preprocessor">#ifdef __cplusplus</span>
+<a name="l00039"></a>00039 <span class="preprocessor"></span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {
+<a name="l00040"></a>00040 <span class="preprocessor">#endif</span>
+<a name="l00041"></a>00041 <span class="preprocessor"></span>
+<a name="l00042"></a>00042 <span class="keyword">struct </span>MboElemOp_t;
+<a name="l00055"></a><a class="code" href="group__mbo__elemop.html#ga3bc079fb6656f649809d7cd7d6e8ddb5">00055</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>MboElemOp_t *<a class="code" href="group__mbo__elemop.html#ga3bc079fb6656f649809d7cd7d6e8ddb5" title="Type for representing elementary operators.">MboElemOp</a>;
+<a name="l00056"></a>00056 
+<a name="l00057"></a>00057 <span class="keyword">struct </span><a class="code" href="structMboAmplitude.html" title="Minimal complex numbers.">MboAmplitude</a>;
+<a name="l00058"></a>00058 
+<a name="l00067"></a>00067 MBO_EXPORT <span class="keywordtype">void</span> <a class="code" href="group__mbo__elemop.html#ga28d1649b52dcf4e9acae4c322cfba19f" title="Create a MboElemOp object.">mboElemOpCreate</a>(MboElemOp *elemOp);
+<a name="l00068"></a>00068 
+<a name="l00074"></a>00074 MBO_EXPORT <span class="keywordtype">void</span> <a class="code" href="group__mbo__elemop.html#gab8cef26a5c6ef8eed05a6666bf439917" title="Destroy a MboElemOp object.">mboElemOpDestroy</a>(MboElemOp *elemOp);
+<a name="l00075"></a>00075 
+<a name="l00086"></a>00086 MBO_EXPORT <span class="keywordtype">void</span> <a class="code" href="group__mbo__elemop.html#ga34d0fbc1cfcc48392ab8a76f3ff6755a" title="Add a non-zero entry to an MboElemOp.">mboElemOpAddTo</a>(<a class="code" href="group__mbo__indices.html#ga0b1d081a169ef61bd1bdf0cec6b0630e" title="Local indices.">MboLocInd</a> r, <a class="code" href="group__mbo__indices.html#ga0b1d081a169ef61bd1bdf0cec6b0630e" title="Local indices.">MboLocInd</a> c, <span class="keyword">struct</span> <a class="code" href="structMboAmplitude.html" title="Minimal complex numbers.">MboAmplitude</a> *a,
+<a name="l00087"></a>00087                                MboElemOp *elemOp);
+<a name="l00098"></a>00098 MBO_EXPORT <span class="keywordtype">void</span> <a class="code" href="group__mbo__elemop.html#ga609ad6ecbc76a3fb777ec2dd7ece41b3" title="Rescale an elementary operator.">mboElemOpScale</a>(<span class="keyword">struct</span> <a class="code" href="structMboAmplitude.html" title="Minimal complex numbers.">MboAmplitude</a>* a, MboElemOp elemOp);
+<a name="l00099"></a>00099 
+<a name="l00110"></a>00110 MBO_EXPORT <span class="keywordtype">void</span> <a class="code" href="group__mbo__elemop.html#gae858f7f4cefc47987b891899a1d8aea2" title="Add elementary operators.">mboElemOpPlus</a>(MboElemOp elemOpA, MboElemOp *elemOpB);
+<a name="l00111"></a>00111 
+<a name="l00122"></a>00122 MBO_EXPORT <span class="keywordtype">void</span> <a class="code" href="group__mbo__elemop.html#ga97e517172b47a747f297e99c8584e85c" title="Add elementary operators.">mboElemOpMul</a>(MboElemOp elemOpA, MboElemOp *elemOpB);
+<a name="l00123"></a>00123 
+<a name="l00135"></a>00135 MBO_EXPORT MboElemOp <a class="code" href="group__mbo__elemop.html#gad86e5808fbb059044ac773b6acce1ffd" title="copy an elementary operator">mboElemOpCopy</a>(MboElemOp elemOp);
+<a name="l00136"></a>00136 
+<a name="l00148"></a>00148 MBO_EXPORT <span class="keywordtype">int</span> <a class="code" href="group__mbo__elemop.html#gaa3b3d7d76ba3b3de6fd10641a93916a3" title="Get the number of non-zero entries.">mboElemOpNumEntries</a>(MboElemOp elemOp);
+<a name="l00149"></a>00149 
+<a name="l00163"></a>00163 MBO_EXPORT <span class="keyword">struct </span><a class="code" href="structMboNonZeroEntry.html" title="A sparse matrix entry.">MboNonZeroEntry</a> *<a class="code" href="group__mbo__elemop.html#ga4cd158caea2c50d760a3adf5b94df2b6" title="Get the non-zero entries in the operator.">mboElemOpGetEntries</a>(MboElemOp elemOp);
+<a name="l00164"></a>00164 
+<a name="l00175"></a>00175 MBO_EXPORT <span class="keywordtype">void</span> <a class="code" href="group__mbo__elemop.html#gac8ffe233bf9dbb8c3c7136c68cf99776" title="Delete a non-zero entry from an operator.">mboElemOpDeleteEntry</a>(MboElemOp elemOp, <span class="keywordtype">int</span> e);
+<a name="l00176"></a>00176 
+<a name="l00184"></a>00184 MBO_EXPORT <span class="keywordtype">int</span> <a class="code" href="group__mbo__elemop.html#gaed8665f5766fca28c59f89a5fea74798" title="Check internal integrity of an elementary operator.">mboElemOpCheck</a>(MboElemOp elemOp);
+<a name="l00185"></a>00185 
+<a name="l00196"></a>00196 MBO_EXPORT MboElemOp <a class="code" href="group__mbo__elemop.html#gabe936a829bea9d2f0e380a66e39b473a" title="Spin raising operator.">mboSigmaPlus</a>();
+<a name="l00197"></a>00197 
+<a name="l00208"></a>00208 MBO_EXPORT MboElemOp <a class="code" href="group__mbo__elemop.html#gab97be6f5030d00bd0328c1bc0efc26e2" title="Spin lowering operator.">mboSigmaMinus</a>();
+<a name="l00209"></a>00209 
+<a name="l00220"></a>00220 MBO_EXPORT MboElemOp <a class="code" href="group__mbo__elemop.html#ga654bd5824a574a137fb084ee81e4f6bd" title="Sigma z Pauli spin matrix.">mboSigmaZ</a>();
+<a name="l00221"></a>00221 
+<a name="l00234"></a>00234 MBO_EXPORT MboElemOp <a class="code" href="group__mbo__elemop.html#gacaf2d025bf271a3a19ce2bce1e3fbc74" title="Identity operator.">mboEye</a>(<a class="code" href="group__mbo__indices.html#ga0b1d081a169ef61bd1bdf0cec6b0630e" title="Local indices.">MboLocInd</a> dim);
+<a name="l00235"></a>00235 
+<a name="l00248"></a>00248 MBO_EXPORT MboElemOp <a class="code" href="group__mbo__elemop.html#ga75157e8a6f777f5e84e85d49cb4cc55c" title="Quantum mechanical harmonic oscillator number operator.">mboNumOp</a>(<a class="code" href="group__mbo__indices.html#ga0b1d081a169ef61bd1bdf0cec6b0630e" title="Local indices.">MboLocInd</a> dim);
+<a name="l00249"></a>00249 
+<a name="l00262"></a>00262 MBO_EXPORT MboElemOp <a class="code" href="group__mbo__elemop.html#gaf983a154011c3e23f28f459efb776365" title="Quantum mechanical harmonic oscillator annihilation operator.">mboAnnihilationOp</a>(<a class="code" href="group__mbo__indices.html#ga0b1d081a169ef61bd1bdf0cec6b0630e" title="Local indices.">MboLocInd</a> dim);
+<a name="l00263"></a>00263 
+<a name="l00276"></a>00276 MBO_EXPORT MboElemOp <a class="code" href="group__mbo__elemop.html#ga8c5c957be261e580e7d8a834899a99fb" title="Quantum mechanical harmonic oscillator creation operator.">mboCreationOp</a>(<a class="code" href="group__mbo__indices.html#ga0b1d081a169ef61bd1bdf0cec6b0630e" title="Local indices.">MboLocInd</a> dim);
+<a name="l00277"></a>00277 
+<a name="l00278"></a>00278 <span class="preprocessor">#ifdef __cplusplus</span>
+<a name="l00279"></a>00279 <span class="preprocessor"></span>}
+<a name="l00280"></a>00280 <span class="preprocessor">#endif</span>
+<a name="l00281"></a>00281 <span class="preprocessor"></span>
+<a name="l00283"></a>00283 <span class="preprocessor">#endif</span>
 </pre></div></div>
 <!--- window showing the filter options -->
 <div id="MSearchSelectWindow"

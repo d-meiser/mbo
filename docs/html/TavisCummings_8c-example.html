@@ -18,6 +18,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="tabs">
     <ul>
       <li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+      <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Data&nbsp;Structures</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li><a href="examples.html"><span>Examples</span></a></li>
@@ -39,7 +40,24 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="contents">
 <h1>TavisCummings.c</h1><p>Illustrates the construction of the Tavis-Cummings Hamiltonian using MBO.</p>
-<div class="fragment"><pre class="fragment">
+<div class="fragment"><pre class="fragment"><span class="comment">/*</span>
+<span class="comment">Copyright 2014 Dominic Meiser</span>
+<span class="comment"></span>
+<span class="comment">This file is part of mbo.</span>
+<span class="comment"></span>
+<span class="comment">mbo is free software: you can redistribute it and/or modify it under</span>
+<span class="comment">the terms of the GNU General Public License as published by the Free</span>
+<span class="comment">Software Foundation, either version 3 of the License, or (at your</span>
+<span class="comment">option) any later version.</span>
+<span class="comment"></span>
+<span class="comment">mbo is distributed in the hope that it will be useful, but WITHOUT</span>
+<span class="comment">ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or</span>
+<span class="comment">FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License</span>
+<span class="comment">for more details.</span>
+<span class="comment"></span>
+<span class="comment">You should have received a copy of the GNU General Public License along</span>
+<span class="comment">with mbo.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="comment">*/</span>
 <span class="preprocessor">#include &lt;Mbo.h&gt;</span>
 <span class="preprocessor">#include &lt;<a class="code" href="MboVec_8h.html" title="The MboVec API.">MboVec.h</a>&gt;</span>
 <span class="preprocessor">#include &lt;stdio.h&gt;</span>
@@ -54,121 +72,121 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <span class="keywordtype">int</span> main()
 {
-        <a name="a0"></a><a class="code" href="MboProdSpace_8h.html#a9ef2073619247462727165ef6f2f436f" title="Type for describing tensor product spaces.">MboProdSpace</a> hSingleAtom, hAtoms, hField, hTot;
-        <a name="a1"></a><a class="code" href="MboElemOp_8h.html#a3bc079fb6656f649809d7cd7d6e8ddb5" title="Type for representing elementary operators.">MboElemOp</a> sm, sp, sz, a, ad, numberOp;
-        <a name="a2"></a><a class="code" href="MboTensorOp_8h.html#a80e92cba3a8e5df5f0cee2132f5bf50a">MboTensorOp</a> inhomogeneousJz, jPlus, jMinus, idField, idAtoms, A, Ad, N,
+        <a name="a0"></a><a class="code" href="group__mbo__prodspace.html#ga9ef2073619247462727165ef6f2f436f" title="Type for describing tensor product spaces.">MboProdSpace</a> hSingleAtom, hAtoms, hField, hTot;
+        <a name="a1"></a><a class="code" href="group__mbo__elemop.html#ga3bc079fb6656f649809d7cd7d6e8ddb5" title="Type for representing elementary operators.">MboElemOp</a> sm, sp, sz, a, ad, numberOp;
+        <a name="a2"></a><a class="code" href="group__mbo__tensorop.html#ga80e92cba3a8e5df5f0cee2132f5bf50a">MboTensorOp</a> inhomogeneousJz, jPlus, jMinus, idField, idAtoms, A, Ad, N,
             H, *factors;
         <span class="keyword">struct </span><a name="_a3"></a><a class="code" href="structMboAmplitude.html" title="Minimal complex numbers.">MboAmplitude</a> tmp, *xarr, *yarr;
-        <a name="a4"></a><a class="code" href="MboVec_8h.html#ae209fb42963e225faa2ec58390ead4c1" title="Data type for representing vectors.">MboVec</a> x, y;
+        <a name="a4"></a><a class="code" href="group__mbo__vec.html#gae209fb42963e225faa2ec58390ead4c1" title="Data type for representing vectors.">MboVec</a> x, y;
         <span class="keywordtype">int</span> i;
 
         <span class="comment">/* build various Hilbert spaces */</span>
-        hSingleAtom = <a name="a5"></a><a class="code" href="MboProdSpace_8h.html#a9bc4dc9dea009614fb28072287b4d04c" title="Create a MboProdSpace.">mboProdSpaceCreate</a>(2);
-        hAtoms = <a class="code" href="MboProdSpace_8h.html#a9bc4dc9dea009614fb28072287b4d04c" title="Create a MboProdSpace.">mboProdSpaceCreate</a>(0);
+        hSingleAtom = <a name="a5"></a><a class="code" href="group__mbo__prodspace.html#ga9bc4dc9dea009614fb28072287b4d04c" title="Create a MboProdSpace.">mboProdSpaceCreate</a>(2);
+        hAtoms = <a class="code" href="group__mbo__prodspace.html#ga9bc4dc9dea009614fb28072287b4d04c" title="Create a MboProdSpace.">mboProdSpaceCreate</a>(0);
         <span class="keywordflow">for</span> (i = 0; i &lt; nAtoms; ++i) {
-                <a name="a6"></a><a class="code" href="MboProdSpace_8h.html#ac4a23fb7961b9e3d59b98da7e7fcd7f5" title="Kronecker product of two spaces.">mboProdSpaceMul</a>(hSingleAtom, &amp;hAtoms);
+                <a name="a6"></a><a class="code" href="group__mbo__prodspace.html#gac4a23fb7961b9e3d59b98da7e7fcd7f5" title="Kronecker product of two spaces.">mboProdSpaceMul</a>(hSingleAtom, &amp;hAtoms);
         }
-        hField = <a class="code" href="MboProdSpace_8h.html#a9bc4dc9dea009614fb28072287b4d04c" title="Create a MboProdSpace.">mboProdSpaceCreate</a>(nPhotons + 1);
-        hTot = <a class="code" href="MboProdSpace_8h.html#a9bc4dc9dea009614fb28072287b4d04c" title="Create a MboProdSpace.">mboProdSpaceCreate</a>(0);
-        <a class="code" href="MboProdSpace_8h.html#ac4a23fb7961b9e3d59b98da7e7fcd7f5" title="Kronecker product of two spaces.">mboProdSpaceMul</a>(hAtoms, &amp;hTot);
-        <a class="code" href="MboProdSpace_8h.html#ac4a23fb7961b9e3d59b98da7e7fcd7f5" title="Kronecker product of two spaces.">mboProdSpaceMul</a>(hField, &amp;hTot);
+        hField = <a class="code" href="group__mbo__prodspace.html#ga9bc4dc9dea009614fb28072287b4d04c" title="Create a MboProdSpace.">mboProdSpaceCreate</a>(nPhotons + 1);
+        hTot = <a class="code" href="group__mbo__prodspace.html#ga9bc4dc9dea009614fb28072287b4d04c" title="Create a MboProdSpace.">mboProdSpaceCreate</a>(0);
+        <a class="code" href="group__mbo__prodspace.html#gac4a23fb7961b9e3d59b98da7e7fcd7f5" title="Kronecker product of two spaces.">mboProdSpaceMul</a>(hAtoms, &amp;hTot);
+        <a class="code" href="group__mbo__prodspace.html#gac4a23fb7961b9e3d59b98da7e7fcd7f5" title="Kronecker product of two spaces.">mboProdSpaceMul</a>(hField, &amp;hTot);
 
         <span class="comment">/* build atomic operators */</span>
-        sm = <a name="a7"></a><a class="code" href="MboElemOp_8h.html#ab97be6f5030d00bd0328c1bc0efc26e2" title="Spin lowering operator.">mboSigmaMinus</a>();
-        sp = <a name="a8"></a><a class="code" href="MboElemOp_8h.html#abe936a829bea9d2f0e380a66e39b473a" title="Spin raising operator.">mboSigmaPlus</a>();
-        sz = <a name="a9"></a><a class="code" href="MboElemOp_8h.html#a654bd5824a574a137fb084ee81e4f6bd" title="Sigma z Pauli spin matrix.">mboSigmaZ</a>();
-        <a name="a10"></a><a class="code" href="MboTensorOp_8h.html#af9e342dc31acaf8b38f842c990e185be" title="Create a tensor operator corresponding to the Null operator.">mboTensorOpNull</a>(hAtoms, &amp;inhomogeneousJz);
+        sm = <a name="a7"></a><a class="code" href="group__mbo__elemop.html#gab97be6f5030d00bd0328c1bc0efc26e2" title="Spin lowering operator.">mboSigmaMinus</a>();
+        sp = <a name="a8"></a><a class="code" href="group__mbo__elemop.html#gabe936a829bea9d2f0e380a66e39b473a" title="Spin raising operator.">mboSigmaPlus</a>();
+        sz = <a name="a9"></a><a class="code" href="group__mbo__elemop.html#ga654bd5824a574a137fb084ee81e4f6bd" title="Sigma z Pauli spin matrix.">mboSigmaZ</a>();
+        <a name="a10"></a><a class="code" href="group__mbo__tensorop.html#gaf9e342dc31acaf8b38f842c990e185be" title="Create a tensor operator corresponding to the Null operator.">mboTensorOpNull</a>(hAtoms, &amp;inhomogeneousJz);
         <span class="keywordflow">for</span> (i = 0; i &lt; nAtoms; ++i) {
                 tmp.re = omega(i);
                 tmp.im = 0;
-                <a name="a11"></a><a class="code" href="MboTensorOp_8h.html#a91470b74cbd8ae3009b4b9f8430b2087" title="Adds scaled version of embedded operator to tensor operator.">mboTensorOpAddScaledTo</a>(&amp;tmp, sz, i, inhomogeneousJz);
+                <a name="a11"></a><a class="code" href="group__mbo__tensorop.html#ga91470b74cbd8ae3009b4b9f8430b2087" title="Adds scaled version of embedded operator to tensor operator.">mboTensorOpAddScaledTo</a>(&amp;tmp, sz, i, inhomogeneousJz);
         }
-        <a class="code" href="MboTensorOp_8h.html#af9e342dc31acaf8b38f842c990e185be" title="Create a tensor operator corresponding to the Null operator.">mboTensorOpNull</a>(hAtoms, &amp;jMinus);
+        <a class="code" href="group__mbo__tensorop.html#gaf9e342dc31acaf8b38f842c990e185be" title="Create a tensor operator corresponding to the Null operator.">mboTensorOpNull</a>(hAtoms, &amp;jMinus);
         <span class="keywordflow">for</span> (i = 0; i &lt; nAtoms; ++i) {
-                <a name="a12"></a><a class="code" href="MboTensorOp_8h.html#a0ed0e1991025ca578bd335cb806c8161" title="Add an embedding to a tensor operator.">mboTensorOpAddTo</a>(sm, i, jMinus);
+                <a name="a12"></a><a class="code" href="group__mbo__tensorop.html#ga0ed0e1991025ca578bd335cb806c8161" title="Add an embedding to a tensor operator.">mboTensorOpAddTo</a>(sm, i, jMinus);
         }
-        <a class="code" href="MboTensorOp_8h.html#af9e342dc31acaf8b38f842c990e185be" title="Create a tensor operator corresponding to the Null operator.">mboTensorOpNull</a>(hAtoms, &amp;jPlus);
+        <a class="code" href="group__mbo__tensorop.html#gaf9e342dc31acaf8b38f842c990e185be" title="Create a tensor operator corresponding to the Null operator.">mboTensorOpNull</a>(hAtoms, &amp;jPlus);
         <span class="keywordflow">for</span> (i = 0; i &lt; nAtoms; ++i) {
-                <a class="code" href="MboTensorOp_8h.html#a0ed0e1991025ca578bd335cb806c8161" title="Add an embedding to a tensor operator.">mboTensorOpAddTo</a>(sp, i, jPlus);
+                <a class="code" href="group__mbo__tensorop.html#ga0ed0e1991025ca578bd335cb806c8161" title="Add an embedding to a tensor operator.">mboTensorOpAddTo</a>(sp, i, jPlus);
         }
-        <a name="a13"></a><a class="code" href="MboTensorOp_8h.html#a4987a0d58e37b003218c1b19fa4c5532" title="Create a tensor operator corresponding to the Identity operator.">mboTensorOpIdentity</a>(hAtoms, &amp;idAtoms);
+        <a name="a13"></a><a class="code" href="group__mbo__tensorop.html#ga4987a0d58e37b003218c1b19fa4c5532" title="Create a tensor operator corresponding to the Identity operator.">mboTensorOpIdentity</a>(hAtoms, &amp;idAtoms);
 
         <span class="comment">/* build field operators */</span>
-        a = <a name="a14"></a><a class="code" href="MboElemOp_8h.html#af983a154011c3e23f28f459efb776365" title="Quantum mechanical harmonic oscillator annihilation operator.">mboAnnihilationOp</a>(nPhotons + 1);
-        ad = <a name="a15"></a><a class="code" href="MboElemOp_8h.html#a8c5c957be261e580e7d8a834899a99fb" title="Quantum mechanical harmonic oscillator creation operator.">mboCreationOp</a>(nPhotons + 1);
-        numberOp = <a name="a16"></a><a class="code" href="MboElemOp_8h.html#a75157e8a6f777f5e84e85d49cb4cc55c" title="Quantum mechanical harmonic oscillator number operator.">mboNumOp</a>(nPhotons + 1);
-        <a class="code" href="MboTensorOp_8h.html#af9e342dc31acaf8b38f842c990e185be" title="Create a tensor operator corresponding to the Null operator.">mboTensorOpNull</a>(hField, &amp;A);
-        <a class="code" href="MboTensorOp_8h.html#a0ed0e1991025ca578bd335cb806c8161" title="Add an embedding to a tensor operator.">mboTensorOpAddTo</a>(a, 0, A);
-        <a class="code" href="MboTensorOp_8h.html#af9e342dc31acaf8b38f842c990e185be" title="Create a tensor operator corresponding to the Null operator.">mboTensorOpNull</a>(hField, &amp;Ad);
-        <a class="code" href="MboTensorOp_8h.html#a0ed0e1991025ca578bd335cb806c8161" title="Add an embedding to a tensor operator.">mboTensorOpAddTo</a>(ad, 0, Ad);
-        <a class="code" href="MboTensorOp_8h.html#af9e342dc31acaf8b38f842c990e185be" title="Create a tensor operator corresponding to the Null operator.">mboTensorOpNull</a>(hField, &amp;N);
+        a = <a name="a14"></a><a class="code" href="group__mbo__elemop.html#gaf983a154011c3e23f28f459efb776365" title="Quantum mechanical harmonic oscillator annihilation operator.">mboAnnihilationOp</a>(nPhotons + 1);
+        ad = <a name="a15"></a><a class="code" href="group__mbo__elemop.html#ga8c5c957be261e580e7d8a834899a99fb" title="Quantum mechanical harmonic oscillator creation operator.">mboCreationOp</a>(nPhotons + 1);
+        numberOp = <a name="a16"></a><a class="code" href="group__mbo__elemop.html#ga75157e8a6f777f5e84e85d49cb4cc55c" title="Quantum mechanical harmonic oscillator number operator.">mboNumOp</a>(nPhotons + 1);
+        <a class="code" href="group__mbo__tensorop.html#gaf9e342dc31acaf8b38f842c990e185be" title="Create a tensor operator corresponding to the Null operator.">mboTensorOpNull</a>(hField, &amp;A);
+        <a class="code" href="group__mbo__tensorop.html#ga0ed0e1991025ca578bd335cb806c8161" title="Add an embedding to a tensor operator.">mboTensorOpAddTo</a>(a, 0, A);
+        <a class="code" href="group__mbo__tensorop.html#gaf9e342dc31acaf8b38f842c990e185be" title="Create a tensor operator corresponding to the Null operator.">mboTensorOpNull</a>(hField, &amp;Ad);
+        <a class="code" href="group__mbo__tensorop.html#ga0ed0e1991025ca578bd335cb806c8161" title="Add an embedding to a tensor operator.">mboTensorOpAddTo</a>(ad, 0, Ad);
+        <a class="code" href="group__mbo__tensorop.html#gaf9e342dc31acaf8b38f842c990e185be" title="Create a tensor operator corresponding to the Null operator.">mboTensorOpNull</a>(hField, &amp;N);
         <span class="comment">/* The frequency of the cavity */</span>
         tmp.re = omegaC;
         tmp.im = 0;
-        <a class="code" href="MboTensorOp_8h.html#a91470b74cbd8ae3009b4b9f8430b2087" title="Adds scaled version of embedded operator to tensor operator.">mboTensorOpAddScaledTo</a>(&amp;tmp, numberOp, 0, N);
-        <a class="code" href="MboTensorOp_8h.html#a4987a0d58e37b003218c1b19fa4c5532" title="Create a tensor operator corresponding to the Identity operator.">mboTensorOpIdentity</a>(hField, &amp;idField);
+        <a class="code" href="group__mbo__tensorop.html#ga91470b74cbd8ae3009b4b9f8430b2087" title="Adds scaled version of embedded operator to tensor operator.">mboTensorOpAddScaledTo</a>(&amp;tmp, numberOp, 0, N);
+        <a class="code" href="group__mbo__tensorop.html#ga4987a0d58e37b003218c1b19fa4c5532" title="Create a tensor operator corresponding to the Identity operator.">mboTensorOpIdentity</a>(hField, &amp;idField);
 
         <span class="comment">/* Assemble Hamiltonian */</span>
         factors = malloc(2 * <span class="keyword">sizeof</span>(*factors));
-        <a class="code" href="MboTensorOp_8h.html#af9e342dc31acaf8b38f842c990e185be" title="Create a tensor operator corresponding to the Null operator.">mboTensorOpNull</a>(hTot, &amp;H);
+        <a class="code" href="group__mbo__tensorop.html#gaf9e342dc31acaf8b38f842c990e185be" title="Create a tensor operator corresponding to the Null operator.">mboTensorOpNull</a>(hTot, &amp;H);
         factors[0] = idField;
         factors[1] = inhomogeneousJz;
-        <a name="a17"></a><a class="code" href="MboTensorOp_8h.html#ae2f2756990a2473f2bf70a22a0d2ff08" title="Tensor product of two operators.">mboTensorOpKron</a>(2, factors, &amp;H);
+        <a name="a17"></a><a class="code" href="group__mbo__tensorop.html#gae2f2756990a2473f2bf70a22a0d2ff08" title="Tensor product of two operators.">mboTensorOpKron</a>(2, factors, &amp;H);
         factors[0] = N;
         factors[1] = idAtoms;
-        <a class="code" href="MboTensorOp_8h.html#ae2f2756990a2473f2bf70a22a0d2ff08" title="Tensor product of two operators.">mboTensorOpKron</a>(2, factors, &amp;H);
+        <a class="code" href="group__mbo__tensorop.html#gae2f2756990a2473f2bf70a22a0d2ff08" title="Tensor product of two operators.">mboTensorOpKron</a>(2, factors, &amp;H);
         factors[0] = A;
         factors[1] = jPlus;
-        <a class="code" href="MboTensorOp_8h.html#ae2f2756990a2473f2bf70a22a0d2ff08" title="Tensor product of two operators.">mboTensorOpKron</a>(2, factors, &amp;H);
+        <a class="code" href="group__mbo__tensorop.html#gae2f2756990a2473f2bf70a22a0d2ff08" title="Tensor product of two operators.">mboTensorOpKron</a>(2, factors, &amp;H);
         factors[0] = Ad;
         factors[1] = jMinus;
-        <a class="code" href="MboTensorOp_8h.html#ae2f2756990a2473f2bf70a22a0d2ff08" title="Tensor product of two operators.">mboTensorOpKron</a>(2, factors, &amp;H);
+        <a class="code" href="group__mbo__tensorop.html#gae2f2756990a2473f2bf70a22a0d2ff08" title="Tensor product of two operators.">mboTensorOpKron</a>(2, factors, &amp;H);
         free(factors);
 
         printf(<span class="stringliteral">&quot;Dimension of total Hilbert Space: %lld\n&quot;</span>,
-               <a name="a18"></a><a class="code" href="MboProdSpace_8h.html#a5a7beb3bfd56e91a294c30aa6912d0ed" title="Dimension of a tensor product space.">mboProdSpaceDim</a>(hTot));
+               <a name="a18"></a><a class="code" href="group__mbo__prodspace.html#ga5a7beb3bfd56e91a294c30aa6912d0ed" title="Dimension of a tensor product space.">mboProdSpaceDim</a>(hTot));
         printf(<span class="stringliteral">&quot;GFLOPs per operator application (estimated):  %lf\n&quot;</span>,
-               <a name="a19"></a><a class="code" href="MboTensorOp_8h.html#a83cfc136cdfad0eb707bc2f1a36cad08" title="Returns an estimate for the number of floating point operations in a MatVec.">mboTensorOpFlops</a>(H) / (<span class="keywordtype">double</span>)(1 &lt;&lt; 30));
+               <a name="a19"></a><a class="code" href="group__mbo__tensorop.html#ga83cfc136cdfad0eb707bc2f1a36cad08" title="Returns an estimate for the number of floating point operations in a MatVec.">mboTensorOpFlops</a>(H) / (<span class="keywordtype">double</span>)(1 &lt;&lt; 30));
         printf(<span class="stringliteral">&quot;Total GFLOPs (estimated):  %lf\n&quot;</span>,
-               (1 + numIter) * <a class="code" href="MboTensorOp_8h.html#a83cfc136cdfad0eb707bc2f1a36cad08" title="Returns an estimate for the number of floating point operations in a MatVec.">mboTensorOpFlops</a>(H) / (<span class="keywordtype">double</span>)(1 &lt;&lt; 30));
+               (1 + numIter) * <a class="code" href="group__mbo__tensorop.html#ga83cfc136cdfad0eb707bc2f1a36cad08" title="Returns an estimate for the number of floating point operations in a MatVec.">mboTensorOpFlops</a>(H) / (<span class="keywordtype">double</span>)(1 &lt;&lt; 30));
 
-        <a name="a20"></a><a class="code" href="MboVec_8h.html#a519f9c4991430613de01c3539afb1b2c" title="Create MboVec of dimension dim.">mboVecCreate</a>(<a class="code" href="MboProdSpace_8h.html#a5a7beb3bfd56e91a294c30aa6912d0ed" title="Dimension of a tensor product space.">mboProdSpaceDim</a>(hTot), &amp;x);
-        <a class="code" href="MboVec_8h.html#a519f9c4991430613de01c3539afb1b2c" title="Create MboVec of dimension dim.">mboVecCreate</a>(<a class="code" href="MboProdSpace_8h.html#a5a7beb3bfd56e91a294c30aa6912d0ed" title="Dimension of a tensor product space.">mboProdSpaceDim</a>(hTot), &amp;y);
+        <a name="a20"></a><a class="code" href="group__mbo__vec.html#ga519f9c4991430613de01c3539afb1b2c" title="Create MboVec of dimension dim.">mboVecCreate</a>(<a class="code" href="group__mbo__prodspace.html#ga5a7beb3bfd56e91a294c30aa6912d0ed" title="Dimension of a tensor product space.">mboProdSpaceDim</a>(hTot), &amp;x);
+        <a class="code" href="group__mbo__vec.html#ga519f9c4991430613de01c3539afb1b2c" title="Create MboVec of dimension dim.">mboVecCreate</a>(<a class="code" href="group__mbo__prodspace.html#ga5a7beb3bfd56e91a294c30aa6912d0ed" title="Dimension of a tensor product space.">mboProdSpaceDim</a>(hTot), &amp;y);
 
         tmp.re = 1.0;
         tmp.im = 0.0;
-        <a name="a21"></a><a class="code" href="MboVec_8h.html#a9a448fe3c5140f81be87692e4a28f4b4" title="Obtain a read-only view of vector data.">mboVecGetViewR</a>(x, &amp;xarr);
-        <a class="code" href="MboVec_8h.html#a9a448fe3c5140f81be87692e4a28f4b4" title="Obtain a read-only view of vector data.">mboVecGetViewR</a>(y, &amp;yarr);
-        <a name="a22"></a><a class="code" href="MboTensorOp_8h.html#a7e52994a65df9bd30345f5ef91ff0f6a">mboTensorOpMatVec</a>(tmp, H, xarr, tmp, yarr, 0, <a class="code" href="MboProdSpace_8h.html#a5a7beb3bfd56e91a294c30aa6912d0ed" title="Dimension of a tensor product space.">mboProdSpaceDim</a>(hTot));
+        <a name="a21"></a><a class="code" href="group__mbo__vec.html#ga9a448fe3c5140f81be87692e4a28f4b4" title="Obtain a read-only view of vector data.">mboVecGetViewR</a>(x, &amp;xarr);
+        <a class="code" href="group__mbo__vec.html#ga9a448fe3c5140f81be87692e4a28f4b4" title="Obtain a read-only view of vector data.">mboVecGetViewR</a>(y, &amp;yarr);
+        <a name="a22"></a><a class="code" href="group__mbo__tensorop.html#ga7e52994a65df9bd30345f5ef91ff0f6a">mboTensorOpMatVec</a>(tmp, H, xarr, tmp, yarr, 0, <a class="code" href="group__mbo__prodspace.html#ga5a7beb3bfd56e91a294c30aa6912d0ed" title="Dimension of a tensor product space.">mboProdSpaceDim</a>(hTot));
         <span class="keywordflow">for</span> (i = 0; i &lt; numIter; ++i) {
-                <a class="code" href="MboTensorOp_8h.html#a7e52994a65df9bd30345f5ef91ff0f6a">mboTensorOpMatVec</a>(tmp, H, xarr, tmp, yarr, 0,
-                                  <a class="code" href="MboProdSpace_8h.html#a5a7beb3bfd56e91a294c30aa6912d0ed" title="Dimension of a tensor product space.">mboProdSpaceDim</a>(hTot));
+                <a class="code" href="group__mbo__tensorop.html#ga7e52994a65df9bd30345f5ef91ff0f6a">mboTensorOpMatVec</a>(tmp, H, xarr, tmp, yarr, 0,
+                                  <a class="code" href="group__mbo__prodspace.html#ga5a7beb3bfd56e91a294c30aa6912d0ed" title="Dimension of a tensor product space.">mboProdSpaceDim</a>(hTot));
         }
-        <a name="a23"></a><a class="code" href="MboVec_8h.html#aac2a610b0276ac900b2acc23bddaecaf" title="Release a view of the vector data.">mboVecReleaseView</a>(x, &amp;xarr);
-        <a class="code" href="MboVec_8h.html#aac2a610b0276ac900b2acc23bddaecaf" title="Release a view of the vector data.">mboVecReleaseView</a>(y, &amp;yarr);
+        <a name="a23"></a><a class="code" href="group__mbo__vec.html#gaac2a610b0276ac900b2acc23bddaecaf" title="Release a view of the vector data.">mboVecReleaseView</a>(x, &amp;xarr);
+        <a class="code" href="group__mbo__vec.html#gaac2a610b0276ac900b2acc23bddaecaf" title="Release a view of the vector data.">mboVecReleaseView</a>(y, &amp;yarr);
 
         <span class="comment">/* Release all resources */</span>
-        <a name="a24"></a><a class="code" href="MboElemOp_8h.html#ab8cef26a5c6ef8eed05a6666bf439917" title="Destroy a MboElemOp object.">mboElemOpDestroy</a>(&amp;sm);
-        <a class="code" href="MboElemOp_8h.html#ab8cef26a5c6ef8eed05a6666bf439917" title="Destroy a MboElemOp object.">mboElemOpDestroy</a>(&amp;sp);
-        <a class="code" href="MboElemOp_8h.html#ab8cef26a5c6ef8eed05a6666bf439917" title="Destroy a MboElemOp object.">mboElemOpDestroy</a>(&amp;sz);
-        <a class="code" href="MboElemOp_8h.html#ab8cef26a5c6ef8eed05a6666bf439917" title="Destroy a MboElemOp object.">mboElemOpDestroy</a>(&amp;a);
-        <a class="code" href="MboElemOp_8h.html#ab8cef26a5c6ef8eed05a6666bf439917" title="Destroy a MboElemOp object.">mboElemOpDestroy</a>(&amp;ad);
-        <a class="code" href="MboElemOp_8h.html#ab8cef26a5c6ef8eed05a6666bf439917" title="Destroy a MboElemOp object.">mboElemOpDestroy</a>(&amp;numberOp);
-        <a name="a25"></a><a class="code" href="MboProdSpace_8h.html#af85a2ef200e7de8ace7f2cefc73e5feb" title="Destroy a MboProdSpace.">mboProdSpaceDestroy</a>(&amp;hSingleAtom);
-        <a class="code" href="MboProdSpace_8h.html#af85a2ef200e7de8ace7f2cefc73e5feb" title="Destroy a MboProdSpace.">mboProdSpaceDestroy</a>(&amp;hAtoms);
-        <a class="code" href="MboProdSpace_8h.html#af85a2ef200e7de8ace7f2cefc73e5feb" title="Destroy a MboProdSpace.">mboProdSpaceDestroy</a>(&amp;hField);
-        <a class="code" href="MboProdSpace_8h.html#af85a2ef200e7de8ace7f2cefc73e5feb" title="Destroy a MboProdSpace.">mboProdSpaceDestroy</a>(&amp;hTot);
-        <a name="a26"></a><a class="code" href="MboTensorOp_8h.html#a834e3a69aec1dbaf1c1e712a3d308e59" title="Destroy a tensor operator object.">mboTensorOpDestroy</a>(&amp;inhomogeneousJz);
-        <a class="code" href="MboTensorOp_8h.html#a834e3a69aec1dbaf1c1e712a3d308e59" title="Destroy a tensor operator object.">mboTensorOpDestroy</a>(&amp;jMinus);
-        <a class="code" href="MboTensorOp_8h.html#a834e3a69aec1dbaf1c1e712a3d308e59" title="Destroy a tensor operator object.">mboTensorOpDestroy</a>(&amp;jPlus);
-        <a class="code" href="MboTensorOp_8h.html#a834e3a69aec1dbaf1c1e712a3d308e59" title="Destroy a tensor operator object.">mboTensorOpDestroy</a>(&amp;idAtoms);
-        <a class="code" href="MboTensorOp_8h.html#a834e3a69aec1dbaf1c1e712a3d308e59" title="Destroy a tensor operator object.">mboTensorOpDestroy</a>(&amp;A);
-        <a class="code" href="MboTensorOp_8h.html#a834e3a69aec1dbaf1c1e712a3d308e59" title="Destroy a tensor operator object.">mboTensorOpDestroy</a>(&amp;Ad);
-        <a class="code" href="MboTensorOp_8h.html#a834e3a69aec1dbaf1c1e712a3d308e59" title="Destroy a tensor operator object.">mboTensorOpDestroy</a>(&amp;N);
-        <a class="code" href="MboTensorOp_8h.html#a834e3a69aec1dbaf1c1e712a3d308e59" title="Destroy a tensor operator object.">mboTensorOpDestroy</a>(&amp;idField);
-        <a class="code" href="MboTensorOp_8h.html#a834e3a69aec1dbaf1c1e712a3d308e59" title="Destroy a tensor operator object.">mboTensorOpDestroy</a>(&amp;H);
-        <a name="a27"></a><a class="code" href="MboVec_8h.html#ad17607371e864e6522cca3e146083c29" title="Release all resources of a MboVec.">mboVecDestroy</a>(&amp;x);
-        <a class="code" href="MboVec_8h.html#ad17607371e864e6522cca3e146083c29" title="Release all resources of a MboVec.">mboVecDestroy</a>(&amp;y);
+        <a name="a24"></a><a class="code" href="group__mbo__elemop.html#gab8cef26a5c6ef8eed05a6666bf439917" title="Destroy a MboElemOp object.">mboElemOpDestroy</a>(&amp;sm);
+        <a class="code" href="group__mbo__elemop.html#gab8cef26a5c6ef8eed05a6666bf439917" title="Destroy a MboElemOp object.">mboElemOpDestroy</a>(&amp;sp);
+        <a class="code" href="group__mbo__elemop.html#gab8cef26a5c6ef8eed05a6666bf439917" title="Destroy a MboElemOp object.">mboElemOpDestroy</a>(&amp;sz);
+        <a class="code" href="group__mbo__elemop.html#gab8cef26a5c6ef8eed05a6666bf439917" title="Destroy a MboElemOp object.">mboElemOpDestroy</a>(&amp;a);
+        <a class="code" href="group__mbo__elemop.html#gab8cef26a5c6ef8eed05a6666bf439917" title="Destroy a MboElemOp object.">mboElemOpDestroy</a>(&amp;ad);
+        <a class="code" href="group__mbo__elemop.html#gab8cef26a5c6ef8eed05a6666bf439917" title="Destroy a MboElemOp object.">mboElemOpDestroy</a>(&amp;numberOp);
+        <a name="a25"></a><a class="code" href="group__mbo__prodspace.html#gaf85a2ef200e7de8ace7f2cefc73e5feb" title="Destroy a MboProdSpace.">mboProdSpaceDestroy</a>(&amp;hSingleAtom);
+        <a class="code" href="group__mbo__prodspace.html#gaf85a2ef200e7de8ace7f2cefc73e5feb" title="Destroy a MboProdSpace.">mboProdSpaceDestroy</a>(&amp;hAtoms);
+        <a class="code" href="group__mbo__prodspace.html#gaf85a2ef200e7de8ace7f2cefc73e5feb" title="Destroy a MboProdSpace.">mboProdSpaceDestroy</a>(&amp;hField);
+        <a class="code" href="group__mbo__prodspace.html#gaf85a2ef200e7de8ace7f2cefc73e5feb" title="Destroy a MboProdSpace.">mboProdSpaceDestroy</a>(&amp;hTot);
+        <a name="a26"></a><a class="code" href="group__mbo__tensorop.html#ga834e3a69aec1dbaf1c1e712a3d308e59" title="Destroy a tensor operator object.">mboTensorOpDestroy</a>(&amp;inhomogeneousJz);
+        <a class="code" href="group__mbo__tensorop.html#ga834e3a69aec1dbaf1c1e712a3d308e59" title="Destroy a tensor operator object.">mboTensorOpDestroy</a>(&amp;jMinus);
+        <a class="code" href="group__mbo__tensorop.html#ga834e3a69aec1dbaf1c1e712a3d308e59" title="Destroy a tensor operator object.">mboTensorOpDestroy</a>(&amp;jPlus);
+        <a class="code" href="group__mbo__tensorop.html#ga834e3a69aec1dbaf1c1e712a3d308e59" title="Destroy a tensor operator object.">mboTensorOpDestroy</a>(&amp;idAtoms);
+        <a class="code" href="group__mbo__tensorop.html#ga834e3a69aec1dbaf1c1e712a3d308e59" title="Destroy a tensor operator object.">mboTensorOpDestroy</a>(&amp;A);
+        <a class="code" href="group__mbo__tensorop.html#ga834e3a69aec1dbaf1c1e712a3d308e59" title="Destroy a tensor operator object.">mboTensorOpDestroy</a>(&amp;Ad);
+        <a class="code" href="group__mbo__tensorop.html#ga834e3a69aec1dbaf1c1e712a3d308e59" title="Destroy a tensor operator object.">mboTensorOpDestroy</a>(&amp;N);
+        <a class="code" href="group__mbo__tensorop.html#ga834e3a69aec1dbaf1c1e712a3d308e59" title="Destroy a tensor operator object.">mboTensorOpDestroy</a>(&amp;idField);
+        <a class="code" href="group__mbo__tensorop.html#ga834e3a69aec1dbaf1c1e712a3d308e59" title="Destroy a tensor operator object.">mboTensorOpDestroy</a>(&amp;H);
+        <a name="a27"></a><a class="code" href="group__mbo__vec.html#gad17607371e864e6522cca3e146083c29" title="Release all resources of a MboVec.">mboVecDestroy</a>(&amp;x);
+        <a class="code" href="group__mbo__vec.html#gad17607371e864e6522cca3e146083c29" title="Release all resources of a MboVec.">mboVecDestroy</a>(&amp;y);
 
         <span class="keywordflow">return</span> 0;
 }

@@ -18,6 +18,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="tabs">
     <ul>
       <li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
+      <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Data&nbsp;Structures</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li><a href="examples.html"><span>Examples</span></a></li>
@@ -60,19 +61,19 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00016"></a>00016 <span class="comment">You should have received a copy of the GNU General Public License along</span>
 <a name="l00017"></a>00017 <span class="comment">with mbo.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
 <a name="l00018"></a>00018 <span class="comment">*/</span>
-<a name="l00023"></a>00023 <span class="preprocessor">#ifndef MBO_NON_ZERO_ENTRY_H</span>
-<a name="l00024"></a>00024 <span class="preprocessor"></span><span class="preprocessor">#define MBO_NON_ZERO_ENTRY_H</span>
-<a name="l00025"></a>00025 <span class="preprocessor"></span>
-<a name="l00026"></a>00026 <span class="preprocessor">#include &lt;<a class="code" href="MboIndices_8h.html" title="Integer types for indices used in mbo library.">MboIndices.h</a>&gt;</span>
-<a name="l00027"></a>00027 <span class="preprocessor">#include &lt;<a class="code" href="MboAmplitude_8h.html" title="Definition of the complex amplitude type.">MboAmplitude.h</a>&gt;</span>
-<a name="l00028"></a>00028 
-<a name="l00033"></a><a class="code" href="structMboNonZeroEntry.html">00033</a> <span class="keyword">struct </span><a class="code" href="structMboNonZeroEntry.html" title="A sparse matrix entry.">MboNonZeroEntry</a> {
-<a name="l00034"></a><a class="code" href="structMboNonZeroEntry.html#a277a6a783ad596b58a33a32da34cd1cc">00034</a>         <a class="code" href="MboIndices_8h.html#a0b1d081a169ef61bd1bdf0cec6b0630e" title="Local indices.">MboLocInd</a> <a class="code" href="structMboNonZeroEntry.html#a277a6a783ad596b58a33a32da34cd1cc">m</a>;             
-<a name="l00035"></a><a class="code" href="structMboNonZeroEntry.html#af3bd4cbb091142e66ceefe2fb9a51b0f">00035</a>         <a class="code" href="MboIndices_8h.html#a0b1d081a169ef61bd1bdf0cec6b0630e" title="Local indices.">MboLocInd</a> <a class="code" href="structMboNonZeroEntry.html#af3bd4cbb091142e66ceefe2fb9a51b0f">n</a>;             
-<a name="l00036"></a><a class="code" href="structMboNonZeroEntry.html#afcc67b3ad0612df2aab7a7c4990e34a6">00036</a>         <span class="keyword">struct </span><a class="code" href="structMboAmplitude.html" title="Minimal complex numbers.">MboAmplitude</a> <a class="code" href="structMboNonZeroEntry.html#afcc67b3ad0612df2aab7a7c4990e34a6">val</a>; 
-<a name="l00037"></a>00037 };
-<a name="l00038"></a>00038 
-<a name="l00039"></a>00039 <span class="preprocessor">#endif</span>
+<a name="l00027"></a>00027 <span class="preprocessor">#ifndef MBO_NON_ZERO_ENTRY_H</span>
+<a name="l00028"></a>00028 <span class="preprocessor"></span><span class="preprocessor">#define MBO_NON_ZERO_ENTRY_H</span>
+<a name="l00029"></a>00029 <span class="preprocessor"></span>
+<a name="l00030"></a>00030 <span class="preprocessor">#include &lt;<a class="code" href="MboIndices_8h.html" title="Integer types for indices used in mbo library.">MboIndices.h</a>&gt;</span>
+<a name="l00031"></a>00031 <span class="preprocessor">#include &lt;<a class="code" href="MboAmplitude_8h.html" title="Definition of the complex amplitude type.">MboAmplitude.h</a>&gt;</span>
+<a name="l00032"></a>00032 
+<a name="l00037"></a><a class="code" href="structMboNonZeroEntry.html">00037</a> <span class="keyword">struct </span><a class="code" href="structMboNonZeroEntry.html" title="A sparse matrix entry.">MboNonZeroEntry</a> {
+<a name="l00038"></a><a class="code" href="structMboNonZeroEntry.html#a277a6a783ad596b58a33a32da34cd1cc">00038</a>         <a class="code" href="group__mbo__indices.html#ga0b1d081a169ef61bd1bdf0cec6b0630e" title="Local indices.">MboLocInd</a> <a class="code" href="structMboNonZeroEntry.html#a277a6a783ad596b58a33a32da34cd1cc">m</a>;             
+<a name="l00039"></a><a class="code" href="structMboNonZeroEntry.html#af3bd4cbb091142e66ceefe2fb9a51b0f">00039</a>         <a class="code" href="group__mbo__indices.html#ga0b1d081a169ef61bd1bdf0cec6b0630e" title="Local indices.">MboLocInd</a> <a class="code" href="structMboNonZeroEntry.html#af3bd4cbb091142e66ceefe2fb9a51b0f">n</a>;             
+<a name="l00040"></a><a class="code" href="structMboNonZeroEntry.html#afcc67b3ad0612df2aab7a7c4990e34a6">00040</a>         <span class="keyword">struct </span><a class="code" href="structMboAmplitude.html" title="Minimal complex numbers.">MboAmplitude</a> <a class="code" href="structMboNonZeroEntry.html#afcc67b3ad0612df2aab7a7c4990e34a6">val</a>; 
+<a name="l00041"></a>00041 };
+<a name="l00042"></a>00042 
+<a name="l00044"></a>00044 <span class="preprocessor">#endif</span>
 </pre></div></div>
 <!--- window showing the filter options -->
 <div id="MSearchSelectWindow"

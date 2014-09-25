@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>MBO: Vectors.c</title>
+<title>MBO: MBO Indices</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javaScript" src="search/search.js"></script>
@@ -39,48 +39,19 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
 </div>
 <div class="contents">
-<h1>Vectors.c</h1><p>Illustrates the use of vectors in MBO.</p>
-<div class="fragment"><pre class="fragment"><span class="comment">/*</span>
-<span class="comment">Copyright 2014 Dominic Meiser</span>
-<span class="comment"></span>
-<span class="comment">This file is part of mbo.</span>
-<span class="comment"></span>
-<span class="comment">mbo is free software: you can redistribute it and/or modify it under</span>
-<span class="comment">the terms of the GNU General Public License as published by the Free</span>
-<span class="comment">Software Foundation, either version 3 of the License, or (at your</span>
-<span class="comment">option) any later version.</span>
-<span class="comment"></span>
-<span class="comment">mbo is distributed in the hope that it will be useful, but WITHOUT</span>
-<span class="comment">ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or</span>
-<span class="comment">FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License</span>
-<span class="comment">for more details.</span>
-<span class="comment"></span>
-<span class="comment">You should have received a copy of the GNU General Public License along</span>
-<span class="comment">with mbo.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
-<span class="comment">*/</span>
-<span class="preprocessor">#include &lt;<a class="code" href="MboVec_8h.html" title="The MboVec API.">MboVec.h</a>&gt;</span>
-<span class="preprocessor">#include &lt;<a class="code" href="MboAmplitude_8h.html" title="Definition of the complex amplitude type.">MboAmplitude.h</a>&gt;</span>
-
-<span class="keywordtype">int</span> main()
-{
-        <span class="keyword">struct </span><a name="_a0"></a><a class="code" href="structMboAmplitude.html" title="Minimal complex numbers.">MboAmplitude</a> alpha = {2.0, 3.0};
-        <span class="keywordtype">long</span> d = 10l;
-        <span class="keywordtype">int</span> i;
-        <a name="a1"></a><a class="code" href="group__mbo__vec.html#gae209fb42963e225faa2ec58390ead4c1" title="Data type for representing vectors.">MboVec</a> x;
-        <a class="code" href="group__mbo__vec.html#gae209fb42963e225faa2ec58390ead4c1" title="Data type for representing vectors.">MboVec</a> y;
-        <a name="a2"></a><a class="code" href="group__mbo__vec.html#ga519f9c4991430613de01c3539afb1b2c" title="Create MboVec of dimension dim.">mboVecCreate</a>(d, &amp;x);
-        <a class="code" href="group__mbo__vec.html#ga519f9c4991430613de01c3539afb1b2c" title="Create MboVec of dimension dim.">mboVecCreate</a>(d, &amp;y);
-
-        <span class="keywordflow">for</span> (i = 0; i &lt; 10; ++i) {
-                <a name="a3"></a><a class="code" href="group__mbo__vec.html#ga70e8b3fb3743cabac8134a198ff1678e" title="y &amp;lt;- a * x + y">mboVecAXPY</a>(&amp;alpha, x, y);
-        }
-
-        <a name="a4"></a><a class="code" href="group__mbo__vec.html#gad17607371e864e6522cca3e146083c29" title="Release all resources of a MboVec.">mboVecDestroy</a>(&amp;x);
-        <a class="code" href="group__mbo__vec.html#gad17607371e864e6522cca3e146083c29" title="Release all resources of a MboVec.">mboVecDestroy</a>(&amp;y);
-        <span class="keywordflow">return</span> 0;
-}
-
-</pre></div> </div>
+<h1>MBO Indices<br/>
+<small>
+[<a class="el" href="group__mbo__core.html">MBO Core functionality</a>]</small>
+</h1><table border="0" cellpadding="0" cellspacing="0">
+<tr><td colspan="2"><h2>Typedefs</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga0b1d081a169ef61bd1bdf0cec6b0630e"></a><!-- doxytag: member="mbo_indices::MboLocInd" ref="ga0b1d081a169ef61bd1bdf0cec6b0630e" args="" -->
+typedef int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mbo__indices.html#ga0b1d081a169ef61bd1bdf0cec6b0630e">MboLocInd</a></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Local indices. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaa1d8f92a1a73cbb37e322162120ea917"></a><!-- doxytag: member="mbo_indices::MboGlobInd" ref="gaa1d8f92a1a73cbb37e322162120ea917" args="" -->
+typedef long long&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mbo__indices.html#gaa1d8f92a1a73cbb37e322162120ea917">MboGlobInd</a></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Global indices. <br/></td></tr>
+</table>
+</div>
 <!--- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
