@@ -1,7 +1,7 @@
 /**
 \mainpage MBO documentation
 
-\section intro_sec Introduction
+\section intro_sec What is MBO?
 
 MBO is a library for the efficient numerical treatment of quantum
 mechanical many body operators.  Quantum mechanical many body operators
@@ -22,7 +22,18 @@ This leads to the three core concepts of MBO:
   operators into tensor product spaces (represented by #MboTensorOp)
 
 MBO was designed to deal with these three concepts as efficiently as
-possible.
+possible.  Specifically, the goal of MBO is to run as fast as possible
+on a single core.  MBO deliberately does not address parallelization via
+processes (e.g. <a
+href="http://en.wikipedia.org/wiki/Message_Passing_Interface">MPI</a>)
+or threads (e.g. via <a
+href="https://computing.llnl.gov/tutorials/pthreads/">pthreads</a> or <a
+href="http://openmp.org/wp/">OpenMP</a>).  This
+choice was made to facilitate using MBO with libraries that have their
+own strategies for parallelism (e.g. <a
+href="http://www.mcs.anl.gov/petsc/">PETSc</a>).  Parallelization of the
+application of MBO operators is easily achieved at the application level
+(i.e. outside of MBO).
 
 
 \section quick_start Quick start guide
@@ -39,11 +50,10 @@ make
 sudo make install
 \endverbatim
 
-A simple example:
+\section simple_example A simple example:
+
+The following example illustrates the basic usage of MBO.
 
 \include SimpleExample.c
-
-To get an idea of how to use MBO check out the examples.
-
 
 */

@@ -19,6 +19,10 @@ with mbo.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * @file MboErrors.h
  * @brief Error codes used by the MBO library.
+ *
+ * @defgroup mbo_errors MboErrors
+ * @ingroup mbo_core
+ * @{ 
  * */
 #ifndef MBO_ERRORS_H
 #define MBO_ERRORS_H
@@ -40,4 +44,5 @@ enum MBO_STATUS {
  * */
 typedef enum MBO_STATUS MBO_STATUS;
 
+/** @} */
 #endif

@@ -27,6 +27,10 @@ with mbo.  If not, see <http://www.gnu.org/licenses/>.
  *
  * @sa MboVec, mboTensorOpMul, mboTensorOpPlus, mboTensorOpKron,
  * mboTensorOpMatVec
+ *
+ * @defgroup mbo_tensorop MboTensorOp
+ * @ingroup mbo_core
+ * @{ 
  * */
 #ifndef MBO_TENSOR_OP_H
 #define MBO_TENSOR_OP_H
@@ -247,4 +251,5 @@ MBO_EXPORT int mboTensorOpCheck(MboTensorOp op);
 #ifdef __cplusplus
 }
 #endif
+/** @} */
 #endif

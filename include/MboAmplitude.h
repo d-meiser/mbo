@@ -19,6 +19,10 @@ with mbo.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * @file MboAmplitude.h
  * @brief Definition of the complex amplitude type
+ *
+ * @defgroup mbo_amplitdue MboAmplitude
+ * @ingroup mbo_core
+ * @{ 
  * */
 #ifndef MBO_AMPLITUDE_H
 #define MBO_AMPLITUDE_H
@@ -38,4 +42,5 @@ struct MboAmplitude {
 #ifdef __cplusplus
 }
 #endif
+/** @} */
 #endif

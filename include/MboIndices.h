@@ -19,6 +19,10 @@ with mbo.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * @file MboIndices.h
  * @brief Integer types for indices used in mbo library
+ *
+ * @defgroup mbo_indices MBO Indices
+ * @ingroup mbo_core
+ * @{ 
  * */
 #ifndef MBO_INDICES_H
 #define MBO_INDICES_H
@@ -29,5 +33,5 @@ typedef int MboLocInd;
 /** @brief Global indices */
 typedef long long MboGlobInd;
 
+/** @} */
 #endif
-

@@ -21,6 +21,10 @@ with mbo.  If not, see <http://www.gnu.org/licenses/>.
  * @brief The MboProdSpace API.
  *
  * MboProdSpaces are used to describe tensor product spaces.
+ *
+ * @defgroup mbo_prodspace MboProdSpace
+ * @ingroup mbo_core
+ * @{ 
  * */
 #ifndef MBO_PROD_SPACE_H
 #define MBO_PROD_SPACE_H
@@ -146,4 +150,5 @@ MBO_EXPORT int mboProdSpaceCheck(MboProdSpace h);
 #ifdef __cplusplus
 }
 #endif
+/** @} */
 #endif

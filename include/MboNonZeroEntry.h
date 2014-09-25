@@ -19,6 +19,10 @@ with mbo.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * @file MboNonZeroEntry.h
  * @brief Definition of data type for nonzero entries.
+ *
+ * @defgroup mbo_nonzeroentry MboNonZeroEntry
+ * @ingroup mbo_core
+ * @{ 
  * */
 #ifndef MBO_NON_ZERO_ENTRY_H
 #define MBO_NON_ZERO_ENTRY_H
@@ -36,4 +40,5 @@ struct MboNonZeroEntry {
 	struct MboAmplitude val; /**< Value of matrix entry */
 };
 
+/** @} */
 #endif

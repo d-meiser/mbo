@@ -24,6 +24,10 @@ with mbo.  If not, see <http://www.gnu.org/licenses/>.
  * operators.  In the context of quantum mechanics they are single
  * particle operators.  Mathematically, they are sparse matrices: A
  * collection of non-zero entries.
+ *
+ * @defgroup mbo_elemop MboElemOp
+ * @ingroup mbo_core
+ * @{ 
  * */
 #ifndef MBO_ELEM_OP_H
 #define MBO_ELEM_OP_H
@@ -275,4 +279,5 @@ MBO_EXPORT MboElemOp mboCreationOp(MboLocInd dim);
 }
 #endif
 
+/** @} */
 #endif
