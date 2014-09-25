@@ -2,6 +2,7 @@ set(EXAMPLES
     ComputeMatrix
     TavisCummings
     Vectors
+    OpenMP
    )
 
 include_directories(
