@@ -5,7 +5,5 @@
 The core components of MBO are #MboElemOp, #MboProdSpace, and
 #MboTensorOp.  
 
-\defgroup mbo_utilities Utilities
-
 */
 

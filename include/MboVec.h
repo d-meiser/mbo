@@ -21,6 +21,10 @@ with mbo.  If not, see <http://www.gnu.org/licenses/>.
  * @brief The MboVec API.
  *
  * MboVecs are used to describe vectors in product spaces.
+ *
+ * @defgroup mbo_vec MboVec
+ * @ingroup mbo_utilities
+ * @{ 
  * */
 #ifndef MBO_VEC_H
 #define MBO_VEC_H
@@ -163,4 +167,5 @@ MBO_EXPORT int mboVecCheck(MboVec v);
 #ifdef __cplusplus
 }
 #endif
+/** @} */
 #endif
