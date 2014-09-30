@@ -132,6 +132,7 @@ void applyEmbeddings(int i, int numSpaces, MboLocInd *dims,
 		nEnd = offsetR + blockSizeAfter - rmin;
 		if (nEnd > rmax - rmin) nEnd = rmax - rmin;
 		x += rmin + offsetC - offsetR;
+    y += rmin;
 		for (n = nStart; n < nEnd; ++n) {
 			y[n].re += alpha.re * x[n].re - alpha.im * x[n].im;
 			y[n].im += alpha.re * x[n].im + alpha.im * x[n].re;

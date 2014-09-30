@@ -316,3 +316,33 @@ TEST(Embedding, ApplyEmbeddingsRowRange) {
     EXPECT_FLOAT_EQ(0, y[i].im) << " i == " << i;
   }
 }
+
+TEST(Embedding, ApplyEmbeddingsRmaxOutOfRange) {
+  MboLocInd dims[] = {2, 3};
+  
+  struct MboAmplitude tmp;
+  tmp.re = 1;
+  tmp.im = 0;
+  std::vector<struct MboAmplitude> x(computeBlockSize(2, dims));
+  std::fill(x.begin(), x.end(), tmp);
+  std::vector<struct MboAmplitude> y(computeBlockSize(2, dims));
+  tmp.re = 0;
+  tmp.im = 0;
+  std::fill(y.begin(), y.end(), tmp);
+
+  MboElemOp sz = mboSigmaZ();
+  std::vector<struct Embedding> embeddings(1);
+  embeddings[0].i = 0;
+  embeddings[0].op = sz;
+  struct MboAmplitude alpha = {2.0, 3.0};
+  applyEmbeddings(0, 2, dims, computeBlockSize(2, dims), alpha,
+      1, &embeddings[0], &x[0], &y[0], 4, 7, 0, 0);
+  EXPECT_FLOAT_EQ(alpha.re, y[4].re) << " i == " << 4;
+  EXPECT_FLOAT_EQ(alpha.im, y[4].im) << " i == " << 4;
+  EXPECT_FLOAT_EQ(alpha.re, y[5].re) << " i == " << 5;
+  EXPECT_FLOAT_EQ(alpha.im, y[5].im) << " i == " << 5;
+  for (MboLocInd i = 0; i < 4; ++i) {
+    EXPECT_FLOAT_EQ(0, y[i].re) << " i == " << i;
+    EXPECT_FLOAT_EQ(0, y[i].im) << " i == " << i;
+  }
+}
