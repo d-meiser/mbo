@@ -56,6 +56,13 @@ elseif("${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC")
 elseif("${CMAKE_C_COMPILER_ID}" STREQUAL "Intel")
 endif()
 
+find_package(OpenMP)
+if(OPENMP_FOUND)
+  set(HAVE_OPENMP TRUE)
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+endif()
+
 include_directories(${PROJECT_BINARY_DIR})
 
 add_subdirectory(src)
