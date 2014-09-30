@@ -108,7 +108,7 @@ TEST(Embedding, ApplyEmbeddings) {
 
   blockSize = computeBlockSize(3, dims + 1);
   applyEmbeddings(0, 4, dims, blockSize, x[0], 0, 0, x, y, 0,
-                  computeBlockSize(4, dims));
+                  computeBlockSize(4, dims), 0, 0);
   for (int i = 0; i < computeBlockSize(4, dims); ++i) {
     EXPECT_FLOAT_EQ(y[i].re, 0);
     EXPECT_FLOAT_EQ(y[i].im, 0);
@@ -124,7 +124,7 @@ TEST(Embedding, ApplyEmbeddings) {
     x[i].im = 0.0;
   }
   applyEmbeddings(0, 4, dims, computeBlockSize(4, dims), alpha, 1, embeddings,
-                  x, y, 0, computeBlockSize(4, dims));
+                  x, y, 0, computeBlockSize(4, dims), 0, 0);
   for (int i = 0; i < computeBlockSize(4, dims); ++i) {
     if (i & 1l) {
       expectedResult.re = alpha.re;
@@ -152,7 +152,7 @@ TEST(Embedding, ApplyEmbeddings) {
     y[i].im = 0.0;
   }
   applyEmbeddings(0, 4, dims, computeBlockSize(4, dims), alpha, 1, embeddings,
-                  x, y, 0, computeBlockSize(4, dims));
+                  x, y, 0, computeBlockSize(4, dims), 0, 0);
   for (int i = 0; i < computeBlockSize(4, dims); ++i) {
     switch ((i / computeBlockSize(2, dims + 2)) % dims[1]) {
       case 0:
@@ -188,7 +188,7 @@ TEST(Embedding, ApplyEmbeddings) {
     y[i].im = 0.0;
   }
   applyEmbeddings(0, 4, dims, computeBlockSize(4, dims), alpha, 2, embeddings,
-                  x, y, 0, computeBlockSize(4, dims));
+                  x, y, 0, computeBlockSize(4, dims), 0, 0);
   /* Make sure that dim of first space is 2.  Otherwise the expected
    * results are not calculated correctly. */
   EXPECT_EQ(dims[0], 2);
@@ -283,4 +283,36 @@ TEST(Embedding, SortEmbeddings) {
     destroyEmbedding(&embeddings[i]);
   }
   free(embeddings);
+}
+
+TEST(Embedding, ApplyEmbeddingsRowRange) {
+  MboLocInd dims[] = {2, 3};
+  
+  struct MboAmplitude tmp;
+  tmp.re = 1;
+  tmp.im = 0;
+  std::vector<struct MboAmplitude> x(computeBlockSize(2, dims));
+  std::fill(x.begin(), x.end(), tmp);
+  std::vector<struct MboAmplitude> y(computeBlockSize(2, dims));
+  tmp.re = 0;
+  tmp.im = 0;
+  std::fill(y.begin(), y.end(), tmp);
+
+  MboElemOp sz = mboSigmaZ();
+  std::vector<struct Embedding> embeddings(1);
+  embeddings[0].i = 0;
+  embeddings[0].op = sz;
+  struct MboAmplitude alpha = {2.0, 3.0};
+  applyEmbeddings(0, 2, dims, computeBlockSize(2, dims), alpha,
+      1, &embeddings[0], &x[0], &y[0], 0, 3, 0, 0);
+  EXPECT_FLOAT_EQ(-alpha.re, y[0].re) << " i == " << 0;
+  EXPECT_FLOAT_EQ(-alpha.im, y[0].im) << " i == " << 0;
+  EXPECT_FLOAT_EQ(-alpha.re, y[1].re) << " i == " << 1;
+  EXPECT_FLOAT_EQ(-alpha.im, y[1].im) << " i == " << 1;
+  EXPECT_FLOAT_EQ(-alpha.re, y[2].re) << " i == " << 2;
+  EXPECT_FLOAT_EQ(-alpha.im, y[2].im) << " i == " << 2;
+  for (MboLocInd i = 3; i < computeBlockSize(2, dims); ++i) {
+    EXPECT_FLOAT_EQ(0, y[i].re) << " i == " << i;
+    EXPECT_FLOAT_EQ(0, y[i].im) << " i == " << i;
+  }
 }
