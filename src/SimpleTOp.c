@@ -138,7 +138,7 @@ MBO_STATUS applySimpleTOp(MboProdSpace h, struct MboAmplitude alpha,
 	mboProdSpaceGetDims(h, mboProdSpaceSize(h), dims);
 
 	applyEmbeddings(0, numSpaces, dims, blockSize, alpha, a->numFactors,
-			a->embeddings, x, y, rmin, rmax);
+			a->embeddings, x, y, rmin, rmax, 0, 0);
 
 	free(dims);
 

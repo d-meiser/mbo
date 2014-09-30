@@ -96,10 +96,11 @@ void applyEmbeddings(int i, int numSpaces, MboLocInd *dims,
 		     MboGlobInd blockSizeAfter, struct MboAmplitude alpha,
 		     int numFactors, struct Embedding *embeddings,
 		     struct MboAmplitude *x, struct MboAmplitude *y,
-		     MboGlobInd rmin, MboGlobInd rmax)
+		     MboGlobInd rmin, MboGlobInd rmax, MboGlobInd offsetR,
+		     MboGlobInd offsetC)
 {
 	int nextI, e;
-	MboGlobInd blockSizeBefore, n;
+	MboGlobInd blockSizeBefore, n, nStart, nEnd;
 	struct MboNonZeroEntry *entries;
 	struct MboAmplitude tmp;
 
@@ -117,16 +118,21 @@ void applyEmbeddings(int i, int numSpaces, MboLocInd *dims,
 					 alpha.im * entries[e].val.re;
 				applyEmbeddings(
 				    nextI + 1, numSpaces, dims, blockSizeAfter,
-				    tmp, numFactors - 1, embeddings + 1,
-				    x + entries[e].n * blockSizeAfter,
-				    y + entries[e].m * blockSizeAfter, rmin,
-				    rmax);
+				    tmp, numFactors - 1, embeddings + 1, x, y,
+				    rmin, rmax,
+				    offsetR + entries[e].m * blockSizeAfter,
+				    offsetC + entries[e].n * blockSizeAfter);
 			}
-			x += blockSizeAfter * (MboGlobInd)dims[nextI];
-			y += blockSizeAfter * (MboGlobInd)dims[nextI];
+			offsetR += blockSizeAfter * (MboGlobInd)dims[nextI];
+			offsetC += blockSizeAfter * (MboGlobInd)dims[nextI];
 		}
 	} else {
-		for (n = 0; n < blockSizeAfter; ++n) {
+		nStart = offsetR - rmin;
+		if (nStart < 0) nStart = 0;
+		nEnd = offsetR + blockSizeAfter - rmin;
+		if (nEnd > rmax - rmin) nEnd = rmax - rmin;
+		x += rmin + offsetC - offsetR;
+		for (n = nStart; n < nEnd; ++n) {
 			y[n].re += alpha.re * x[n].re - alpha.im * x[n].im;
 			y[n].im += alpha.re * x[n].im + alpha.im * x[n].re;
 		}

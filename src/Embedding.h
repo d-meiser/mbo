@@ -73,7 +73,8 @@ void applyEmbeddings(int i, int numSpaces, MboLocInd *dims,
 		     int numFactors, struct Embedding *embeddings,
 		     struct MboAmplitude *x,
 		     struct MboAmplitude *y, MboGlobInd rmin,
-		     MboGlobInd rmax);
+		     MboGlobInd rmax, MboGlobInd offsetR,
+		     MboGlobInd offsetC);
 
 void embeddingDenseMatrix(int i, int numSpaces, MboLocInd *dims,
 			  MboGlobInd blockSize, MboGlobInd dim,
