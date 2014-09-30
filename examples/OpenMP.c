@@ -107,8 +107,7 @@ int main()
 	if (numChunks * chunkSize < mboProdSpaceDim(hTot)) ++numChunks;
 	for (i = 0; i < numIters; ++i) {
 		for (chunk = 0; chunk < numChunks; ++chunk) {
-			mboTensorOpMatVec(one, Jx, x + chunk * chunkSize, zero,
-					  yomp + chunk * chunkSize,
+			mboTensorOpMatVec(one, Jx, x, zero, yomp,
 					  chunk * chunkSize,
 					  (chunk + 1) * chunkSize);
 		}

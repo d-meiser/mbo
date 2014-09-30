@@ -221,7 +221,7 @@ MBO_STATUS mboTensorOpMatVec(struct MboAmplitude alpha, MboTensorOp a,
 	MBO_STATUS err;
 	struct MboAmplitude tmp;
 
-  for (r = 0; r < rmax - rmin; ++r) {
+  for (r = rmin; r < rmax; ++r) {
     tmp.re = beta.re * y[r].re - beta.im * y[r].im;
     tmp.im = beta.re * y[r].im + beta.im * y[r].re;
     y[r].re = tmp.re;
