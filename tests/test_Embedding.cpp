@@ -21,7 +21,7 @@ TEST(Embedding, Find) {
   free(embeddings);
 }
 
-TEST(EMBEDDING, GatherIthEmbedding) {
+TEST(Embedding, GatherIthEmbedding) {
   int i, n = 5;
   struct Embedding *embeddings =
       (struct Embedding *)malloc(n * sizeof(*embeddings));
