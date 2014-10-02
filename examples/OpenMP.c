@@ -126,15 +126,17 @@ int main()
 	}
 	difference = sqrt(difference);
 	printf("Error: %lf\n", difference);
-	if (difference < 1.0e-12) {
-		return 0;
-	} else {
-		return 1;
-	}
 
 	free(x);
 	free(y);
 	free(yomp);
 	mboNumOpDestroy(&Jx);
 	mboProdSpaceDestroy(&hTot);
+
+	if (difference < 1.0e-12) {
+		return 0;
+	} else {
+		return 1;
+	}
+
 }
