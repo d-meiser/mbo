@@ -9,6 +9,7 @@ set(TESTS
   test_DenseMatrices
   test_Embedding
   test_MboElemOp
+  test_MboNumOp
   test_MboProdSpace
   test_MboTensorOp
   test_MboVec
