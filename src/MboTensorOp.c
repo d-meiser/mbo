@@ -210,25 +210,3 @@ int mboTensorOpCheck(MboTensorOp op)
 	return errs;
 }
 
-void mboTensorOpDiagonal(MboTensorOp op, MboGlobInd rmin, MboGlobInd rmax,
-			 struct MboAmplitude *diag)
-{
-	MboGlobInd i;
-	int s;
-
-	for (i = 0; i < rmax - rmin; ++i) {
-		diag[i].re = 0;
-		diag[i].im = 0;
-	}
-	for (s = 0; s < op->numTerms; ++s) {
-		simpleTOpDiagonal(op->space, op->sum + s, rmin, rmax, diag);
-	}
-}
-
-void mboTensorOpDeleteDiagonal(MboTensorOp op)
-{
-	int s;
-	for (s = 0; s < op->numTerms; ++s) {
-		simpleTOpDeleteDiagonal(op->sum + s);
-	}
-}

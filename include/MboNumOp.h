@@ -118,6 +118,29 @@ MBO_EXPORT void mboNumOpSparseMatrix(MboNumOp op, MboGlobInd rmin,
 				     MboGlobInd rmax, int *i, int *j,
 				     struct MboAmplitude *a);
 
+/**
+ * @brief Get diagonal entries from a numerical operator.
+ *
+ * @param op   The operator.
+ * @param rmin First row for which to get the diagonal.
+ * @param rmax Last row for which to get the diagonal.
+ * @param diag The diagonal. Has to point to memory for at least rmax - rmin
+ *             entries.
+ *
+ * @sa MboNumOp, mboNumOpDeleteDiagonal
+ * */
+MBO_EXPORT void mboNumOpDiagonal(MboNumOp op, MboGlobInd rmin, MboGlobInd rmax,
+				 struct MboAmplitude *diag);
+
+/**
+ * @brief Erase the diagonal from an operator.
+ *
+ * @param op Operator from which to delete the diagonal.
+ *
+ * @sa MboNumOp, mboTensorOpDiagonal
+ * */
+MBO_EXPORT void mboNumOpDeleteDiagonal(MboNumOp op);
+
 #ifdef __cplusplus
 }
 #endif

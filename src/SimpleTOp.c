@@ -130,8 +130,6 @@ MBO_STATUS applySimpleTOp(MboProdSpace h, struct MboAmplitude alpha,
 	MboGlobInd blockSize;
 
 	dims = malloc(mboProdSpaceSize(h) * sizeof(*dims));
-	gatherAllEmbeddings(&a->numFactors, &a->embeddings);
-	sortEmbeddings(a->numFactors, a->embeddings);
 
 	numSpaces = mboProdSpaceSize(h);
 	blockSize = mboProdSpaceDim(h);
@@ -149,9 +147,6 @@ double flopsSimpleTOp(int numSpaces, MboLocInd *dims, struct SimpleTOp *a)
 {
 	int i, j;
 	double flops;
-
-	gatherAllEmbeddings(&a->numFactors, &a->embeddings);
-	sortEmbeddings(a->numFactors, a->embeddings);
 
 	flops = 1;
 	for (i = 0; i < numSpaces; ++i) {
@@ -173,9 +168,6 @@ void simpleTOpDenseMatrix(MboProdSpace h, struct SimpleTOp *simpleOp,
 	int numSpaces;
 	struct MboAmplitude alpha;
 	
-	gatherAllEmbeddings(&simpleOp->numFactors, &simpleOp->embeddings);
-	sortEmbeddings(simpleOp->numFactors, simpleOp->embeddings);
-
 	blockSize = mboProdSpaceDim(h);
 	dim = blockSize;
 	numSpaces = mboProdSpaceSize(h);
@@ -196,9 +188,6 @@ void simpleTOpGetNonZerosPerRow(MboProdSpace h, struct SimpleTOp *simpleOp,
 	MboGlobInd blockSize, offset;
 	MboLocInd *dims;
 	int numSpaces;
-
-	gatherAllEmbeddings(&simpleOp->numFactors, &simpleOp->embeddings);
-	sortEmbeddings(simpleOp->numFactors, simpleOp->embeddings);
 
 	blockSize = mboProdSpaceDim(h);
 	numSpaces = mboProdSpaceSize(h);
@@ -221,9 +210,6 @@ void simpleTOpSparseMatrix(MboProdSpace h, struct SimpleTOp *simpleOp,
 	int numSpaces;
 	struct MboAmplitude alpha;
 	
-	gatherAllEmbeddings(&simpleOp->numFactors, &simpleOp->embeddings);
-	sortEmbeddings(simpleOp->numFactors, simpleOp->embeddings);
-
 	blockSize = mboProdSpaceDim(h);
 	numSpaces = mboProdSpaceSize(h);
 	dims = malloc(numSpaces * sizeof(*dims));
@@ -246,9 +232,6 @@ void simpleTOpDiagonal(MboProdSpace h, struct SimpleTOp *simpleOp,
 	MboGlobInd blockSize;
 	int numSpaces;
 	MboLocInd *dims;
-
-	gatherAllEmbeddings(&simpleOp->numFactors, &simpleOp->embeddings);
-	sortEmbeddings(simpleOp->numFactors, simpleOp->embeddings);
 
 	blockSize = mboProdSpaceDim(h);
 	numSpaces = mboProdSpaceSize(h);
@@ -275,11 +258,15 @@ void simpleTOpDeleteDiagonal(struct SimpleTOp *simpleOp)
 		mboElemOpCreate(&null);
 		simpleOp->embeddings[0].op = null;
 	} else {
-		gatherAllEmbeddings(&simpleOp->numFactors,
-				    &simpleOp->embeddings);
-		sortEmbeddings(simpleOp->numFactors, simpleOp->embeddings);
+		simpleTOpNormalize(simpleOp);
 		for (i = 0; i < simpleOp->numFactors; ++i) {
 			embeddingDeleteDiagonal(simpleOp->embeddings + i);
 		}
 	}
+}
+
+void simpleTOpNormalize(struct SimpleTOp *simpleOp)
+{
+	gatherAllEmbeddings(&simpleOp->numFactors, &simpleOp->embeddings);
+	sortEmbeddings(simpleOp->numFactors, simpleOp->embeddings);
 }

@@ -44,6 +44,7 @@ MboNumOp mboNumOpCompile(MboTensorOp op)
     numOp->sum[i].numFactors = 0;
     numOp->sum[i].embeddings = 0;
     copySimpleTOp(numOp->sum + i, terms + i);
+    simpleTOpNormalize(numOp->sum + i);
   }
   return numOp;
 }
@@ -158,4 +159,27 @@ double mboNumOpFlops(MboNumOp a)
 	}
 	free(dims);
 	return flops;
+}
+
+void mboNumOpDiagonal(MboNumOp op, MboGlobInd rmin, MboGlobInd rmax,
+		      struct MboAmplitude *diag)
+{
+	MboGlobInd i;
+	int s;
+
+	for (i = 0; i < rmax - rmin; ++i) {
+		diag[i].re = 0;
+		diag[i].im = 0;
+	}
+	for (s = 0; s < op->numTerms; ++s) {
+		simpleTOpDiagonal(op->space, op->sum + s, rmin, rmax, diag);
+	}
+}
+
+void mboNumOpDeleteDiagonal(MboNumOp op)
+{
+	int s;
+	for (s = 0; s < op->numTerms; ++s) {
+		simpleTOpDeleteDiagonal(op->sum + s);
+	}
 }
