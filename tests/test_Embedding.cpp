@@ -315,6 +315,7 @@ TEST(Embedding, ApplyEmbeddingsRowRange) {
     EXPECT_FLOAT_EQ(0, y[i].re) << " i == " << i;
     EXPECT_FLOAT_EQ(0, y[i].im) << " i == " << i;
   }
+  mboElemOpDestroy(&sz);
 }
 
 TEST(Embedding, ApplyEmbeddingsRmaxOutOfRange) {
@@ -345,4 +346,5 @@ TEST(Embedding, ApplyEmbeddingsRmaxOutOfRange) {
     EXPECT_FLOAT_EQ(0, y[i].re) << " i == " << i;
     EXPECT_FLOAT_EQ(0, y[i].im) << " i == " << i;
   }
+  mboElemOpDestroy(&sz);
 }
