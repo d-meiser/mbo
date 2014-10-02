@@ -24,29 +24,29 @@ with mbo.  If not, see <http://www.gnu.org/licenses/>.
 
 struct MboNumOp_t
 {
-  MboProdSpace space;
-  int numTerms;
-  struct SimpleTOp *sum;
+	MboProdSpace space;
+	int numTerms;
+	struct SimpleTOp *sum;
 };
 
 MboNumOp mboNumOpCompile(MboTensorOp op)
 {
-  struct SimpleTOp *terms;
-  int i;
-  MboNumOp numOp;
+	struct SimpleTOp *terms;
+	int i;
+	MboNumOp numOp;
 
-  numOp = malloc(sizeof(*numOp));
-  numOp->space = mboProdSpaceCopy(mboTensorOpGetSpace(op)); 
-  numOp->numTerms = mboTensorOpGetNumTerms(op);
-  numOp->sum = malloc(numOp->numTerms * sizeof(*numOp->sum));
-  terms = mboTensorOpGetSimpleTOps(op);
-  for (i = 0; i < numOp->numTerms; ++i) {
-    numOp->sum[i].numFactors = 0;
-    numOp->sum[i].embeddings = 0;
-    copySimpleTOp(numOp->sum + i, terms + i);
-    simpleTOpNormalize(numOp->sum + i);
-  }
-  return numOp;
+	numOp = malloc(sizeof(*numOp));
+	numOp->space = mboProdSpaceCopy(mboTensorOpGetSpace(op));
+	numOp->numTerms = mboTensorOpGetNumTerms(op);
+	numOp->sum = malloc(numOp->numTerms * sizeof(*numOp->sum));
+	terms = mboTensorOpGetSimpleTOps(op);
+	for (i = 0; i < numOp->numTerms; ++i) {
+		numOp->sum[i].numFactors = 0;
+		numOp->sum[i].embeddings = 0;
+		copySimpleTOp(numOp->sum + i, terms + i);
+		simpleTOpNormalize(numOp->sum + i);
+	}
+	return numOp;
 }
 
 void mboNumOpDestroy(MboNumOp *op)
@@ -63,7 +63,7 @@ void mboNumOpDestroy(MboNumOp *op)
 
 MboProdSpace mboNumOpGetSpace(MboNumOp op)
 {
-  return op->space;
+	return op->space;
 }
 
 static void zeroArray(MboGlobInd n, struct MboAmplitude *array)
@@ -87,8 +87,7 @@ void mboNumOpDenseMatrix(MboNumOp a, struct MboAmplitude *mat)
 	}
 }
 
-void mboNumOpRowOffsets(MboNumOp op, MboGlobInd rmin, MboGlobInd rmax,
-			   int *i)
+void mboNumOpRowOffsets(MboNumOp op, MboGlobInd rmin, MboGlobInd rmax, int *i)
 {
 	int j, r;
 	for (r = 0; r < rmax - rmin; ++r) {
@@ -104,8 +103,8 @@ void mboNumOpRowOffsets(MboNumOp op, MboGlobInd rmin, MboGlobInd rmax,
 	}
 }
 
-void mboNumOpSparseMatrix(MboNumOp op, MboGlobInd rmin, MboGlobInd rmax,
-			     int *i, int *j, struct MboAmplitude *a)
+void mboNumOpSparseMatrix(MboNumOp op, MboGlobInd rmin, MboGlobInd rmax, int *i,
+			  int *j, struct MboAmplitude *a)
 {
 	int *numInserted, r, s;
 
@@ -116,30 +115,31 @@ void mboNumOpSparseMatrix(MboNumOp op, MboGlobInd rmin, MboGlobInd rmax,
 	}
 	for (s = 0; s < op->numTerms; ++s) {
 		simpleTOpSparseMatrix(op->space, op->sum + s, rmin, rmax, i, j,
-				a, numInserted);
+				      a, numInserted);
 	}
 	free(numInserted);
 }
 
 MBO_STATUS mboNumOpMatVec(struct MboAmplitude alpha, MboNumOp a,
-			     struct MboAmplitude *x, struct MboAmplitude beta,
-			     struct MboAmplitude *y, MboGlobInd rmin,
-			     MboGlobInd rmax)
+			  struct MboAmplitude *x, struct MboAmplitude beta,
+			  struct MboAmplitude *y, MboGlobInd rmin,
+			  MboGlobInd rmax)
 {
 	int i;
-  MboGlobInd r;
+	MboGlobInd r;
 	MBO_STATUS err;
 	struct MboAmplitude tmp;
 
-  for (r = rmin; r < rmax; ++r) {
-    tmp.re = beta.re * y[r].re - beta.im * y[r].im;
-    tmp.im = beta.re * y[r].im + beta.im * y[r].re;
-    y[r].re = tmp.re;
-    y[r].im = tmp.im;
-  }
+	for (r = rmin; r < rmax; ++r) {
+		tmp.re = beta.re * y[r].re - beta.im * y[r].im;
+		tmp.im = beta.re * y[r].im + beta.im * y[r].re;
+		y[r].re = tmp.re;
+		y[r].im = tmp.im;
+	}
 
 	for (i = 0; i < a->numTerms; ++i) {
-		err = applySimpleTOp(a->space, alpha, a->sum + i, x, y, rmin, rmax);
+		err = applySimpleTOp(a->space, alpha, a->sum + i, x, y, rmin,
+				     rmax);
 		if (err != MBO_SUCCESS) return err;
 	}
 	return MBO_SUCCESS;
