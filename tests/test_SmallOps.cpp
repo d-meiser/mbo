@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <MboTensorOp.h>
+#include <MboNumOp.h>
 #include <MboAmplitude.h>
 #include <MboElemOp.h>
 #include <cmath>
@@ -11,7 +12,8 @@ TEST(SmallOps, SigmaP) {
   mboTensorOpNull(h, &Sp);
   mboTensorOpAddTo(sp, 0, Sp);
   std::vector<struct MboAmplitude> mat(4);
-  mboTensorOpDenseMatrix(Sp, &mat[0]);
+  MboNumOp Sp_comp = mboNumOpCompile(Sp);
+  mboNumOpDenseMatrix(Sp_comp, &mat[0]);
   std::vector<struct MboAmplitude> expectedResult(4);
   expectedResult[0].re = 0;
   expectedResult[0].im = 0;
@@ -28,6 +30,7 @@ TEST(SmallOps, SigmaP) {
   mboTensorOpDestroy(&Sp);
   mboElemOpDestroy(&sp);
   mboProdSpaceDestroy(&h);
+  mboNumOpDestroy(&Sp_comp);
 }
 
 TEST(SmallOps, SigmaM) {
@@ -37,7 +40,8 @@ TEST(SmallOps, SigmaM) {
   mboTensorOpNull(h, &Sp);
   mboTensorOpAddTo(sp, 0, Sp);
   std::vector<struct MboAmplitude> mat(4);
-  mboTensorOpDenseMatrix(Sp, &mat[0]);
+  MboNumOp Sp_comp = mboNumOpCompile(Sp);
+  mboNumOpDenseMatrix(Sp_comp, &mat[0]);
   std::vector<struct MboAmplitude> expectedResult(4);
   expectedResult[0].re = 0;
   expectedResult[0].im = 0;
@@ -54,6 +58,7 @@ TEST(SmallOps, SigmaM) {
   mboTensorOpDestroy(&Sp);
   mboElemOpDestroy(&sp);
   mboProdSpaceDestroy(&h);
+  mboNumOpDestroy(&Sp_comp);
 }
 
 TEST(SmallOps, SigmaZ) {
@@ -63,7 +68,8 @@ TEST(SmallOps, SigmaZ) {
   mboTensorOpNull(h, &Sp);
   mboTensorOpAddTo(sp, 0, Sp);
   std::vector<struct MboAmplitude> mat(4);
-  mboTensorOpDenseMatrix(Sp, &mat[0]);
+  MboNumOp Sp_comp = mboNumOpCompile(Sp);
+  mboNumOpDenseMatrix(Sp_comp, &mat[0]);
   std::vector<struct MboAmplitude> expectedResult(4);
   expectedResult[0].re = -1;
   expectedResult[0].im = 0;
@@ -80,6 +86,7 @@ TEST(SmallOps, SigmaZ) {
   mboTensorOpDestroy(&Sp);
   mboElemOpDestroy(&sp);
   mboProdSpaceDestroy(&h);
+  mboNumOpDestroy(&Sp_comp);
 }
 
 TEST(SmallOps, Eye) {
@@ -90,7 +97,8 @@ TEST(SmallOps, Eye) {
   mboTensorOpNull(h, &Sp);
   mboTensorOpAddTo(sp, 0, Sp);
   std::vector<struct MboAmplitude> mat(dim * dim);
-  mboTensorOpDenseMatrix(Sp, &mat[0]);
+  MboNumOp Sp_comp = mboNumOpCompile(Sp);
+  mboNumOpDenseMatrix(Sp_comp, &mat[0]);
   std::vector<struct MboAmplitude> expectedResult(dim * dim);
   for (int i = 0; i < dim * dim; ++i) {
     if ((i % dim) == (i / dim)) {
@@ -107,6 +115,7 @@ TEST(SmallOps, Eye) {
   mboTensorOpDestroy(&Sp);
   mboElemOpDestroy(&sp);
   mboProdSpaceDestroy(&h);
+  mboNumOpDestroy(&Sp_comp);
 }
 
 TEST(SmallOps, NumOp) {
@@ -117,7 +126,8 @@ TEST(SmallOps, NumOp) {
   mboTensorOpNull(h, &Sp);
   mboTensorOpAddTo(sp, 0, Sp);
   std::vector<struct MboAmplitude> mat(dim * dim);
-  mboTensorOpDenseMatrix(Sp, &mat[0]);
+  MboNumOp Sp_comp = mboNumOpCompile(Sp);
+  mboNumOpDenseMatrix(Sp_comp, &mat[0]);
   std::vector<struct MboAmplitude> expectedResult(dim * dim);
   for (int i = 0; i < dim * dim; ++i) {
     int row = i / dim;
@@ -136,6 +146,7 @@ TEST(SmallOps, NumOp) {
   mboTensorOpDestroy(&Sp);
   mboElemOpDestroy(&sp);
   mboProdSpaceDestroy(&h);
+  mboNumOpDestroy(&Sp_comp);
 }
 
 TEST(SmallOps, AnnihilationOp) {
@@ -146,7 +157,8 @@ TEST(SmallOps, AnnihilationOp) {
   mboTensorOpNull(h, &Sp);
   mboTensorOpAddTo(sp, 0, Sp);
   std::vector<struct MboAmplitude> mat(dim * dim);
-  mboTensorOpDenseMatrix(Sp, &mat[0]);
+  MboNumOp Sp_comp = mboNumOpCompile(Sp);
+  mboNumOpDenseMatrix(Sp_comp, &mat[0]);
   std::vector<struct MboAmplitude> expectedResult(dim * dim);
   for (int i = 0; i < dim * dim; ++i) {
     int row = i / dim;
@@ -165,6 +177,7 @@ TEST(SmallOps, AnnihilationOp) {
   mboTensorOpDestroy(&Sp);
   mboElemOpDestroy(&sp);
   mboProdSpaceDestroy(&h);
+  mboNumOpDestroy(&Sp_comp);
 }
 
 TEST(SmallOps, CreationOp) {
@@ -175,7 +188,8 @@ TEST(SmallOps, CreationOp) {
   mboTensorOpNull(h, &Sp);
   mboTensorOpAddTo(sp, 0, Sp);
   std::vector<struct MboAmplitude> mat(dim * dim);
-  mboTensorOpDenseMatrix(Sp, &mat[0]);
+  MboNumOp Sp_comp = mboNumOpCompile(Sp);
+  mboNumOpDenseMatrix(Sp_comp, &mat[0]);
   std::vector<struct MboAmplitude> expectedResult(dim * dim);
   for (int i = 0; i < dim * dim; ++i) {
     int row = i / dim;
@@ -194,4 +208,5 @@ TEST(SmallOps, CreationOp) {
   mboTensorOpDestroy(&Sp);
   mboElemOpDestroy(&sp);
   mboProdSpaceDestroy(&h);
+  mboNumOpDestroy(&Sp_comp);
 }

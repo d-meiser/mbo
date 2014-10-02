@@ -32,6 +32,7 @@ int main()
 	MboVec x, y, result;
 	MboElemOp sp, sm;
 	MboTensorOp Jx;
+  MboNumOp Jx_compiled;
 	MboProdSpace h1, hTot;
 	struct MboAmplitude pointFive, one, zero, dotProduct, *yarr, *resultarr;
 
@@ -65,6 +66,8 @@ int main()
 	mboVecCreate(mboProdSpaceDim(hTot), &y);
 	mboVecCreate(mboProdSpaceDim(hTot), &result);
 
+  Jx_compiled = mboNumOpCompile(Jx);
+
 	printf("\nMatrix entries:\n");
 	for (i = 0; i < mboProdSpaceDim(hTot); ++i) {
 		mboVecUnitVector(i, x);
@@ -72,7 +75,7 @@ int main()
 			mboVecUnitVector(j, y);
 			mboVecGetViewR(y, &yarr);
 			mboVecGetViewRW(result, &resultarr);
-			mboTensorOpMatVec(one, Jx, yarr, zero, resultarr, 0,
+			mboNumOpMatVec(one, Jx_compiled, yarr, zero, resultarr, 0,
 					mboProdSpaceDim(hTot)); 
 			mboVecReleaseView(y, &yarr);
 			mboVecReleaseView(result, &resultarr);
@@ -88,7 +91,7 @@ int main()
 			mboVecUnitVector(j, y);
 			mboVecGetViewR(y, &yarr);
 			mboVecGetViewRW(result, &resultarr);
-			mboTensorOpMatVec(one, Jx, yarr, zero, resultarr, 0,
+			mboNumOpMatVec(one, Jx_compiled, yarr, zero, resultarr, 0,
 					mboProdSpaceDim(hTot)); 
 			mboVecReleaseView(y, &yarr);
 			mboVecReleaseView(result, &resultarr);
@@ -108,6 +111,7 @@ int main()
 	mboVecDestroy(&result);
 
 	/* Deallocate remaining resources */
+  mboNumOpDestroy(&Jx_compiled);
 	mboTensorOpDestroy(&Jx);
 	mboProdSpaceDestroy(&hTot);
 }

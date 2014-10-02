@@ -39,6 +39,7 @@ int main()
 	MboElemOp sm, sp, sz, a, ad, numberOp;
 	MboTensorOp inhomogeneousJz, jPlus, jMinus, idField, idAtoms, A, Ad, N,
 	    H, *factors;
+	MboNumOp H_compiled;
 	struct MboAmplitude tmp, *xarr, *yarr;
 	MboVec x, y;
 	int i;
@@ -106,12 +107,14 @@ int main()
 	mboTensorOpKron(2, factors, &H);
 	free(factors);
 
+	H_compiled = mboNumOpCompile(H);
+
 	printf("Dimension of total Hilbert Space: %lld\n",
 	       mboProdSpaceDim(hTot));
 	printf("GFLOPs per operator application (estimated):  %lf\n",
-	       mboTensorOpFlops(H) / (double)(1 << 30));
+	       mboNumOpFlops(H_compiled) / (double)(1 << 30));
 	printf("Total GFLOPs (estimated):  %lf\n",
-	       (1 + numIter) * mboTensorOpFlops(H) / (double)(1 << 30));
+	       (1 + numIter) * mboNumOpFlops(H_compiled) / (double)(1 << 30));
 
 	mboVecCreate(mboProdSpaceDim(hTot), &x);
 	mboVecCreate(mboProdSpaceDim(hTot), &y);
@@ -120,10 +123,11 @@ int main()
 	tmp.im = 0.0;
 	mboVecGetViewR(x, &xarr);
 	mboVecGetViewR(y, &yarr);
-	mboTensorOpMatVec(tmp, H, xarr, tmp, yarr, 0, mboProdSpaceDim(hTot));
+	mboNumOpMatVec(tmp, H_compiled, xarr, tmp, yarr, 0,
+		       mboProdSpaceDim(hTot));
 	for (i = 0; i < numIter; ++i) {
-		mboTensorOpMatVec(tmp, H, xarr, tmp, yarr, 0,
-				  mboProdSpaceDim(hTot));
+		mboNumOpMatVec(tmp, H_compiled, xarr, tmp, yarr, 0,
+			       mboProdSpaceDim(hTot));
 	}
 	mboVecReleaseView(x, &xarr);
 	mboVecReleaseView(y, &yarr);
@@ -150,6 +154,7 @@ int main()
 	mboTensorOpDestroy(&H);
 	mboVecDestroy(&x);
 	mboVecDestroy(&y);
+  mboNumOpDestroy(&H_compiled);
 
 	return 0;
 }

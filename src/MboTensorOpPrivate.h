@@ -16,21 +16,27 @@ for more details.
 You should have received a copy of the GNU General Public License along
 with mbo.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef MBO_H
-#define MBO_H
+#ifndef MBO_TENSOR_OP_PRIVATE_H
+#define MBO_TENSOR_OP_PRIVATE_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#include <MboIndices.h>
-#include <MboAmplitude.h>
-#include <MboElemOp.h>
-#include <MboProdSpace.h>
 #include <MboTensorOp.h>
-#include <MboNumOp.h>
 
-#ifdef __cplusplus
-}
+/**
+   Data structure for tensor product operators.
+   */
+struct MboTensorOp_t
+{
+	/* Product space on which the operator is defined. */
+	MboProdSpace space;
+	/* Number of terms (SimpleTOp's) making up the operator */
+	int numTerms;
+	/* Array of terms in sum */
+	struct SimpleTOp *sum;
+};
+
+
+int mboTensorOpGetNumTerms(MboTensorOp op);
+struct SimpleTOp* mboTensorOpGetSimpleTOps(MboTensorOp op);
+
 #endif
-#endif
+

@@ -6,8 +6,10 @@ include_directories(
 
 set(MBO_SRCS
   MboElemOp.c
+  MboNumOp.c
   MboProdSpace.c
   MboTensorOp.c
+  MboTensorOpPrivate.c
   MboVec.c
   Embedding.c
   SimpleTOp.c

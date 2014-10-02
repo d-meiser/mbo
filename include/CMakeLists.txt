@@ -4,6 +4,7 @@ set(QUO_HEADERS
     MboElemOp.h
     MboErrors.h
     MboNonZeroEntry.h
+    MboNumOp.h
     MboProdSpace.h
     MboTensorOp.h
     MboVec.h

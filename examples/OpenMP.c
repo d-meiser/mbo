@@ -43,10 +43,11 @@ static MboProdSpace buildSpace(int n)
 	return hTot;
 }
 
-static MboTensorOp buildJx(MboProdSpace h)
+static MboNumOp buildJx(MboProdSpace h)
 {
 	MboElemOp sp, sm;
 	MboTensorOp Jx;
+  MboNumOp Jx_compiled;
 	struct MboAmplitude pointFive;
 	int i;
 
@@ -61,12 +62,14 @@ static MboTensorOp buildJx(MboProdSpace h)
 	}
 	mboElemOpDestroy(&sp);
 	mboElemOpDestroy(&sm);
-	return Jx;
+  Jx_compiled = mboNumOpCompile(Jx);
+  mboTensorOpDestroy(&Jx);
+	return Jx_compiled;
 }
 
 int main()
 {
-	MboTensorOp Jx;
+	MboNumOp Jx;
 	MboProdSpace hTot;
 	struct MboAmplitude one, zero, *x, *y, *yomp;
 	int i;
@@ -92,7 +95,7 @@ int main()
 
 	tstart = clock();
 	for (i = 0; i < numIters; ++i) {
-		mboTensorOpMatVec(one, Jx, x, zero, y, 0,
+		mboNumOpMatVec(one, Jx, x, zero, y, 0,
 				  mboProdSpaceDim(hTot));
 	}
 	tend = clock();
@@ -107,7 +110,7 @@ int main()
 	if (numChunks * chunkSize < mboProdSpaceDim(hTot)) ++numChunks;
 	for (i = 0; i < numIters; ++i) {
 		for (chunk = 0; chunk < numChunks; ++chunk) {
-			mboTensorOpMatVec(one, Jx, x, zero, yomp,
+			mboNumOpMatVec(one, Jx, x, zero, yomp,
 					  chunk * chunkSize,
 					  (chunk + 1) * chunkSize);
 		}
@@ -132,6 +135,6 @@ int main()
 	free(x);
 	free(y);
 	free(yomp);
-	mboTensorOpDestroy(&Jx);
+	mboNumOpDestroy(&Jx);
 	mboProdSpaceDestroy(&hTot);
 }

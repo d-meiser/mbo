@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <MboTensorOp.h>
+#include <MboNumOp.h>
 #include <MboProdSpace.h>
 #include <MboAmplitude.h>
 #include <MboVec.h>
@@ -7,7 +8,7 @@
 class TOpBuilder {
   public:
     virtual ~TOpBuilder() {}
-    virtual MboTensorOp build() const = 0;
+    virtual MboNumOp build() const = 0;
     virtual TOpBuilder* copy() const = 0;
 };
 
@@ -15,12 +16,14 @@ class TOpBuilder {
 
 class Null : public TOpBuilder {
  public:
-  virtual MboTensorOp build() const {
+  virtual MboNumOp build() const {
     MboProdSpace h = mboProdSpaceCreate(2);
     MboTensorOp a;
     mboTensorOpNull(h, &a);
     mboProdSpaceDestroy(&h);
-    return a;
+    MboNumOp ac = mboNumOpCompile(a);
+    mboTensorOpDestroy(&a);
+    return ac;
   }
   Null* copy() const {
     return new Null(*this);
@@ -29,12 +32,14 @@ class Null : public TOpBuilder {
 
 class Identity : public TOpBuilder {
  public:
-  virtual MboTensorOp build() const {
+  virtual MboNumOp build() const {
     MboProdSpace h = mboProdSpaceCreate(2);
     MboTensorOp a;
     mboTensorOpIdentity(h, &a);
     mboProdSpaceDestroy(&h);
-    return a;
+    MboNumOp ac = mboNumOpCompile(a);
+    mboTensorOpDestroy(&a);
+    return ac;
   }
   Identity* copy() const {
     return new Identity(*this);
@@ -43,7 +48,7 @@ class Identity : public TOpBuilder {
 
 class SigmaPlus : public TOpBuilder {
  public:
-  virtual MboTensorOp build() const {
+  virtual MboNumOp build() const {
     MboProdSpace h = mboProdSpaceCreate(2);
     MboTensorOp a;
     mboTensorOpNull(h, &a);
@@ -51,7 +56,9 @@ class SigmaPlus : public TOpBuilder {
     mboTensorOpAddTo(sp, 0, a);
     mboElemOpDestroy(&sp);
     mboProdSpaceDestroy(&h);
-    return a;
+    MboNumOp ac = mboNumOpCompile(a);
+    mboTensorOpDestroy(&a);
+    return ac;
   }
   SigmaPlus* copy() const {
     return new SigmaPlus(*this);
@@ -60,7 +67,7 @@ class SigmaPlus : public TOpBuilder {
 
 class SigmaMinus : public TOpBuilder {
  public:
-  virtual MboTensorOp build() const {
+  virtual MboNumOp build() const {
     MboProdSpace h = mboProdSpaceCreate(2);
     MboTensorOp a;
     mboTensorOpNull(h, &a);
@@ -68,7 +75,9 @@ class SigmaMinus : public TOpBuilder {
     mboTensorOpAddTo(sp, 0, a);
     mboElemOpDestroy(&sp);
     mboProdSpaceDestroy(&h);
-    return a;
+    MboNumOp ac = mboNumOpCompile(a);
+    mboTensorOpDestroy(&a);
+    return ac;
   }
   SigmaMinus* copy() const {
     return new SigmaMinus(*this);
@@ -77,7 +86,7 @@ class SigmaMinus : public TOpBuilder {
 
 class SigmaZ : public TOpBuilder {
  public:
-  virtual MboTensorOp build() const {
+  virtual MboNumOp build() const {
     MboProdSpace h = mboProdSpaceCreate(2);
     MboTensorOp a;
     mboTensorOpNull(h, &a);
@@ -85,7 +94,9 @@ class SigmaZ : public TOpBuilder {
     mboTensorOpAddTo(sp, 0, a);
     mboElemOpDestroy(&sp);
     mboProdSpaceDestroy(&h);
-    return a;
+    MboNumOp ac = mboNumOpCompile(a);
+    mboTensorOpDestroy(&a);
+    return ac;
   }
   SigmaZ* copy() const {
     return new SigmaZ(*this);
@@ -94,7 +105,7 @@ class SigmaZ : public TOpBuilder {
 
 class AnnihilationOp : public TOpBuilder {
  public:
-  virtual MboTensorOp build() const {
+  virtual MboNumOp build() const {
     MboProdSpace h = mboProdSpaceCreate(4);
     MboTensorOp a;
     mboTensorOpNull(h, &a);
@@ -102,7 +113,9 @@ class AnnihilationOp : public TOpBuilder {
     mboTensorOpAddTo(sp, 0, a);
     mboElemOpDestroy(&sp);
     mboProdSpaceDestroy(&h);
-    return a;
+    MboNumOp ac = mboNumOpCompile(a);
+    mboTensorOpDestroy(&a);
+    return ac;
   }
   AnnihilationOp* copy() const {
     return new AnnihilationOp(*this);
@@ -111,7 +124,7 @@ class AnnihilationOp : public TOpBuilder {
 
 class CreationOp : public TOpBuilder {
  public:
-  virtual MboTensorOp build() const {
+  virtual MboNumOp build() const {
     MboProdSpace h = mboProdSpaceCreate(3);
     MboTensorOp a;
     mboTensorOpNull(h, &a);
@@ -119,7 +132,9 @@ class CreationOp : public TOpBuilder {
     mboTensorOpAddTo(sp, 0, a);
     mboElemOpDestroy(&sp);
     mboProdSpaceDestroy(&h);
-    return a;
+    MboNumOp ac = mboNumOpCompile(a);
+    mboTensorOpDestroy(&a);
+    return ac;
   }
   CreationOp* copy() const {
     return new CreationOp(*this);
@@ -128,7 +143,7 @@ class CreationOp : public TOpBuilder {
 
 class NumOp : public TOpBuilder {
  public:
-  virtual MboTensorOp build() const {
+  virtual MboNumOp build() const {
     MboProdSpace h = mboProdSpaceCreate(2);
     MboTensorOp a;
     mboTensorOpNull(h, &a);
@@ -136,7 +151,9 @@ class NumOp : public TOpBuilder {
     mboTensorOpAddTo(sp, 0, a);
     mboElemOpDestroy(&sp);
     mboProdSpaceDestroy(&h);
-    return a;
+    MboNumOp ac = mboNumOpCompile(a);
+    mboTensorOpDestroy(&a);
+    return ac;
   }
   NumOp* copy() const {
     return new NumOp(*this);
@@ -145,7 +162,7 @@ class NumOp : public TOpBuilder {
 
 class SigmaPEnd : public TOpBuilder {
  public:
-  virtual MboTensorOp build() const {
+  virtual MboNumOp build() const {
     MboProdSpace h = mboProdSpaceCreate(2);
     mboProdSpaceMul(h, &h);
     MboTensorOp a;
@@ -154,7 +171,9 @@ class SigmaPEnd : public TOpBuilder {
     mboTensorOpAddTo(sp, 1, a);
     mboElemOpDestroy(&sp);
     mboProdSpaceDestroy(&h);
-    return a;
+    MboNumOp ac = mboNumOpCompile(a);
+    mboTensorOpDestroy(&a);
+    return ac;
   }
   SigmaPEnd* copy() const {
     return new SigmaPEnd(*this);
@@ -163,7 +182,7 @@ class SigmaPEnd : public TOpBuilder {
 
 class SigmaZEnd : public TOpBuilder {
  public:
-  virtual MboTensorOp build() const {
+  virtual MboNumOp build() const {
     MboProdSpace h = mboProdSpaceCreate(2);
     mboProdSpaceMul(h, &h);
     MboTensorOp a;
@@ -172,7 +191,9 @@ class SigmaZEnd : public TOpBuilder {
     mboTensorOpAddTo(sp, 1, a);
     mboElemOpDestroy(&sp);
     mboProdSpaceDestroy(&h);
-    return a;
+    MboNumOp ac = mboNumOpCompile(a);
+    mboTensorOpDestroy(&a);
+    return ac;
   }
   SigmaZEnd* copy() const {
     return new SigmaZEnd(*this);
@@ -181,7 +202,7 @@ class SigmaZEnd : public TOpBuilder {
 
 class SigmaZBegin : public TOpBuilder {
  public:
-  virtual MboTensorOp build() const {
+  virtual MboNumOp build() const {
     MboProdSpace h = mboProdSpaceCreate(2);
     mboProdSpaceMul(h, &h);
     MboTensorOp a;
@@ -190,7 +211,9 @@ class SigmaZBegin : public TOpBuilder {
     mboTensorOpAddTo(sp, 0, a);
     mboElemOpDestroy(&sp);
     mboProdSpaceDestroy(&h);
-    return a;
+    MboNumOp ac = mboNumOpCompile(a);
+    mboTensorOpDestroy(&a);
+    return ac;
   }
   SigmaZBegin* copy() const {
     return new SigmaZBegin(*this);
@@ -199,7 +222,7 @@ class SigmaZBegin : public TOpBuilder {
 
 class SigmaZMiddle : public TOpBuilder {
  public:
-  virtual MboTensorOp build() const {
+  virtual MboNumOp build() const {
     MboProdSpace h = mboProdSpaceCreate(2);
     mboProdSpaceMul(h, &h);
     mboProdSpaceMul(h, &h);
@@ -209,7 +232,9 @@ class SigmaZMiddle : public TOpBuilder {
     mboTensorOpAddTo(sp, 2, a);
     mboElemOpDestroy(&sp);
     mboProdSpaceDestroy(&h);
-    return a;
+    MboNumOp ac = mboNumOpCompile(a);
+    mboTensorOpDestroy(&a);
+    return ac;
   }
   SigmaZMiddle* copy() const {
     return new SigmaZMiddle(*this);
@@ -231,25 +256,25 @@ class BuilderWrapper {
      return *this;
    }
    ~BuilderWrapper() { delete builder; }
-   MboTensorOp build() const { return builder->build(); }
+   MboNumOp build() const { return builder->build(); }
 
   private:
    BuilderWrapper();
    const TOpBuilder* builder;
 };
 
-class MboTensorOpDenseMatrix
+class MboNumOpDenseMatrix
     : public ::testing::TestWithParam<BuilderWrapper> {};
 
 // This function calculates the reference solution
-static void computeMatrix(MboTensorOp op, struct MboAmplitude* mat) {
+static void computeMatrix(MboNumOp op, struct MboAmplitude* mat) {
   struct MboAmplitude one;
   one.re = 1.0;
   one.im = 0.0;
   struct MboAmplitude zero;
   zero.re = 0.0;
   zero.im = 0.0;
-  MboGlobInd dim = mboProdSpaceDim(mboTensorOpGetSpace(op));
+  MboGlobInd dim = mboProdSpaceDim(mboNumOpGetSpace(op));
   MboVec x;
   mboVecCreate(dim, &x);
   MboVec y;
@@ -264,7 +289,7 @@ static void computeMatrix(MboTensorOp op, struct MboAmplitude* mat) {
       mboVecGetViewR(y, &yarr);
       struct MboAmplitude *resultarr;
       mboVecGetViewRW(result, &resultarr);
-      mboTensorOpMatVec(one, op, yarr, zero, resultarr, 0, dim);
+      mboNumOpMatVec(one, op, yarr, zero, resultarr, 0, dim);
       mboVecReleaseView(y, &yarr);
       mboVecReleaseView(result, &resultarr);
       mboVecDot(x, result, &mat[i * dim + j]);
@@ -276,11 +301,11 @@ static void computeMatrix(MboTensorOp op, struct MboAmplitude* mat) {
 }
 
 // The tests compare our results agains the reference solution
-TEST_P(MboTensorOpDenseMatrix, compAgainstNaive) {
-  MboTensorOp op = GetParam().build();
-  MboGlobInd dim = mboProdSpaceDim(mboTensorOpGetSpace(op));
+TEST_P(MboNumOpDenseMatrix, compAgainstNaive) {
+  MboNumOp op = GetParam().build();
+  MboGlobInd dim = mboProdSpaceDim(mboNumOpGetSpace(op));
   std::vector<struct MboAmplitude> mat(dim * dim);
-  mboTensorOpDenseMatrix(op, &mat[0]);
+  mboNumOpDenseMatrix(op, &mat[0]);
   std::vector<struct MboAmplitude> expected(dim * dim);
   computeMatrix(op, &expected[0]);
   for (MboGlobInd i = 0; i < dim; ++i) {
@@ -291,11 +316,11 @@ TEST_P(MboTensorOpDenseMatrix, compAgainstNaive) {
           << "Matrices differ in M(" << i << ", " << j << ").im";
     }
   }
-  mboTensorOpDestroy(&op);
+  mboNumOpDestroy(&op);
 }
 
 INSTANTIATE_TEST_CASE_P(
-    DenseMatrixTests, MboTensorOpDenseMatrix,
+    DenseMatrixTests, MboNumOpDenseMatrix,
     ::testing::Values(BuilderWrapper(Null()), BuilderWrapper(Identity()),
                       BuilderWrapper(SigmaPlus()), BuilderWrapper(SigmaMinus()),
                       BuilderWrapper(SigmaZ()),

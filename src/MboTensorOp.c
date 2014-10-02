@@ -20,6 +20,7 @@ with mbo.  If not, see <http://www.gnu.org/licenses/>.
 #include <string.h>
 
 #include <MboTensorOp.h>
+#include <MboTensorOpPrivate.h>
 #include <MboIndices.h>
 #include <MboAmplitude.h>
 #include <MboNonZeroEntry.h>
@@ -27,19 +28,6 @@ with mbo.  If not, see <http://www.gnu.org/licenses/>.
 #include <Embedding.h>
 #include <SimpleTOp.h>
 #include <Utilities.h>
-
-/**
-   Data structure for tensor product operators.
-   */
-struct MboTensorOp_t
-{
-	/* Product space on which the operator is defined. */
-	MboProdSpace space;
-	/* Number of terms (SimpleTOp's) making up the operator */
-	int numTerms;
-	/* Array of terms in sum */
-	struct SimpleTOp *sum;
-};
 
 void mboTensorOpNull(MboProdSpace h, MboTensorOp *op)
 {
@@ -211,46 +199,6 @@ MBO_STATUS mboTensorOpKron(int n, MboTensorOp *ops, MboTensorOp *c)
 	return MBO_SUCCESS;
 }
 
-MBO_STATUS mboTensorOpMatVec(struct MboAmplitude alpha, MboTensorOp a,
-			     struct MboAmplitude *x, struct MboAmplitude beta,
-			     struct MboAmplitude *y, MboGlobInd rmin,
-			     MboGlobInd rmax)
-{
-	int i;
-  MboGlobInd r;
-	MBO_STATUS err;
-	struct MboAmplitude tmp;
-
-  for (r = rmin; r < rmax; ++r) {
-    tmp.re = beta.re * y[r].re - beta.im * y[r].im;
-    tmp.im = beta.re * y[r].im + beta.im * y[r].re;
-    y[r].re = tmp.re;
-    y[r].im = tmp.im;
-  }
-
-	for (i = 0; i < a->numTerms; ++i) {
-		err = applySimpleTOp(a->space, alpha, a->sum + i, x, y, rmin, rmax);
-		if (err != MBO_SUCCESS) return err;
-	}
-	return MBO_SUCCESS;
-}
-
-double mboTensorOpFlops(MboTensorOp a)
-{
-	int i, numSpaces;
-	MboLocInd *dims;
-	double flops = 0;
-
-	dims = malloc(mboProdSpaceSize(a->space) * sizeof(*dims));
-	numSpaces = mboProdSpaceSize(a->space);
-	mboProdSpaceGetDims(a->space, numSpaces, dims);
-	for (i = 0; i < a->numTerms; ++i) {
-		flops += flopsSimpleTOp(numSpaces, dims, a->sum + i);
-	}
-	free(dims);
-	return flops;
-}
-
 int mboTensorOpCheck(MboTensorOp op)
 {
 	int i, errs = 0;
@@ -260,61 +208,6 @@ int mboTensorOpCheck(MboTensorOp op)
 		errs += checkSimpleTOp(op->sum + i);
 	}
 	return errs;
-}
-
-static void zeroArray(MboGlobInd n, struct MboAmplitude *array)
-{
-	MboGlobInd i;
-	for (i = 0; i < n; ++i) {
-		array[i].re = 0;
-		array[i].im = 0;
-	}
-}
-
-void mboTensorOpDenseMatrix(MboTensorOp a, struct MboAmplitude *mat)
-{
-	int i;
-	MboGlobInd dim;
-	dim = mboProdSpaceDim(a->space);
-
-	zeroArray(dim * dim, mat);
-	for (i = 0; i < a->numTerms; ++i) {
-		simpleTOpDenseMatrix(a->space, a->sum + i, mat);
-	}
-}
-
-void mboTensorOpRowOffsets(MboTensorOp op, MboGlobInd rmin, MboGlobInd rmax,
-			   int *i)
-{
-	int j, r;
-	for (r = 0; r < rmax - rmin; ++r) {
-		i[r] = 0;
-	}
-	for (j = 0; j < op->numTerms; ++j) {
-		simpleTOpGetNonZerosPerRow(op->space, op->sum + j, rmin, rmax,
-					   i + 1);
-	}
-	i[0] = 0;
-	for (j = 0; j < rmax - rmin; ++j) {
-		i[j + 1] += i[j];
-	}
-}
-
-void mboTensorOpSparseMatrix(MboTensorOp op, MboGlobInd rmin, MboGlobInd rmax,
-			     int *i, int *j, struct MboAmplitude *a)
-{
-	int *numInserted, r, s;
-
-	if (rmax <= rmin) return;
-	numInserted = malloc((rmax - rmin) * sizeof(*numInserted));
-	for (r = 0; r < rmax - rmin; ++r) {
-		numInserted[r] = 0;
-	}
-	for (s = 0; s < op->numTerms; ++s) {
-		simpleTOpSparseMatrix(op->space, op->sum + s, rmin, rmax, i, j,
-				a, numInserted);
-	}
-	free(numInserted);
 }
 
 void mboTensorOpDiagonal(MboTensorOp op, MboGlobInd rmin, MboGlobInd rmax,
