@@ -25,8 +25,12 @@ with mbo.  If not, see <http://www.gnu.org/licenses/>.
 #include <time.h>
 #include <math.h>
 #include "Mbo.h"
+#include <config.h>
+#ifdef HAVE_OPENMP
+#include <omp.h>
+#endif
 
-static const int numSpins = 13;
+static const int numSpins = 17;
 static const int numIters = 10;
 
 static MboProdSpace buildSpace(int n)
@@ -47,7 +51,7 @@ static MboNumOp buildJx(MboProdSpace h)
 {
 	MboElemOp sp, sm;
 	MboTensorOp Jx;
-  MboNumOp Jx_compiled;
+	MboNumOp Jx_compiled;
 	struct MboAmplitude pointFive;
 	int i;
 
@@ -62,8 +66,8 @@ static MboNumOp buildJx(MboProdSpace h)
 	}
 	mboElemOpDestroy(&sp);
 	mboElemOpDestroy(&sm);
-  Jx_compiled = mboNumOpCompile(Jx);
-  mboTensorOpDestroy(&Jx);
+	Jx_compiled = mboNumOpCompile(Jx);
+	mboTensorOpDestroy(&Jx);
 	return Jx_compiled;
 }
 
@@ -76,6 +80,7 @@ int main()
 	MboGlobInd n, chunk, chunkSize, numChunks;
 	clock_t tstart, tend;
 	double deltat, difference;
+	int numThreads;
 
 	hTot = buildSpace(numSpins);
 	Jx = buildJx(hTot);
@@ -102,13 +107,23 @@ int main()
 	deltat = (double)(tend - tstart) / (double)CLOCKS_PER_SEC;
 	printf("Serial: %2.3lf s\n", deltat);
 
-	tstart = clock();
-	chunkSize = 1024;
+#ifdef HAVE_OPENMP
+	numThreads = omp_get_max_threads();
+#else
+	numThreads = 1;
+	printf("here");
+#endif
+	printf("Using %d threads.\n", numThreads);
+	chunkSize = mboProdSpaceDim(hTot) / numThreads;
 	printf("Chunk Size: %lld\n", chunkSize);
 	numChunks = mboProdSpaceDim(hTot) / chunkSize;
 	printf("Number of Chunks: %lld\n", numChunks);
 	if (numChunks * chunkSize < mboProdSpaceDim(hTot)) ++numChunks;
+	tstart = clock();
 	for (i = 0; i < numIters; ++i) {
+#ifdef HAVE_OPENMP
+#pragma omp parallel for private(chunk)
+#endif
 		for (chunk = 0; chunk < numChunks; ++chunk) {
 			mboNumOpMatVec(one, Jx, x, zero, yomp,
 					  chunk * chunkSize,
@@ -116,7 +131,7 @@ int main()
 		}
 	}
 	tend = clock();
-	deltat = (double)(tend - tstart) / (double)CLOCKS_PER_SEC;
+	deltat = (double)(tend - tstart) / (double)CLOCKS_PER_SEC / numThreads;
 	printf("Parallel: %2.3lf s\n", deltat);
 
 	difference = 0;
@@ -125,6 +140,7 @@ int main()
 			      (yomp[n].im - y[n].im) * (yomp[n].im - y[n].im);
 	}
 	difference = sqrt(difference);
+
 	printf("Error: %lf\n", difference);
 
 	free(x);
