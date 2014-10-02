@@ -19,6 +19,17 @@ with mbo.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * @file MboNumOp.h
  * @brief Numerical operators.
+ *
+ * MboNumOp objects provide operators in a form suitable for numerical
+ * operations such as matrix-vector multiplies.  MboNumOp objects can be
+ * obtained from MboTensorOps by means of a compilation step with
+ * #mboNumOpCompile.
+ *
+ * @sa MboNumOp, mboNumOpCompile, MboTensorOp
+ *
+ * @defgroup mbo_numop MboNumOp
+ * @ingroup mbo_core
+ * @{
  * */
 
 #ifndef MBO_NUM_OP_H
@@ -31,15 +42,41 @@ extern "C" {
 #endif
 
 struct MboNumOp_t;
-/** Data type for numerical operators. */
+/** @brief Data type for numerical operators. 
+ *
+ * MboNumOp objects can be created from MboTensorOps using
+ * #mboNumOpCompile
+ *
+ * @sa mboNumOpCompile, MboTensorOp
+ * */
 typedef struct MboNumOp_t *MboNumOp;
 
 /**
  * @brief Build a numerical operator from a tensor operator.
+ *
+ * @param op Operator to compile.
+ * @return   The compiled operator.  The generated MboNumOp has to be
+ *           destroyed with #mboNumOpDestroy.
+ *
+ * @sa MboNumOp, MboTensorOp, mboNumOpDestroy
  * */
 MBO_EXPORT MboNumOp mboNumOpCompile(MboTensorOp op);
+
+/**
+ * @brief Deallocate all resources associated with a MboNumOp.
+ *
+ * @sa mboNumOpCompile, MboNumOp
+ * */
 MBO_EXPORT void mboNumOpDestroy(MboNumOp *op);
 
+/**
+ * @brief Returns a (non-owning) pointer to the space of an operator.
+ *
+ * @param op The operator.
+ * @return   The product space.
+ *
+ * @sa MboProdSpace, MboNumOp
+ * */
 MBO_EXPORT MboProdSpace mboNumOpGetSpace(MboNumOp op);
 
 /**
@@ -144,5 +181,5 @@ MBO_EXPORT void mboNumOpDeleteDiagonal(MboNumOp op);
 #ifdef __cplusplus
 }
 #endif
-
+/** @} */
 #endif
