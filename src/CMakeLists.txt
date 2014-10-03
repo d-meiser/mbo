@@ -13,6 +13,7 @@ set(MBO_SRCS
   MboVec.c
   Embedding.c
   SimpleTOp.c
+  SimpleTOpTraversal.c
   Utilities.c
   )
 

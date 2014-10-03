@@ -21,6 +21,10 @@ with mbo.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <MboIndices.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct Tile
 {
 	MboGlobInd rmin;
@@ -29,5 +33,11 @@ struct Tile
 	MboGlobInd cmax;
 };
 
+struct Tile tileIntersection(struct Tile t1, struct Tile t2);
+int tileIsEmpty(const struct Tile *tile);
+
+#ifdef __cplusplus
+}
+#endif
 #endif
 
