@@ -1,4 +1,4 @@
-#include <SimpleTOpTraversal.h>
+#include <Tile.h>
 
 
 struct Tile tileIntersection(struct Tile t1, struct Tile t2)

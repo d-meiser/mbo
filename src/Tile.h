@@ -16,8 +16,8 @@ for more details.
 You should have received a copy of the GNU General Public License along
 with mbo.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef SIMPLE_TOP_TRAVERSAL_H
-#define SIMPLE_TOP_TRAVERSAL_H
+#ifndef TILE_H
+#define TILE_H
 
 #include <MboIndices.h>
 

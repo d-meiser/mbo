@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <SimpleTOpTraversal.h>
+#include <Tile.h>
 
 TEST(Tile, SameTiles) {
   struct Tile t;
