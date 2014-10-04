@@ -35,6 +35,9 @@ struct Tile
 
 struct Tile tileIntersection(struct Tile t1, struct Tile t2);
 int tileIsEmpty(const struct Tile *tile);
+struct Tile tileDivide(struct Tile t1, struct Tile t2);
+MboGlobInd numTilesContained(struct Tile t1, struct Tile t2);
+void tileAdvance(MboGlobInd n, struct Tile *t);
 
 #ifdef __cplusplus
 }
