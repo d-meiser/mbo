@@ -30,8 +30,8 @@ with mbo.  If not, see <http://www.gnu.org/licenses/>.
 #include <omp.h>
 #endif
 
-static const int numSpins = 17;
-static const int numIters = 10;
+static const int numSpins = 8;
+static const int numIters = 1;
 
 static MboProdSpace buildSpace(int n)
 {
