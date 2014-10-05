@@ -77,31 +77,30 @@ int main()
 	MboProdSpace hTot;
 	struct MboAmplitude one, zero, *x, *y, *yomp;
 	int i;
-	MboGlobInd n, chunk, chunkSize, numChunks;
+	MboGlobInd n, chunk, chunkSize, numChunks, dim;
 	clock_t tstart, tend;
 	double deltat, difference;
 	int numThreads;
 
 	hTot = buildSpace(numSpins);
+  dim = mboProdSpaceDim(hTot);
 	Jx = buildJx(hTot);
 
 	one.re = 1.0;
 	one.im = 0.0;
 	zero.re = 0.0;
 	zero.im = 0.0;
-	x = malloc(mboProdSpaceDim(hTot) * sizeof(*x));
-	y = malloc(mboProdSpaceDim(hTot) * sizeof(*x));
-	yomp = malloc(mboProdSpaceDim(hTot) * sizeof(*x));
-	for (n = 0; n < mboProdSpaceDim(hTot); ++n) {
+	x = malloc(dim * sizeof(*x));
+	y = malloc(dim * sizeof(*x));
+	yomp = malloc(dim * sizeof(*x));
+	for (n = 0; n < dim; ++n) {
 		x[n].re = (double)rand() / RAND_MAX;
 		x[n].im = (double)rand() / RAND_MAX;
 	}
 
-
 	tstart = clock();
 	for (i = 0; i < numIters; ++i) {
-		mboNumOpMatVec(one, Jx, x, zero, y, 0,
-				  mboProdSpaceDim(hTot));
+		mboNumOpMatVec(one, Jx, x, zero, y, 0, dim);
 	}
 	tend = clock();
 	deltat = (double)(tend - tstart) / (double)CLOCKS_PER_SEC;
@@ -114,11 +113,11 @@ int main()
 	printf("here");
 #endif
 	printf("Using %d threads.\n", numThreads);
-	chunkSize = mboProdSpaceDim(hTot) / numThreads;
+	chunkSize = dim / numThreads;
 	printf("Chunk Size: %lld\n", chunkSize);
-	numChunks = mboProdSpaceDim(hTot) / chunkSize;
+	numChunks = dim / chunkSize;
 	printf("Number of Chunks: %lld\n", numChunks);
-	if (numChunks * chunkSize < mboProdSpaceDim(hTot)) ++numChunks;
+	if (numChunks * chunkSize < dim) ++numChunks;
 	tstart = clock();
 	for (i = 0; i < numIters; ++i) {
 #ifdef HAVE_OPENMP
@@ -135,7 +134,7 @@ int main()
 	printf("Parallel: %2.3lf s\n", deltat);
 
 	difference = 0;
-	for (n = 0; n < mboProdSpaceDim(hTot); ++n) {
+	for (n = 0; n < dim; ++n) {
 		difference += (yomp[n].re - y[n].re) * (yomp[n].re - y[n].re) +
 			      (yomp[n].im - y[n].im) * (yomp[n].im - y[n].im);
 	}
