@@ -10,6 +10,7 @@ set(TESTS
   test_Embedding
   test_MboElemOp
   test_MboNumOp
+  test_MboNumSubMatrix
   test_MboProdSpace
   test_MboTensorOp
   test_MboVec
