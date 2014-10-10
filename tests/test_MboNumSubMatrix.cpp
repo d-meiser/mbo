@@ -66,8 +66,72 @@ TEST_F(MboNumSubMatrixFixture, Create) {
 
 TEST_F(MboNumSubMatrixFixture, SetTile) {
   MboNumSubMatrix m = mboNumSubMatrixCreate(Jx, 10, 12, 13, 17);
-  ASSERT_NE((void*)0, m);
   mboNumSubMatrixSetTile(m, 12, 13, 20, 30);
   mboNumSubMatrixDestroy(&m);
 }
+
+TEST_F(MboNumSubMatrixFixture, MatVec) {
+  MboGlobInd dim = mboProdSpaceDim(h);
+  MboNumSubMatrix m = mboNumSubMatrixCreate(Jx, 0, dim, 0, dim);
+
+  std::vector<struct MboAmplitude> x(dim);
+  struct MboAmplitude one = {1, 0};
+  std::fill(x.begin(), x.end(), one);
+  std::vector<struct MboAmplitude> y(dim);
+  std::fill(y.begin(), y.end(), one);
+
+  struct MboAmplitude zero = {0, 0};
+  mboNumSubMatrixMatVec(one, m, &x[0], zero, &y[0]);
+  for (MboGlobInd i = 0; i < dim; ++i) {
+	  EXPECT_FLOAT_EQ(2.0, y[i].re) << "i == " << i;
+	  EXPECT_FLOAT_EQ(0.0, y[i].im) << "i == " << i;
+  }
+
+  mboNumSubMatrixDestroy(&m);
+}
+
+TEST_F(MboNumSubMatrixFixture, MatVecFirstRow) {
+  MboGlobInd dim = mboProdSpaceDim(h);
+  MboNumSubMatrix m = mboNumSubMatrixCreate(Jx, 0, 1, 0, dim);
+
+  std::vector<struct MboAmplitude> x(dim);
+  struct MboAmplitude one = {1, 0};
+  std::fill(x.begin(), x.end(), one);
+  std::vector<struct MboAmplitude> y(dim);
+  std::fill(y.begin(), y.end(), one);
+
+  struct MboAmplitude zero = {0, 0};
+  mboNumSubMatrixMatVec(one, m, &x[0], zero, &y[0]);
+  EXPECT_FLOAT_EQ(2.0, y[0].re) << "i == " << 0;
+  EXPECT_FLOAT_EQ(0.0, y[0].im) << "i == " << 0;
+  for (MboGlobInd i = 1; i < dim; ++i) {
+	  EXPECT_FLOAT_EQ(1.0, y[i].re) << "i == " << i;
+	  EXPECT_FLOAT_EQ(0.0, y[i].im) << "i == " << i;
+  }
+
+  mboNumSubMatrixDestroy(&m);
+}
+
+TEST_F(MboNumSubMatrixFixture, MatVecFirstColumn) {
+  MboGlobInd dim = mboProdSpaceDim(h);
+  MboNumSubMatrix m = mboNumSubMatrixCreate(Jx, 0, dim, 0, 1);
+
+  std::vector<struct MboAmplitude> x(dim);
+  struct MboAmplitude one = {1, 0};
+  std::fill(x.begin(), x.end(), one);
+  std::vector<struct MboAmplitude> y(dim);
+  std::fill(y.begin(), y.end(), one);
+
+  struct MboAmplitude zero = {0, 0};
+  mboNumSubMatrixMatVec(one, m, &x[0], zero, &y[0]);
+  double expectedRealParts[] = {0,   0.5, 0.5, 0, 0.5, 0, 0, 0,
+                                0.5, 0,   0,   0, 0,   0, 0, 0};
+  for (MboGlobInd i = 1; i < dim; ++i) {
+    EXPECT_FLOAT_EQ(expectedRealParts[i], y[i].re) << "i == " << i;
+    EXPECT_FLOAT_EQ(0, y[i].im) << "i == " << i;
+  }
+
+  mboNumSubMatrixDestroy(&m);
+}
+
 

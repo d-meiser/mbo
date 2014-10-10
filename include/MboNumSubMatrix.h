@@ -31,7 +31,8 @@ with mbo.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <MboExport.h>
 #include <MboIndices.h>
-typedef struct MboNumOp_t *MboNumOp;
+#include <MboAmplitude.h>
+#include <MboNumOp.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -70,6 +71,10 @@ MBO_EXPORT void mboNumSubMatrixDestroy(MboNumSubMatrix *m);
 MBO_EXPORT void mboNumSubMatrixSetTile(MboNumSubMatrix m, MboGlobInd rmin,
 				       MboGlobInd rmax, MboGlobInd cmin,
 				       MboGlobInd cmax);
+MBO_EXPORT MBO_STATUS
+    mboNumSubMatrixMatVec(struct MboAmplitude alpha, MboNumSubMatrix m,
+			  struct MboAmplitude *x, struct MboAmplitude beta,
+			  struct MboAmplitude *y);
 
 #ifdef __cplusplus
 }
