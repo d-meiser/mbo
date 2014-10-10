@@ -72,8 +72,8 @@ void sortEmbeddings(int numEmbeddings, struct Embedding *a);
 void applyEmbeddings(int i, int numSpaces, MboLocInd *dims,
 		     MboGlobInd blockSize, struct MboAmplitude alpha,
 		     int numFactors, struct Embedding *embeddings,
-		     struct MboAmplitude *x,
-		     struct MboAmplitude *y, struct Tile tile, const struct Tile *mask);
+		     struct MboAmplitude *x, struct MboAmplitude *y,
+		     struct Tile tile, const struct Tile *mask);
 
 void embeddingDenseMatrix(int i, int numSpaces, MboLocInd *dims,
 			  MboGlobInd blockSize, MboGlobInd dim,
