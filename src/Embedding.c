@@ -122,10 +122,10 @@ void applyEmbeddings(int i, int numSpaces, MboLocInd *dims,
 		     struct Tile tile, const struct Tile *mask)
 {
 	int nextI, e;
-	MboGlobInd blockSizeBefore, n, tileSize, offsetR, offsetC, numTiles;
+	MboGlobInd blockSizeBefore, n, numTiles;
 	struct MboNonZeroEntry *entries;
 	struct MboAmplitude tmp;
-	struct Tile baseTile, firstTile, maskedTile, quotient;
+	struct Tile myTile, quotient;
 
 	if (numFactors > 0) {
 		nextI = embeddings->i;
@@ -138,27 +138,26 @@ void applyEmbeddings(int i, int numSpaces, MboLocInd *dims,
 			tmp.im = alpha.re * entries[e].val.im +
 				 alpha.im * entries[e].val.re;
 
-			baseTile.rmin = entries[e].m * blockSizeAfter;
-			baseTile.rmax = baseTile.rmin + blockSizeAfter;
-			baseTile.cmin = entries[e].n * blockSizeAfter;
-			baseTile.cmax = baseTile.cmin + blockSizeAfter;
-			quotient = tileDivide(tile, baseTile);
+			myTile.rmin = entries[e].m * blockSizeAfter;
+			myTile.rmax = myTile.rmin + blockSizeAfter;
+			myTile.cmin = entries[e].n * blockSizeAfter;
+			myTile.cmax = myTile.cmin + blockSizeAfter;
+			quotient = tileDivide(tile, myTile);
 
-			firstTile = baseTile;
 			if (quotient.rmin > quotient.cmin) {
-				tileAdvance(quotient.rmin, &firstTile);
+				tileAdvance(quotient.rmin, &myTile);
 			} else {
-				tileAdvance(quotient.cmin, &firstTile);
+				tileAdvance(quotient.cmin, &myTile);
 			}
-			numTiles = numTilesContained(tile, baseTile);
+			numTiles = numTilesContained(tile, myTile);
 			for (n = 0; n < numTiles; ++n) {
 				applyEmbeddings(nextI + 1, numSpaces, dims,
 						blockSizeAfter, tmp,
 						numFactors - 1, embeddings + 1,
-						x, y, baseTile, mask);
-				tileAdvance(1, &baseTile);
-				x += baseTile.cmax - baseTile.cmin;
-				y += baseTile.rmax - baseTile.rmin;
+						x, y, myTile, mask);
+				tileAdvance(1, &myTile);
+				x += myTile.cmax - myTile.cmin;
+				y += myTile.rmax - myTile.rmin;
 			}
 		}
 	} else {
