@@ -94,7 +94,7 @@ TEST(Embedding, GatherAllEmbeddings) {
 class ApplyEmbedding : public ::testing::Test {
   public:
   MboLocInd dims[4];
-  MboGlobInd blockSize;
+  MboGlobInd dim;
   struct MboAmplitude alpha, expectedResult, *x, *y;
   struct Embedding *embeddings;
   MboElemOp sz, sp;
@@ -111,7 +111,7 @@ class ApplyEmbedding : public ::testing::Test {
     sp = mboSigmaPlus();
     memset(x, 0, sizeof(*x) * computeBlockSize(4, dims));
     memset(y, 0, sizeof(*y) * computeBlockSize(4, dims));
-    blockSize = computeBlockSize(3, dims + 1);
+    dim = computeBlockSize(4, dims);
   }
 
   void TearDown() {
@@ -124,10 +124,10 @@ class ApplyEmbedding : public ::testing::Test {
 
 TEST_F(ApplyEmbedding, Identity) {
   tile.rmin = 0;
-  tile.rmax = blockSize;
+  tile.rmax = dim;
   tile.cmin = 0;
-  tile.cmax = blockSize;
-  applyEmbeddings(0, 4, dims, blockSize, x[0], 0, 0, x, y, tile, &tile);
+  tile.cmax = dim;
+  applyEmbeddings(0, 4, dims, dim, x[0], 0, 0, x, y, tile, &tile);
   for (int i = 0; i < computeBlockSize(4, dims); ++i) {
     EXPECT_FLOAT_EQ(y[i].re, 0);
     EXPECT_FLOAT_EQ(y[i].im, 0);
@@ -144,9 +144,12 @@ TEST_F(ApplyEmbedding, SzLast) {
     x[i].re = 1.0;
     x[i].im = 0.0;
   }
-  applyEmbeddings(0, 4, dims, computeBlockSize(4, dims), alpha, 1, embeddings,
-                  x, y, tile, &tile);
-  for (int i = 0; i < computeBlockSize(4, dims); ++i) {
+  tile.rmin = 0;
+  tile.rmax = dim;
+  tile.cmin = 0;
+  tile.cmax = dim;
+  applyEmbeddings(0, 4, dims, dim, alpha, 1, embeddings, x, y, tile, &tile);
+  for (int i = 0; i < dim; ++i) {
     if (i & 1l) {
       expectedResult.re = alpha.re;
       expectedResult.im = alpha.im;
@@ -166,17 +169,20 @@ TEST_F(ApplyEmbedding, SzInterior) {
   embeddings[0].op = sz;
   alpha.re = 2.0;
   alpha.im = 3.0;
-  for (int i = 0; i < computeBlockSize(4, dims); ++i) {
+  for (int i = 0; i < dim; ++i) {
     x[i].re = 1.0;
     x[i].im = 0.0;
   }
-  for (int i = 0; i < computeBlockSize(4, dims); ++i) {
+  for (int i = 0; i < dim; ++i) {
     y[i].re = 0.0;
     y[i].im = 0.0;
   }
-  applyEmbeddings(0, 4, dims, computeBlockSize(4, dims), alpha, 1, embeddings,
-                  x, y, tile, &tile);
-  for (int i = 0; i < computeBlockSize(4, dims); ++i) {
+  tile.rmin = 0;
+  tile.rmax = dim;
+  tile.cmin = 0;
+  tile.cmax = dim;
+  applyEmbeddings(0, 4, dims, dim, alpha, 1, embeddings, x, y, tile, &tile);
+  for (int i = 0; i < dim; ++i) {
     switch ((i / computeBlockSize(2, dims + 2)) % dims[1]) {
       case 0:
         expectedResult.re = -alpha.re;
