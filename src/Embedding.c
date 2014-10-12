@@ -93,22 +93,39 @@ int findEmbedding(int i, int numEmbeddings, struct Embedding *emb)
 	return -1;
 }
 
+static MboGlobInd min(MboGlobInd a, MboGlobInd b)
+{
+	if (a < b) {
+		return a;
+	} else {
+		return b;
+	}
+}
+
+static MboGlobInd max(MboGlobInd a, MboGlobInd b)
+{
+	if (a > b) {
+		return a;
+	} else {
+		return b;
+	}
+}
+
 static void applyLeaf(struct MboAmplitude alpha, struct MboAmplitude *x,
 		      struct MboAmplitude *y, const struct Tile *tile,
 		      const struct Tile *mask)
 {
 	MboGlobInd drmin, dcmin, rmax, cmax, nMin, nMax, n;
 
-	drmin = (mask->rmin - tile->rmin > 0) ? mask->rmin - tile->rmin : 0;
-	dcmin = (mask->cmin - tile->cmin > 0) ? mask->cmin - tile->cmin : 0;
-	rmax = (mask->rmax < tile->rmax) ? mask->rmax : tile->rmax;
-	cmax = (mask->cmax < tile->cmax) ? mask->cmax : tile->cmax;
-	y += drmin;
-	x += dcmin;
-	nMin = drmin > dcmin ? drmin : dcmin;
-	nMax = (rmax - tile->rmin - drmin) < (cmax - tile->cmin - dcmin)
-		   ? rmax - tile->rmin - drmin
-		   : cmax - tile->cmin - dcmin;
+	drmin = max(mask->rmin - tile->rmin, 0);
+	dcmin = max(mask->cmin - tile->cmin, 0);
+	rmax = min(mask->rmax, tile->rmax);
+	cmax = min(mask->cmax, tile->cmax);
+	nMin = tile->rmin + max(drmin, dcmin);
+	nMax = nMin +
+	       min(rmax - (tile->rmin + drmin), cmax - (tile->cmin + dcmin));
+	x -= mask->cmin;
+	y -= mask->rmin;
 	for (n = nMin; n < nMax; ++n) {
 		y[n].re += alpha.re * x[n].re - alpha.im * x[n].im;
 		y[n].im += alpha.re * x[n].im + alpha.im * x[n].re;
@@ -125,39 +142,47 @@ void applyEmbeddings(int i, int numSpaces, MboLocInd *dims,
 	MboGlobInd blockSizeBefore, n, numTiles;
 	struct MboNonZeroEntry *entries;
 	struct MboAmplitude tmp;
-	struct Tile myTile, quotient;
+	struct Tile myTile, childTile, quotient;
 
 	if (numFactors > 0) {
 		nextI = embeddings->i;
 		blockSizeBefore = computeBlockSize(nextI - i, dims + i);
 		blockSizeAfter /= (blockSizeBefore * (MboGlobInd)dims[nextI]);
 		entries = mboElemOpGetEntries(embeddings->op);
+
+		myTile.rmin = 0;
+		myTile.rmax = blockSizeAfter * dims[nextI];
+		myTile.cmin = 0;
+		myTile.cmax = blockSizeAfter * dims[nextI];
+		quotient = tileDivide(tile, myTile);
+		if (quotient.rmin > quotient.cmin) {
+			tileAdvance(quotient.rmin, &myTile);
+		} else {
+			tileAdvance(quotient.cmin, &myTile);
+		}
+		numTiles = numTilesContained(tile, myTile);
 		for (e = 0; e < mboElemOpNumEntries(embeddings->op); ++e) {
 			tmp.re = alpha.re * entries[e].val.re -
 				 alpha.im * entries[e].val.im;
 			tmp.im = alpha.re * entries[e].val.im +
 				 alpha.im * entries[e].val.re;
 
-			myTile.rmin = entries[e].m * blockSizeAfter;
-			myTile.rmax = myTile.rmin + blockSizeAfter;
-			myTile.cmin = entries[e].n * blockSizeAfter;
-			myTile.cmax = myTile.cmin + blockSizeAfter;
-			quotient = tileDivide(tile, myTile);
+			childTile.rmin =
+			    myTile.rmin + entries[e].m * blockSizeAfter;
+			childTile.rmax = childTile.rmin + blockSizeAfter;
+			childTile.cmin =
+			    myTile.cmin + entries[e].n * blockSizeAfter;
+			childTile.cmax = childTile.cmin + blockSizeAfter;
 
-			if (quotient.rmin > quotient.cmin) {
-				tileAdvance(quotient.rmin, &myTile);
-			} else {
-				tileAdvance(quotient.cmin, &myTile);
-			}
-			numTiles = numTilesContained(tile, myTile);
 			for (n = 0; n < numTiles; ++n) {
 				applyEmbeddings(nextI + 1, numSpaces, dims,
 						blockSizeAfter, tmp,
 						numFactors - 1, embeddings + 1,
-						x, y, myTile, mask);
-				tileAdvance(1, &myTile);
-				x += myTile.cmax - myTile.cmin;
-				y += myTile.rmax - myTile.rmin;
+						x, y, childTile, mask);
+				childTile.rmin += myTile.rmax - myTile.rmin;
+				childTile.rmax += myTile.rmax - myTile.rmin;
+				childTile.cmin += myTile.cmax - myTile.cmin;
+				childTile.cmax += myTile.cmax - myTile.cmin;
 			}
 		}
 	} else {
