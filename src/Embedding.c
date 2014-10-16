@@ -150,17 +150,17 @@ void applyEmbeddings(int i, int numSpaces, MboLocInd *dims,
 		blockSizeAfter /= (blockSizeBefore * (MboGlobInd)dims[nextI]);
 		entries = mboElemOpGetEntries(embeddings->op);
 
-		myTile.rmin = 0;
-		myTile.rmax = blockSizeAfter * dims[nextI];
-		myTile.cmin = 0;
-		myTile.cmax = blockSizeAfter * dims[nextI];
-		quotient = tileDivide(tile, myTile);
+		myTile.rmin = tile.rmin;
+		myTile.rmax = myTile.rmin + blockSizeAfter * dims[nextI];
+		myTile.cmin = tile.cmin;
+		myTile.cmax = myTile.cmin + blockSizeAfter * dims[nextI];
+		quotient = tileDivide(*mask, myTile);
 		if (quotient.rmin > quotient.cmin) {
 			tileAdvance(quotient.rmin, &myTile);
 		} else {
 			tileAdvance(quotient.cmin, &myTile);
 		}
-		numTiles = numTilesContained(tile, myTile);
+		numTiles = numTilesContained(*mask, myTile);
 		for (e = 0; e < mboElemOpNumEntries(embeddings->op); ++e) {
 			tmp.re = alpha.re * entries[e].val.re -
 				 alpha.im * entries[e].val.im;
@@ -186,7 +186,7 @@ void applyEmbeddings(int i, int numSpaces, MboLocInd *dims,
 			}
 		}
 	} else {
-		applyLeaf(alpha,x, y, &tile, mask);
+		applyLeaf(alpha, x, y, &tile, mask);
 	}
 }
 

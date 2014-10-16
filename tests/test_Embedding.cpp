@@ -350,7 +350,7 @@ TEST(Embedding, ApplyEmbeddingsRowRange) {
 
 TEST(Embedding, ApplyEmbeddingsRmaxOutOfRange) {
   MboLocInd dims[] = {2, 3};
-  struct Tile tile;
+  struct Tile tile, fullTile;
 
   struct MboAmplitude tmp;
   tmp.re = 1;
@@ -371,8 +371,12 @@ TEST(Embedding, ApplyEmbeddingsRmaxOutOfRange) {
   tile.rmax = 7;
   tile.cmin = 0;
   tile.cmax = computeBlockSize(2, dims);
+  fullTile.rmin = 0;
+  fullTile.rmax = computeBlockSize(2, dims);
+  fullTile.cmin = 0;
+  fullTile.cmax = computeBlockSize(2, dims);
   applyEmbeddings(0, 2, dims, computeBlockSize(2, dims), alpha,
-      1, &embeddings[0], &x[0], &y[0] + 4, tile, &tile);
+      1, &embeddings[0], &x[0], &y[0] + 4, fullTile, &tile);
   EXPECT_FLOAT_EQ(alpha.re, y[4].re) << " i == " << 4;
   EXPECT_FLOAT_EQ(alpha.im, y[4].im) << " i == " << 4;
   EXPECT_FLOAT_EQ(alpha.re, y[5].re) << " i == " << 5;
