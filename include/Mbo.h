@@ -29,6 +29,7 @@ extern "C" {
 #include <MboProdSpace.h>
 #include <MboTensorOp.h>
 #include <MboNumOp.h>
+#include <MboNumSubMatrix.h>
 
 #ifdef __cplusplus
 }
