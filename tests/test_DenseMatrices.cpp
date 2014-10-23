@@ -5,6 +5,8 @@
 #include <MboAmplitude.h>
 #include <MboVec.h>
 
+#include <iostream>
+
 class TOpBuilder {
   public:
     virtual ~TOpBuilder() {}
@@ -300,6 +302,19 @@ static void computeMatrix(MboNumOp op, struct MboAmplitude* mat) {
   mboVecDestroy(&result);
 }
 
+static void printMatrix(struct MboAmplitude* mat, MboGlobInd dim,
+                        const char* name) {
+  std::cout << name << std::endl;
+  std::cout << std::setprecision(1) << std::fixed;
+  for (MboGlobInd i = 0; i < dim; ++i) {
+    for (MboGlobInd j = 0; j < dim; ++j) {
+      std::cout << mat[i * dim + j].re << " " << mat[i * dim + j].im
+                << "  ";
+    }
+    std::cout << "\n";
+  }
+}
+
 // The tests compare our results agains the reference solution
 TEST_P(MboNumOpDenseMatrix, compAgainstNaive) {
   MboNumOp op = GetParam().build();
@@ -316,6 +331,8 @@ TEST_P(MboNumOpDenseMatrix, compAgainstNaive) {
           << "Matrices differ in M(" << i << ", " << j << ").im";
     }
   }
+  printMatrix(&expected[0], dim, "Expected matrix:");
+  printMatrix(&mat[0], dim, "Actual matrix:");
   mboNumOpDestroy(&op);
 }
 

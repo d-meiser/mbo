@@ -36,6 +36,7 @@ with mbo.  If not, see <http://www.gnu.org/licenses/>.
 #define MBO_NUM_OP_H
 
 #include <MboExport.h>
+#include <MboTensorOp.h>
 
 #ifdef __cplusplus
 extern "C" {

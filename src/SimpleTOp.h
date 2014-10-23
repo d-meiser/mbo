@@ -24,6 +24,7 @@ with mbo.  If not, see <http://www.gnu.org/licenses/>.
 #include <MboProdSpace.h>
 #include <MboErrors.h>
 #include <Embedding.h>
+#include <Tile.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -50,8 +51,7 @@ void scaleSimpleTOp(struct MboAmplitude *alpha, MboProdSpace h,
 int checkSimpleTOp(struct SimpleTOp *sa);
 MBO_STATUS applySimpleTOp(MboProdSpace h, struct MboAmplitude alpha,
 			  struct SimpleTOp *a, struct MboAmplitude *x,
-			  struct MboAmplitude *y, MboGlobInd rmin,
-			  MboGlobInd rmax);
+			  struct MboAmplitude *y, const struct Tile *mask);
 double flopsSimpleTOp(int numSpaces, MboLocInd *dims, struct SimpleTOp *op);
 
 void simpleTOpDenseMatrix(MboProdSpace h, struct SimpleTOp *simpleOp,

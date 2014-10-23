@@ -16,22 +16,16 @@ for more details.
 You should have received a copy of the GNU General Public License along
 with mbo.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef MBO_H
-#define MBO_H
+#ifndef MBO_NUM_OP_PRIVATE_H
+#define MBO_NUM_OP_PRIVATE_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#include <MboIndices.h>
-#include <MboAmplitude.h>
-#include <MboElemOp.h>
-#include <MboProdSpace.h>
-#include <MboTensorOp.h>
 #include <MboNumOp.h>
-#include <MboNumSubMatrix.h>
 
-#ifdef __cplusplus
-}
-#endif
+struct MboNumOp_t
+{
+	MboProdSpace space;
+	int numTerms;
+	struct SimpleTOp *sum;
+};
+
 #endif

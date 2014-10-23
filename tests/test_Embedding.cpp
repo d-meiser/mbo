@@ -91,29 +91,50 @@ TEST(Embedding, GatherAllEmbeddings) {
   free(embeddings);
 }
 
-TEST(Embedding, ApplyEmbeddings) {
-  MboLocInd dims[] = {2, 3, 5, 2};
-  MboGlobInd blockSize;
+class ApplyEmbedding : public ::testing::Test {
+  public:
+  MboLocInd dims[4];
+  MboGlobInd dim;
   struct MboAmplitude alpha, expectedResult, *x, *y;
   struct Embedding *embeddings;
   MboElemOp sz, sp;
+  struct Tile tile;
 
-  x = (struct MboAmplitude *)malloc(computeBlockSize(4, dims) * sizeof(*x));
-  y = (struct MboAmplitude *)malloc(computeBlockSize(4, dims) * sizeof(*y));
-  sz = mboSigmaZ();
-  sp = mboSigmaPlus();
+  void SetUp() {
+    dims[0] = 2;
+    dims[1] = 3;
+    dims[2] = 5;
+    dims[3] = 2;
+    x = (struct MboAmplitude *)malloc(computeBlockSize(4, dims) * sizeof(*x));
+    y = (struct MboAmplitude *)malloc(computeBlockSize(4, dims) * sizeof(*y));
+    sz = mboSigmaZ();
+    sp = mboSigmaPlus();
+    memset(x, 0, sizeof(*x) * computeBlockSize(4, dims));
+    memset(y, 0, sizeof(*y) * computeBlockSize(4, dims));
+    dim = computeBlockSize(4, dims);
+  }
 
-  memset(x, 0, sizeof(*x) * computeBlockSize(4, dims));
-  memset(y, 0, sizeof(*y) * computeBlockSize(4, dims));
+  void TearDown() {
+    mboElemOpDestroy(&sz);
+    mboElemOpDestroy(&sp);
+    free(x);
+    free(y);
+  }
+};
 
-  blockSize = computeBlockSize(3, dims + 1);
-  applyEmbeddings(0, 4, dims, blockSize, x[0], 0, 0, x, y, 0,
-                  computeBlockSize(4, dims), 0, 0);
+TEST_F(ApplyEmbedding, Identity) {
+  tile.rmin = 0;
+  tile.rmax = dim;
+  tile.cmin = 0;
+  tile.cmax = dim;
+  applyEmbeddings(0, 4, dims, dim, x[0], 0, 0, x, y, tile, &tile);
   for (int i = 0; i < computeBlockSize(4, dims); ++i) {
     EXPECT_FLOAT_EQ(y[i].re, 0);
     EXPECT_FLOAT_EQ(y[i].im, 0);
   }
+}
 
+TEST_F(ApplyEmbedding, SzLast) {
   embeddings = (struct Embedding *)malloc(sizeof(*embeddings));
   embeddings[0].i = 3;
   embeddings[0].op = sz;
@@ -123,9 +144,12 @@ TEST(Embedding, ApplyEmbeddings) {
     x[i].re = 1.0;
     x[i].im = 0.0;
   }
-  applyEmbeddings(0, 4, dims, computeBlockSize(4, dims), alpha, 1, embeddings,
-                  x, y, 0, computeBlockSize(4, dims), 0, 0);
-  for (int i = 0; i < computeBlockSize(4, dims); ++i) {
+  tile.rmin = 0;
+  tile.rmax = dim;
+  tile.cmin = 0;
+  tile.cmax = dim;
+  applyEmbeddings(0, 4, dims, dim, alpha, 1, embeddings, x, y, tile, &tile);
+  for (int i = 0; i < dim; ++i) {
     if (i & 1l) {
       expectedResult.re = alpha.re;
       expectedResult.im = alpha.im;
@@ -133,27 +157,32 @@ TEST(Embedding, ApplyEmbeddings) {
       expectedResult.re = -alpha.re;
       expectedResult.im = -alpha.im;
     }
-    EXPECT_FLOAT_EQ(y[i].re, expectedResult.re);
-    EXPECT_FLOAT_EQ(y[i].im, expectedResult.im);
+    EXPECT_FLOAT_EQ(expectedResult.re, y[i].re) << " i == " << i;
+    EXPECT_FLOAT_EQ(expectedResult.im, y[i].im) << " i == " << i;
   }
   free(embeddings);
+}
 
+TEST_F(ApplyEmbedding, SzInterior) {
   embeddings = (struct Embedding *)malloc(sizeof(*embeddings));
   embeddings[0].i = 1;
   embeddings[0].op = sz;
   alpha.re = 2.0;
   alpha.im = 3.0;
-  for (int i = 0; i < computeBlockSize(4, dims); ++i) {
+  for (int i = 0; i < dim; ++i) {
     x[i].re = 1.0;
     x[i].im = 0.0;
   }
-  for (int i = 0; i < computeBlockSize(4, dims); ++i) {
+  for (int i = 0; i < dim; ++i) {
     y[i].re = 0.0;
     y[i].im = 0.0;
   }
-  applyEmbeddings(0, 4, dims, computeBlockSize(4, dims), alpha, 1, embeddings,
-                  x, y, 0, computeBlockSize(4, dims), 0, 0);
-  for (int i = 0; i < computeBlockSize(4, dims); ++i) {
+  tile.rmin = 0;
+  tile.rmax = dim;
+  tile.cmin = 0;
+  tile.cmax = dim;
+  applyEmbeddings(0, 4, dims, dim, alpha, 1, embeddings, x, y, tile, &tile);
+  for (int i = 0; i < dim; ++i) {
     switch ((i / computeBlockSize(2, dims + 2)) % dims[1]) {
       case 0:
         expectedResult.re = -alpha.re;
@@ -171,7 +200,9 @@ TEST(Embedding, ApplyEmbeddings) {
     EXPECT_FLOAT_EQ(y[i].im, expectedResult.im);
   }
   free(embeddings);
+}
 
+TEST_F(ApplyEmbedding, TwoFactors) {
   embeddings = (struct Embedding *)malloc(2 * sizeof(*embeddings));
   embeddings[0].i = 0;
   embeddings[0].op = sz;
@@ -188,10 +219,10 @@ TEST(Embedding, ApplyEmbeddings) {
     y[i].im = 0.0;
   }
   applyEmbeddings(0, 4, dims, computeBlockSize(4, dims), alpha, 2, embeddings,
-                  x, y, 0, computeBlockSize(4, dims), 0, 0);
+                  x, y, tile, &tile);
   /* Make sure that dim of first space is 2.  Otherwise the expected
    * results are not calculated correctly. */
-  EXPECT_EQ(dims[0], 2);
+  ASSERT_EQ(dims[0], 2);
   for (int i = 0; i < computeBlockSize(4, dims); ++i) {
     if ((i / computeBlockSize(1, dims + 3)) % dims[2] == 1) {
       if ((i / computeBlockSize(3, dims + 1)) % dims[0]) {
@@ -210,12 +241,6 @@ TEST(Embedding, ApplyEmbeddings) {
     EXPECT_FLOAT_EQ(y[i].im, expectedResult.im);
   }
   free(embeddings);
-
-  mboElemOpDestroy(&sz);
-  mboElemOpDestroy(&sp);
-
-  free(x);
-  free(y);
 }
 
 TEST(Embedding, SortEmbeddings) {
@@ -287,6 +312,7 @@ TEST(Embedding, SortEmbeddings) {
 
 TEST(Embedding, ApplyEmbeddingsRowRange) {
   MboLocInd dims[] = {2, 3};
+  struct Tile tile;
   
   struct MboAmplitude tmp;
   tmp.re = 1;
@@ -303,8 +329,12 @@ TEST(Embedding, ApplyEmbeddingsRowRange) {
   embeddings[0].i = 0;
   embeddings[0].op = sz;
   struct MboAmplitude alpha = {2.0, 3.0};
+  tile.rmin = 0;
+  tile.rmax = 3;
+  tile.cmin = 0;
+  tile.cmax = computeBlockSize(2, dims);
   applyEmbeddings(0, 2, dims, computeBlockSize(2, dims), alpha,
-      1, &embeddings[0], &x[0], &y[0], 0, 3, 0, 0);
+      1, &embeddings[0], &x[0], &y[0], tile, &tile);
   EXPECT_FLOAT_EQ(-alpha.re, y[0].re) << " i == " << 0;
   EXPECT_FLOAT_EQ(-alpha.im, y[0].im) << " i == " << 0;
   EXPECT_FLOAT_EQ(-alpha.re, y[1].re) << " i == " << 1;
@@ -320,7 +350,8 @@ TEST(Embedding, ApplyEmbeddingsRowRange) {
 
 TEST(Embedding, ApplyEmbeddingsRmaxOutOfRange) {
   MboLocInd dims[] = {2, 3};
-  
+  struct Tile tile, fullTile;
+
   struct MboAmplitude tmp;
   tmp.re = 1;
   tmp.im = 0;
@@ -336,8 +367,16 @@ TEST(Embedding, ApplyEmbeddingsRmaxOutOfRange) {
   embeddings[0].i = 0;
   embeddings[0].op = sz;
   struct MboAmplitude alpha = {2.0, 3.0};
+  tile.rmin = 4;
+  tile.rmax = 7;
+  tile.cmin = 0;
+  tile.cmax = computeBlockSize(2, dims);
+  fullTile.rmin = 0;
+  fullTile.rmax = computeBlockSize(2, dims);
+  fullTile.cmin = 0;
+  fullTile.cmax = computeBlockSize(2, dims);
   applyEmbeddings(0, 2, dims, computeBlockSize(2, dims), alpha,
-      1, &embeddings[0], &x[0], &y[0], 4, 7, 0, 0);
+      1, &embeddings[0], &x[0], &y[0] + 4, fullTile, &tile);
   EXPECT_FLOAT_EQ(alpha.re, y[4].re) << " i == " << 4;
   EXPECT_FLOAT_EQ(alpha.im, y[4].im) << " i == " << 4;
   EXPECT_FLOAT_EQ(alpha.re, y[5].re) << " i == " << 5;

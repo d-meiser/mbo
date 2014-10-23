@@ -62,6 +62,13 @@ TEST(Tile, NumTilesContained) {
   EXPECT_EQ(5, numTiles);
 }
 
+TEST(Tile, NumTilesContainedSubset) {
+  struct Tile t1 = {0, 3, 0, 6};
+  struct Tile t2 = {0, 6, 0, 6};
+  MboGlobInd numTiles = numTilesContained(t1, t2);
+  EXPECT_EQ(1, numTiles);
+}
+
 TEST(Tile, Advance) {
   struct Tile t = {0, 2, 2, 3};
   tileAdvance(3, &t);

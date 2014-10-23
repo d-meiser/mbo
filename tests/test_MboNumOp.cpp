@@ -173,8 +173,8 @@ TEST(MboTensorOp, MatVec) {
       expectedResult.re += a.re;
       expectedResult.im += a.im;
     }
-    EXPECT_FLOAT_EQ(y[i].re, expectedResult.re);
-    EXPECT_FLOAT_EQ(y[i].im, expectedResult.im);
+    EXPECT_FLOAT_EQ(y[i].re, expectedResult.re) << "i == " << i;
+    EXPECT_FLOAT_EQ(y[i].im, expectedResult.im) << "i == " << i;
   }
   free(dims);
   mboTensorOpDestroy(&C);

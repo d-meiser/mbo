@@ -31,6 +31,12 @@ MboGlobInd numTilesContained(struct Tile t1, struct Tile t2)
   struct Tile quotient = tileDivide(t1, t2);
   MboGlobInd numRows = quotient.rmax - quotient.rmin;
   MboGlobInd numCols = quotient.cmax - quotient.cmin;
+  if (numRows * (t2.rmax - t2.rmin) < t1.rmax - t1.rmin) {
+    ++numRows;
+  }
+  if (numCols * (t2.cmax - t2.cmin) < t1.cmax - t1.cmin) {
+    ++numCols;
+  }
   return (numRows < numCols) ? numRows : numCols;
 }
 

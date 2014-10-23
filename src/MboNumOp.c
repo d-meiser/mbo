@@ -20,14 +20,8 @@ with mbo.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 #include <MboTensorOpPrivate.h>
 #include <SimpleTOp.h>
-#include <MboNumOp.h>
-
-struct MboNumOp_t
-{
-	MboProdSpace space;
-	int numTerms;
-	struct SimpleTOp *sum;
-};
+#include <MboNumOpPrivate.h>
+#include <MboNumSubMatrix.h>
 
 MboNumOp mboNumOpCompile(MboTensorOp op)
 {
@@ -125,24 +119,13 @@ MBO_STATUS mboNumOpMatVec(struct MboAmplitude alpha, MboNumOp a,
 			  struct MboAmplitude *y, MboGlobInd rmin,
 			  MboGlobInd rmax)
 {
-	int i;
-	MboGlobInd r;
+	MboNumSubMatrix mat;
 	MBO_STATUS err;
-	struct MboAmplitude tmp;
 
-	for (r = rmin; r < rmax; ++r) {
-		tmp.re = beta.re * y[r].re - beta.im * y[r].im;
-		tmp.im = beta.re * y[r].im + beta.im * y[r].re;
-		y[r].re = tmp.re;
-		y[r].im = tmp.im;
-	}
-
-	for (i = 0; i < a->numTerms; ++i) {
-		err = applySimpleTOp(a->space, alpha, a->sum + i, x, y, rmin,
-				     rmax);
-		if (err != MBO_SUCCESS) return err;
-	}
-	return MBO_SUCCESS;
+	mat = mboNumSubMatrixCreate(a, rmin, rmax, 0, rmax);
+	err = mboNumSubMatrixMatVec(alpha, mat, x, beta, y);
+	mboNumSubMatrixDestroy(&mat);
+	return err;
 }
 
 double mboNumOpFlops(MboNumOp a)

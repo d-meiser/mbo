@@ -22,6 +22,7 @@ with mbo.  If not, see <http://www.gnu.org/licenses/>.
 #include <MboElemOp.h>
 #include <MboAmplitude.h>
 #include <Utilities.h>
+#include <Tile.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -71,10 +72,8 @@ void sortEmbeddings(int numEmbeddings, struct Embedding *a);
 void applyEmbeddings(int i, int numSpaces, MboLocInd *dims,
 		     MboGlobInd blockSize, struct MboAmplitude alpha,
 		     int numFactors, struct Embedding *embeddings,
-		     struct MboAmplitude *x,
-		     struct MboAmplitude *y, MboGlobInd rmin,
-		     MboGlobInd rmax, MboGlobInd offsetR,
-		     MboGlobInd offsetC);
+		     struct MboAmplitude *x, struct MboAmplitude *y,
+		     struct Tile tile, const struct Tile *mask);
 
 void embeddingDenseMatrix(int i, int numSpaces, MboLocInd *dims,
 			  MboGlobInd blockSize, MboGlobInd dim,

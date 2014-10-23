@@ -18,6 +18,7 @@ with mbo.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <Embedding.h>
 #include <stdlib.h>
+#include <assert.h>
 #include <Utilities.h>
 #include <MboNonZeroEntry.h>
 
@@ -92,51 +93,101 @@ int findEmbedding(int i, int numEmbeddings, struct Embedding *emb)
 	return -1;
 }
 
+static MboGlobInd min(MboGlobInd a, MboGlobInd b)
+{
+	if (a < b) {
+		return a;
+	} else {
+		return b;
+	}
+}
+
+static MboGlobInd max(MboGlobInd a, MboGlobInd b)
+{
+	if (a > b) {
+		return a;
+	} else {
+		return b;
+	}
+}
+
+static void applyLeaf(struct MboAmplitude alpha, struct MboAmplitude *x,
+		      struct MboAmplitude *y, const struct Tile *tile,
+		      const struct Tile *mask)
+{
+	MboGlobInd drmin, dcmin, rmax, cmax, nMin, nMax, n;
+
+	drmin = max(mask->rmin - tile->rmin, 0);
+	dcmin = max(mask->cmin - tile->cmin, 0);
+	rmax = min(mask->rmax, tile->rmax);
+	cmax = min(mask->cmax, tile->cmax);
+	nMin = tile->rmin + max(drmin, dcmin);
+	nMax = nMin +
+	       min(rmax - (tile->rmin + drmin), cmax - (tile->cmin + dcmin));
+	x += tile->cmin - tile->rmin;
+	x -= mask->cmin;
+	y -= mask->rmin;
+	for (n = nMin; n < nMax; ++n) {
+		y[n].re += alpha.re * x[n].re - alpha.im * x[n].im;
+		y[n].im += alpha.re * x[n].im + alpha.im * x[n].re;
+	}
+}
+
 void applyEmbeddings(int i, int numSpaces, MboLocInd *dims,
 		     MboGlobInd blockSizeAfter, struct MboAmplitude alpha,
 		     int numFactors, struct Embedding *embeddings,
 		     struct MboAmplitude *x, struct MboAmplitude *y,
-		     MboGlobInd rmin, MboGlobInd rmax, MboGlobInd offsetR,
-		     MboGlobInd offsetC)
+		     struct Tile tile, const struct Tile *mask)
 {
 	int nextI, e;
-	MboGlobInd blockSizeBefore, n, nStart, nEnd;
+	MboGlobInd blockSizeBefore, n, numTiles;
 	struct MboNonZeroEntry *entries;
 	struct MboAmplitude tmp;
+	struct Tile myTile, childTile, quotient;
 
 	if (numFactors > 0) {
 		nextI = embeddings->i;
 		blockSizeBefore = computeBlockSize(nextI - i, dims + i);
 		blockSizeAfter /= (blockSizeBefore * (MboGlobInd)dims[nextI]);
 		entries = mboElemOpGetEntries(embeddings->op);
-		for (n = 0; n < blockSizeBefore; ++n) {
-			for (e = 0; e < mboElemOpNumEntries(embeddings->op);
-			     ++e) {
-				tmp.re = alpha.re * entries[e].val.re -
-					 alpha.im * entries[e].val.im;
-				tmp.im = alpha.re * entries[e].val.im +
-					 alpha.im * entries[e].val.re;
-				applyEmbeddings(
-				    nextI + 1, numSpaces, dims, blockSizeAfter,
-				    tmp, numFactors - 1, embeddings + 1, x, y,
-				    rmin, rmax,
-				    offsetR + entries[e].m * blockSizeAfter,
-				    offsetC + entries[e].n * blockSizeAfter);
+
+		myTile.rmin = tile.rmin;
+		myTile.rmax = myTile.rmin + blockSizeAfter * dims[nextI];
+		myTile.cmin = tile.cmin;
+		myTile.cmax = myTile.cmin + blockSizeAfter * dims[nextI];
+		quotient = tileDivide(*mask, myTile);
+		if (quotient.rmin > quotient.cmin) {
+			tileAdvance(quotient.rmin, &myTile);
+		} else {
+			tileAdvance(quotient.cmin, &myTile);
+		}
+		numTiles = numTilesContained(*mask, myTile);
+		for (e = 0; e < mboElemOpNumEntries(embeddings->op); ++e) {
+			tmp.re = alpha.re * entries[e].val.re -
+				 alpha.im * entries[e].val.im;
+			tmp.im = alpha.re * entries[e].val.im +
+				 alpha.im * entries[e].val.re;
+
+			childTile.rmin =
+			    myTile.rmin + entries[e].m * blockSizeAfter;
+			childTile.rmax = childTile.rmin + blockSizeAfter;
+			childTile.cmin =
+			    myTile.cmin + entries[e].n * blockSizeAfter;
+			childTile.cmax = childTile.cmin + blockSizeAfter;
+
+			for (n = 0; n < numTiles; ++n) {
+				applyEmbeddings(nextI + 1, numSpaces, dims,
+						blockSizeAfter, tmp,
+						numFactors - 1, embeddings + 1,
+						x, y, childTile, mask);
+				childTile.rmin += myTile.rmax - myTile.rmin;
+				childTile.rmax += myTile.rmax - myTile.rmin;
+				childTile.cmin += myTile.cmax - myTile.cmin;
+				childTile.cmax += myTile.cmax - myTile.cmin;
 			}
-			offsetR += blockSizeAfter * (MboGlobInd)dims[nextI];
-			offsetC += blockSizeAfter * (MboGlobInd)dims[nextI];
 		}
 	} else {
-		nStart = offsetR - rmin;
-		if (nStart < 0) nStart = 0;
-		nEnd = offsetR + blockSizeAfter - rmin;
-		if (nEnd > rmax - rmin) nEnd = rmax - rmin;
-		x += rmin + offsetC - offsetR;
-    y += rmin;
-		for (n = nStart; n < nEnd; ++n) {
-			y[n].re += alpha.re * x[n].re - alpha.im * x[n].im;
-			y[n].im += alpha.re * x[n].im + alpha.im * x[n].re;
-		}
+		applyLeaf(alpha, x, y, &tile, mask);
 	}
 }
 

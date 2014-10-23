@@ -122,12 +122,12 @@ int checkSimpleTOp(struct SimpleTOp *sa)
 
 MBO_STATUS applySimpleTOp(MboProdSpace h, struct MboAmplitude alpha,
 			  struct SimpleTOp *a, struct MboAmplitude *x,
-			  struct MboAmplitude *y, MboGlobInd rmin,
-			  MboGlobInd rmax)
+			  struct MboAmplitude *y, const struct Tile *mask)
 {
 	int numSpaces;
 	MboLocInd *dims;
 	MboGlobInd blockSize;
+	struct Tile tile;
 
 	dims = malloc(mboProdSpaceSize(h) * sizeof(*dims));
 
@@ -135,8 +135,12 @@ MBO_STATUS applySimpleTOp(MboProdSpace h, struct MboAmplitude alpha,
 	blockSize = mboProdSpaceDim(h);
 	mboProdSpaceGetDims(h, mboProdSpaceSize(h), dims);
 
+	tile.rmin = 0;
+	tile.cmin = 0;
+	tile.rmax = blockSize;
+	tile.cmax = blockSize;
 	applyEmbeddings(0, numSpaces, dims, blockSize, alpha, a->numFactors,
-			a->embeddings, x, y, rmin, rmax, 0, 0);
+			a->embeddings, x, y, tile, mask);
 
 	free(dims);
 
