@@ -118,14 +118,19 @@ MBO_STATUS mboNumOpMatVec(struct MboAmplitude alpha, MboNumOp a,
 			  struct MboAmplitude *x, struct MboAmplitude beta,
 			  struct MboAmplitude *y)
 {
-	MboNumSubMatrix mat;
-	MBO_STATUS err;
-  MboGlobInd dim;
+	MBO_STATUS err = MBO_SUCCESS;
+  MboGlobInd r, dim;
+  struct MboAmplitude tmp;
+  int i;
 
   dim = mboProdSpaceDim(a->space);
-	mat = mboNumSubMatrixCreate(a, 0, dim, 0, dim);
-	err = mboNumSubMatrixMatVec(alpha, mat, x, beta, y);
-	mboNumSubMatrixDestroy(&mat);
+	for (r = 0; r < dim; ++r) {
+		tmp.re = beta.re * y[r].re - beta.im * y[r].im;
+		tmp.im = beta.re * y[r].im + beta.im * y[r].re;
+		y[r].re = tmp.re;
+		y[r].im = tmp.im;
+	}
+
 	return err;
 }
 
