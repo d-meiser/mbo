@@ -81,9 +81,10 @@ int main()
 	clock_t tstart, tend;
 	double deltat, difference;
 	int numThreads;
+	MboNumSubMatrix *chunks;
 
 	hTot = buildSpace(numSpins);
-  dim = mboProdSpaceDim(hTot);
+	dim = mboProdSpaceDim(hTot);
 	Jx = buildJx(hTot);
 
 	one.re = 1.0;
@@ -118,15 +119,19 @@ int main()
 	numChunks = dim / chunkSize;
 	printf("Number of Chunks: %lld\n", numChunks);
 	if (numChunks * chunkSize < dim) ++numChunks;
+	chunks = (MboNumSubMatrix*)malloc(numChunks * sizeof(*chunks));
+	for (chunk = 0; chunk < numChunks; ++chunk) {
+		chunks[chunk] = mboNumSubMatrixCreate(Jx, chunk * chunkSize,
+				(chunk + 1) * chunkSize, 0, dim);
+	}
 	tstart = clock();
 	for (i = 0; i < numIters; ++i) {
 #ifdef HAVE_OPENMP
 #pragma omp parallel for private(chunk)
 #endif
 		for (chunk = 0; chunk < numChunks; ++chunk) {
-			mboNumOpMatVec(one, Jx, x, zero, yomp,
-					  chunk * chunkSize,
-					  (chunk + 1) * chunkSize);
+			mboNumSubMatrixMatVec(one, chunks[chunk], x, zero,
+					      yomp + chunk * chunkSize);
 		}
 	}
 	tend = clock();
@@ -145,6 +150,10 @@ int main()
 	free(x);
 	free(y);
 	free(yomp);
+	for (chunk = 0; chunk < numChunks; ++chunk) {
+		mboNumSubMatrixDestroy(&chunks[chunk]);
+	}
+	free(chunks);
 	mboNumOpDestroy(&Jx);
 	mboProdSpaceDestroy(&hTot);
 
