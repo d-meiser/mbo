@@ -123,11 +123,9 @@ int main()
 	tmp.im = 0.0;
 	mboVecGetViewR(x, &xarr);
 	mboVecGetViewR(y, &yarr);
-	mboNumOpMatVec(tmp, H_compiled, xarr, tmp, yarr, 0,
-		       mboProdSpaceDim(hTot));
+	mboNumOpMatVec(tmp, H_compiled, xarr, tmp, yarr);
 	for (i = 0; i < numIter; ++i) {
-		mboNumOpMatVec(tmp, H_compiled, xarr, tmp, yarr, 0,
-			       mboProdSpaceDim(hTot));
+		mboNumOpMatVec(tmp, H_compiled, xarr, tmp, yarr);
 	}
 	mboVecReleaseView(x, &xarr);
 	mboVecReleaseView(y, &yarr);

@@ -116,13 +116,14 @@ void mboNumOpSparseMatrix(MboNumOp op, MboGlobInd rmin, MboGlobInd rmax, int *i,
 
 MBO_STATUS mboNumOpMatVec(struct MboAmplitude alpha, MboNumOp a,
 			  struct MboAmplitude *x, struct MboAmplitude beta,
-			  struct MboAmplitude *y, MboGlobInd rmin,
-			  MboGlobInd rmax)
+			  struct MboAmplitude *y)
 {
 	MboNumSubMatrix mat;
 	MBO_STATUS err;
+  MboGlobInd dim;
 
-	mat = mboNumSubMatrixCreate(a, rmin, rmax, 0, rmax);
+  dim = mboProdSpaceDim(a->space);
+	mat = mboNumSubMatrixCreate(a, 0, dim, 0, dim);
 	err = mboNumSubMatrixMatVec(alpha, mat, x, beta, y);
 	mboNumSubMatrixDestroy(&mat);
 	return err;

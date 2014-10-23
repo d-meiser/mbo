@@ -49,7 +49,7 @@ TEST(MboTensorOp, MatVec) {
   std::fill(y.begin(), y.end(), one);
   mboTensorOpIdentity(h2, &A);
   Ac = mboNumOpCompile(A);
-  err = mboNumOpMatVec(a, Ac, &x[0], b, &y[0], 0, mboProdSpaceDim(h2));
+  err = mboNumOpMatVec(a, Ac, &x[0], b, &y[0]);
   EXPECT_EQ(err, MBO_SUCCESS);
   for (i = 0; i < mboProdSpaceDim(h2); ++i) {
     EXPECT_FLOAT_EQ(y[i].re, 1.0);
@@ -73,7 +73,7 @@ TEST(MboTensorOp, MatVec) {
   result.im = a.im + b.re * b.im + b.im * b.re;
   mboTensorOpIdentity(h2, &A);
   Ac = mboNumOpCompile(A);
-  err = mboNumOpMatVec(a, Ac, &x[0], b, &y[0], 0, mboProdSpaceDim(h2));
+  err = mboNumOpMatVec(a, Ac, &x[0], b, &y[0]);
   EXPECT_EQ(err, MBO_SUCCESS);
   for (i = 0; i < mboProdSpaceDim(h2); ++i) {
     EXPECT_FLOAT_EQ(y[i].re, result.re);
@@ -97,7 +97,7 @@ TEST(MboTensorOp, MatVec) {
   b.re = 0.0;
   b.im = 0.0;
   Ac = mboNumOpCompile(A);
-  err = mboNumOpMatVec(one, Ac, &x[0], b, &y[0], 0, mboProdSpaceDim(h2));
+  err = mboNumOpMatVec(one, Ac, &x[0], b, &y[0]);
   EXPECT_EQ(err, MBO_SUCCESS);
   for (i = 0; i < mboProdSpaceDim(h2) / 2; ++i) {
     EXPECT_FLOAT_EQ(a.re, y[i].re);
@@ -126,7 +126,7 @@ TEST(MboTensorOp, MatVec) {
   b.re = 0.0;
   b.im = 0.0;
   Ac = mboNumOpCompile(A);
-  err = mboNumOpMatVec(one, Ac, &x[0], b, &y[0], 0, mboProdSpaceDim(h2));
+  err = mboNumOpMatVec(one, Ac, &x[0], b, &y[0]);
   EXPECT_EQ(err, MBO_SUCCESS);
   for (i = 0; i < mboProdSpaceDim(h2) / 2; ++i) {
     EXPECT_FLOAT_EQ(y[i].re, 2.0 * a.re);
@@ -161,7 +161,7 @@ TEST(MboTensorOp, MatVec) {
   mboTensorOpDestroy(&A);
   mboTensorOpDestroy(&B);
   MboNumOp Cc = mboNumOpCompile(C);
-  err = mboNumOpMatVec(one, Cc, &x[0], b, &y[0], 0, mboProdSpaceDim(h2));
+  err = mboNumOpMatVec(one, Cc, &x[0], b, &y[0]);
   EXPECT_EQ(err, MBO_SUCCESS);
   dims = (MboLocInd *)malloc(3 * sizeof(*dims));
   mboProdSpaceGetDims(h2, 3, dims);

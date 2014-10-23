@@ -85,8 +85,7 @@ MBO_EXPORT MboProdSpace mboNumOpGetSpace(MboNumOp op);
  * */
 MBO_EXPORT MBO_STATUS
 mboNumOpMatVec(struct MboAmplitude alpha, MboNumOp a, struct MboAmplitude *x,
-	       struct MboAmplitude beta, struct MboAmplitude *y,
-	       MboGlobInd rmin, MboGlobInd rmax);
+	       struct MboAmplitude beta, struct MboAmplitude *y);
 
 /**
  * @brief Returns an estimate for the number of floating point operations in a

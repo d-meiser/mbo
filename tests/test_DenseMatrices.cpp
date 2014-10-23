@@ -291,7 +291,7 @@ static void computeMatrix(MboNumOp op, struct MboAmplitude* mat) {
       mboVecGetViewR(y, &yarr);
       struct MboAmplitude *resultarr;
       mboVecGetViewRW(result, &resultarr);
-      mboNumOpMatVec(one, op, yarr, zero, resultarr, 0, dim);
+      mboNumOpMatVec(one, op, yarr, zero, resultarr);
       mboVecReleaseView(y, &yarr);
       mboVecReleaseView(result, &resultarr);
       mboVecDot(x, result, &mat[i * dim + j]);

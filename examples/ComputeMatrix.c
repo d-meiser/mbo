@@ -75,8 +75,7 @@ int main()
 			mboVecUnitVector(j, y);
 			mboVecGetViewR(y, &yarr);
 			mboVecGetViewRW(result, &resultarr);
-			mboNumOpMatVec(one, Jx_compiled, yarr, zero, resultarr, 0,
-					mboProdSpaceDim(hTot)); 
+			mboNumOpMatVec(one, Jx_compiled, yarr, zero, resultarr); 
 			mboVecReleaseView(y, &yarr);
 			mboVecReleaseView(result, &resultarr);
 			mboVecDot(x, result, &dotProduct);
@@ -91,8 +90,7 @@ int main()
 			mboVecUnitVector(j, y);
 			mboVecGetViewR(y, &yarr);
 			mboVecGetViewRW(result, &resultarr);
-			mboNumOpMatVec(one, Jx_compiled, yarr, zero, resultarr, 0,
-					mboProdSpaceDim(hTot)); 
+			mboNumOpMatVec(one, Jx_compiled, yarr, zero, resultarr); 
 			mboVecReleaseView(y, &yarr);
 			mboVecReleaseView(result, &resultarr);
 			mboVecDot(x, result, &dotProduct);

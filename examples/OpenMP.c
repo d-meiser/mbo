@@ -101,7 +101,7 @@ int main()
 
 	tstart = clock();
 	for (i = 0; i < numIters; ++i) {
-		mboNumOpMatVec(one, Jx, x, zero, y, 0, dim);
+		mboNumOpMatVec(one, Jx, x, zero, y);
 	}
 	tend = clock();
 	deltat = (double)(tend - tstart) / (double)CLOCKS_PER_SEC;
