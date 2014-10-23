@@ -127,7 +127,7 @@ TEST_F(ApplyEmbedding, Identity) {
   tile.rmax = dim;
   tile.cmin = 0;
   tile.cmax = dim;
-  applyEmbeddings(0, 4, dims, dim, x[0], 0, 0, x, y, tile, &tile);
+  applyEmbeddingsMask(0, 4, dims, dim, x[0], 0, 0, x, y, tile, &tile);
   for (int i = 0; i < computeBlockSize(4, dims); ++i) {
     EXPECT_FLOAT_EQ(y[i].re, 0);
     EXPECT_FLOAT_EQ(y[i].im, 0);
@@ -148,7 +148,7 @@ TEST_F(ApplyEmbedding, SzLast) {
   tile.rmax = dim;
   tile.cmin = 0;
   tile.cmax = dim;
-  applyEmbeddings(0, 4, dims, dim, alpha, 1, embeddings, x, y, tile, &tile);
+  applyEmbeddingsMask(0, 4, dims, dim, alpha, 1, embeddings, x, y, tile, &tile);
   for (int i = 0; i < dim; ++i) {
     if (i & 1l) {
       expectedResult.re = alpha.re;
@@ -181,7 +181,7 @@ TEST_F(ApplyEmbedding, SzInterior) {
   tile.rmax = dim;
   tile.cmin = 0;
   tile.cmax = dim;
-  applyEmbeddings(0, 4, dims, dim, alpha, 1, embeddings, x, y, tile, &tile);
+  applyEmbeddingsMask(0, 4, dims, dim, alpha, 1, embeddings, x, y, tile, &tile);
   for (int i = 0; i < dim; ++i) {
     switch ((i / computeBlockSize(2, dims + 2)) % dims[1]) {
       case 0:
@@ -218,7 +218,7 @@ TEST_F(ApplyEmbedding, TwoFactors) {
     y[i].re = 0.0;
     y[i].im = 0.0;
   }
-  applyEmbeddings(0, 4, dims, computeBlockSize(4, dims), alpha, 2, embeddings,
+  applyEmbeddingsMask(0, 4, dims, computeBlockSize(4, dims), alpha, 2, embeddings,
                   x, y, tile, &tile);
   /* Make sure that dim of first space is 2.  Otherwise the expected
    * results are not calculated correctly. */
@@ -333,7 +333,7 @@ TEST(Embedding, ApplyEmbeddingsRowRange) {
   tile.rmax = 3;
   tile.cmin = 0;
   tile.cmax = computeBlockSize(2, dims);
-  applyEmbeddings(0, 2, dims, computeBlockSize(2, dims), alpha,
+  applyEmbeddingsMask(0, 2, dims, computeBlockSize(2, dims), alpha,
       1, &embeddings[0], &x[0], &y[0], tile, &tile);
   EXPECT_FLOAT_EQ(-alpha.re, y[0].re) << " i == " << 0;
   EXPECT_FLOAT_EQ(-alpha.im, y[0].im) << " i == " << 0;
@@ -375,7 +375,7 @@ TEST(Embedding, ApplyEmbeddingsRmaxOutOfRange) {
   fullTile.rmax = computeBlockSize(2, dims);
   fullTile.cmin = 0;
   fullTile.cmax = computeBlockSize(2, dims);
-  applyEmbeddings(0, 2, dims, computeBlockSize(2, dims), alpha,
+  applyEmbeddingsMask(0, 2, dims, computeBlockSize(2, dims), alpha,
       1, &embeddings[0], &x[0], &y[0] + 4, fullTile, &tile);
   EXPECT_FLOAT_EQ(alpha.re, y[4].re) << " i == " << 4;
   EXPECT_FLOAT_EQ(alpha.im, y[4].im) << " i == " << 4;

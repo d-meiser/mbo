@@ -111,7 +111,7 @@ static MboGlobInd max(MboGlobInd a, MboGlobInd b)
 	}
 }
 
-static void applyLeaf(struct MboAmplitude alpha, struct MboAmplitude *x,
+static void applyLeafMask(struct MboAmplitude alpha, struct MboAmplitude *x,
 		      struct MboAmplitude *y, const struct Tile *tile,
 		      const struct Tile *mask)
 {
@@ -133,7 +133,7 @@ static void applyLeaf(struct MboAmplitude alpha, struct MboAmplitude *x,
 	}
 }
 
-void applyEmbeddings(int i, int numSpaces, MboLocInd *dims,
+void applyEmbeddingsMask(int i, int numSpaces, MboLocInd *dims,
 		     MboGlobInd blockSizeAfter, struct MboAmplitude alpha,
 		     int numFactors, struct Embedding *embeddings,
 		     struct MboAmplitude *x, struct MboAmplitude *y,
@@ -176,7 +176,7 @@ void applyEmbeddings(int i, int numSpaces, MboLocInd *dims,
 			childTile.cmax = childTile.cmin + blockSizeAfter;
 
 			for (n = 0; n < numTiles; ++n) {
-				applyEmbeddings(nextI + 1, numSpaces, dims,
+				applyEmbeddingsMask(nextI + 1, numSpaces, dims,
 						blockSizeAfter, tmp,
 						numFactors - 1, embeddings + 1,
 						x, y, childTile, mask);
@@ -187,7 +187,7 @@ void applyEmbeddings(int i, int numSpaces, MboLocInd *dims,
 			}
 		}
 	} else {
-		applyLeaf(alpha, x, y, &tile, mask);
+		applyLeafMask(alpha, x, y, &tile, mask);
 	}
 }
 

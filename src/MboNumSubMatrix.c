@@ -54,7 +54,7 @@ MBO_STATUS mboNumSubMatrixMatVec(struct MboAmplitude alpha, MboNumSubMatrix m,
 		y[r].im = tmp.im;
 	}
 	for (i = 0; i < m->op->numTerms; ++i) {
-		err = applySimpleTOp(m->op->space, alpha, m->op->sum + i, x, y,
+		err = applySimpleTOpMask(m->op->space, alpha, m->op->sum + i, x, y,
 				     &m->tile);
 		if (err != MBO_SUCCESS) return err;
 	}

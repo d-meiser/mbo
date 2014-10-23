@@ -69,7 +69,7 @@ void sortEmbeddings(int numEmbeddings, struct Embedding *a);
 
 /**
  * @brief Apply a product of embeddings to a vector */
-void applyEmbeddings(int i, int numSpaces, MboLocInd *dims,
+void applyEmbeddingsMask(int i, int numSpaces, MboLocInd *dims,
 		     MboGlobInd blockSize, struct MboAmplitude alpha,
 		     int numFactors, struct Embedding *embeddings,
 		     struct MboAmplitude *x, struct MboAmplitude *y,
