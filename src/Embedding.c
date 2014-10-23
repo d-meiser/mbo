@@ -124,6 +124,7 @@ static void applyLeaf(struct MboAmplitude alpha, struct MboAmplitude *x,
 	nMin = tile->rmin + max(drmin, dcmin);
 	nMax = nMin +
 	       min(rmax - (tile->rmin + drmin), cmax - (tile->cmin + dcmin));
+	x += tile->cmin - tile->rmin;
 	x -= mask->cmin;
 	y -= mask->rmin;
 	for (n = nMin; n < nMax; ++n) {
