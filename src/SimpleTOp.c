@@ -147,6 +147,28 @@ MBO_STATUS applySimpleTOpMask(MboProdSpace h, struct MboAmplitude alpha,
 	return MBO_SUCCESS;
 }
 
+MBO_STATUS applySimpleTOp(MboProdSpace h, struct MboAmplitude alpha,
+			  struct SimpleTOp *a, struct MboAmplitude *x,
+			  struct MboAmplitude *y)
+{
+	int numSpaces;
+	MboLocInd *dims;
+	MboGlobInd blockSize;
+
+	dims = malloc(mboProdSpaceSize(h) * sizeof(*dims));
+
+	numSpaces = mboProdSpaceSize(h);
+	blockSize = mboProdSpaceDim(h);
+	mboProdSpaceGetDims(h, mboProdSpaceSize(h), dims);
+
+	applyEmbeddings(0, numSpaces, dims, blockSize, alpha, a->numFactors,
+			a->embeddings, x, y);
+
+	free(dims);
+
+	return MBO_SUCCESS;
+}
+
 double flopsSimpleTOp(int numSpaces, MboLocInd *dims, struct SimpleTOp *a)
 {
 	int i, j;

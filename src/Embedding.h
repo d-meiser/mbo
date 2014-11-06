@@ -74,6 +74,10 @@ void applyEmbeddingsMask(int i, int numSpaces, MboLocInd *dims,
 		     int numFactors, struct Embedding *embeddings,
 		     struct MboAmplitude *x, struct MboAmplitude *y,
 		     struct Tile tile, const struct Tile *mask);
+void applyEmbeddings(int i, int numSpaces, MboLocInd *dims,
+		     MboGlobInd blockSize, struct MboAmplitude alpha,
+		     int numFactors, struct Embedding *embeddings,
+		     struct MboAmplitude *x, struct MboAmplitude *y);
 
 void embeddingDenseMatrix(int i, int numSpaces, MboLocInd *dims,
 			  MboGlobInd blockSize, MboGlobInd dim,

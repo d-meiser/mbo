@@ -119,16 +119,20 @@ MBO_STATUS mboNumOpMatVec(struct MboAmplitude alpha, MboNumOp a,
 			  struct MboAmplitude *y)
 {
 	MBO_STATUS err = MBO_SUCCESS;
-  MboGlobInd r, dim;
-  struct MboAmplitude tmp;
-  int i;
+	MboGlobInd r, dim;
+	struct MboAmplitude tmp;
+	int i;
 
-  dim = mboProdSpaceDim(a->space);
+	dim = mboProdSpaceDim(a->space);
 	for (r = 0; r < dim; ++r) {
 		tmp.re = beta.re * y[r].re - beta.im * y[r].im;
 		tmp.im = beta.re * y[r].im + beta.im * y[r].re;
 		y[r].re = tmp.re;
 		y[r].im = tmp.im;
+	}
+	for (i = 0; i < a->numTerms; ++i) {
+		err = applySimpleTOp(a->space, alpha, a->sum + i, x, y);
+		if (err != MBO_SUCCESS) return err;
 	}
 
 	return err;

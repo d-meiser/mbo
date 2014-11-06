@@ -52,6 +52,9 @@ int checkSimpleTOp(struct SimpleTOp *sa);
 MBO_STATUS applySimpleTOpMask(MboProdSpace h, struct MboAmplitude alpha,
 			  struct SimpleTOp *a, struct MboAmplitude *x,
 			  struct MboAmplitude *y, const struct Tile *mask);
+MBO_STATUS applySimpleTOp(MboProdSpace h, struct MboAmplitude alpha,
+			  struct SimpleTOp *a, struct MboAmplitude *x,
+			  struct MboAmplitude *y);
 double flopsSimpleTOp(int numSpaces, MboLocInd *dims, struct SimpleTOp *op);
 
 void simpleTOpDenseMatrix(MboProdSpace h, struct SimpleTOp *simpleOp,
