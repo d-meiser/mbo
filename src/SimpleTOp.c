@@ -120,7 +120,7 @@ int checkSimpleTOp(struct SimpleTOp *sa)
 	return errs;
 }
 
-MBO_STATUS applySimpleTOp(MboProdSpace h, struct MboAmplitude alpha,
+MBO_STATUS applySimpleTOpMask(MboProdSpace h, struct MboAmplitude alpha,
 			  struct SimpleTOp *a, struct MboAmplitude *x,
 			  struct MboAmplitude *y, const struct Tile *mask)
 {
@@ -139,8 +139,30 @@ MBO_STATUS applySimpleTOp(MboProdSpace h, struct MboAmplitude alpha,
 	tile.cmin = 0;
 	tile.rmax = blockSize;
 	tile.cmax = blockSize;
-	applyEmbeddings(0, numSpaces, dims, blockSize, alpha, a->numFactors,
+	applyEmbeddingsMask(0, numSpaces, dims, blockSize, alpha, a->numFactors,
 			a->embeddings, x, y, tile, mask);
+
+	free(dims);
+
+	return MBO_SUCCESS;
+}
+
+MBO_STATUS applySimpleTOp(MboProdSpace h, struct MboAmplitude alpha,
+			  struct SimpleTOp *a, struct MboAmplitude *x,
+			  struct MboAmplitude *y)
+{
+	int numSpaces;
+	MboLocInd *dims;
+	MboGlobInd blockSize;
+
+	dims = malloc(mboProdSpaceSize(h) * sizeof(*dims));
+
+	numSpaces = mboProdSpaceSize(h);
+	blockSize = mboProdSpaceDim(h);
+	mboProdSpaceGetDims(h, mboProdSpaceSize(h), dims);
+
+	applyEmbeddings(0, numSpaces, dims, blockSize, alpha, a->numFactors,
+			a->embeddings, x, y);
 
 	free(dims);
 

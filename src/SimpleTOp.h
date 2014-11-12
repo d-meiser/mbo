@@ -49,9 +49,12 @@ void copySimpleTOp(struct SimpleTOp *dest, struct SimpleTOp *src);
 void scaleSimpleTOp(struct MboAmplitude *alpha, MboProdSpace h,
 		    struct SimpleTOp *op);
 int checkSimpleTOp(struct SimpleTOp *sa);
-MBO_STATUS applySimpleTOp(MboProdSpace h, struct MboAmplitude alpha,
+MBO_STATUS applySimpleTOpMask(MboProdSpace h, struct MboAmplitude alpha,
 			  struct SimpleTOp *a, struct MboAmplitude *x,
 			  struct MboAmplitude *y, const struct Tile *mask);
+MBO_STATUS applySimpleTOp(MboProdSpace h, struct MboAmplitude alpha,
+			  struct SimpleTOp *a, struct MboAmplitude *x,
+			  struct MboAmplitude *y);
 double flopsSimpleTOp(int numSpaces, MboLocInd *dims, struct SimpleTOp *op);
 
 void simpleTOpDenseMatrix(MboProdSpace h, struct SimpleTOp *simpleOp,

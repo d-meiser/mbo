@@ -111,7 +111,7 @@ static MboGlobInd max(MboGlobInd a, MboGlobInd b)
 	}
 }
 
-static void applyLeaf(struct MboAmplitude alpha, struct MboAmplitude *x,
+static void applyLeafMask(struct MboAmplitude alpha, struct MboAmplitude *x,
 		      struct MboAmplitude *y, const struct Tile *tile,
 		      const struct Tile *mask)
 {
@@ -133,7 +133,17 @@ static void applyLeaf(struct MboAmplitude alpha, struct MboAmplitude *x,
 	}
 }
 
-void applyEmbeddings(int i, int numSpaces, MboLocInd *dims,
+static void applyLeaf(struct MboAmplitude alpha, struct MboAmplitude *x,
+		      struct MboAmplitude *y, MboGlobInd blockSize)
+{
+	MboGlobInd n;
+	for (n = 0; n < blockSize; ++n) {
+		y[n].re += alpha.re * x[n].re - alpha.im * x[n].im;
+		y[n].im += alpha.re * x[n].im + alpha.im * x[n].re;
+	}
+}
+
+void applyEmbeddingsMask(int i, int numSpaces, MboLocInd *dims,
 		     MboGlobInd blockSizeAfter, struct MboAmplitude alpha,
 		     int numFactors, struct Embedding *embeddings,
 		     struct MboAmplitude *x, struct MboAmplitude *y,
@@ -176,7 +186,7 @@ void applyEmbeddings(int i, int numSpaces, MboLocInd *dims,
 			childTile.cmax = childTile.cmin + blockSizeAfter;
 
 			for (n = 0; n < numTiles; ++n) {
-				applyEmbeddings(nextI + 1, numSpaces, dims,
+				applyEmbeddingsMask(nextI + 1, numSpaces, dims,
 						blockSizeAfter, tmp,
 						numFactors - 1, embeddings + 1,
 						x, y, childTile, mask);
@@ -187,7 +197,44 @@ void applyEmbeddings(int i, int numSpaces, MboLocInd *dims,
 			}
 		}
 	} else {
-		applyLeaf(alpha, x, y, &tile, mask);
+		applyLeafMask(alpha, x, y, &tile, mask);
+	}
+}
+
+void applyEmbeddings(int i, int numSpaces, MboLocInd *dims,
+		     MboGlobInd blockSizeAfter, struct MboAmplitude alpha,
+		     int numFactors, struct Embedding *embeddings,
+		     struct MboAmplitude *x, struct MboAmplitude *y)
+{
+	int nextI, e;
+	MboGlobInd blockSizeBefore, n;
+	struct MboNonZeroEntry *entries;
+	struct MboAmplitude tmp, *xtmp, *ytmp;
+
+	if (numFactors > 0) {
+		nextI = embeddings->i;
+		blockSizeBefore = computeBlockSize(nextI - i, dims + i);
+		blockSizeAfter /= (blockSizeBefore * (MboGlobInd)dims[nextI]);
+		entries = mboElemOpGetEntries(embeddings->op);
+
+		for (e = 0; e < mboElemOpNumEntries(embeddings->op); ++e) {
+			tmp.re = alpha.re * entries[e].val.re -
+				 alpha.im * entries[e].val.im;
+			tmp.im = alpha.re * entries[e].val.im +
+				 alpha.im * entries[e].val.re;
+			xtmp = x + entries[e].n * blockSizeAfter;
+			ytmp = y + entries[e].m * blockSizeAfter;
+			for (n = 0; n < blockSizeBefore; ++n) {
+				applyEmbeddings(nextI + 1, numSpaces, dims,
+						blockSizeAfter, tmp,
+						numFactors - 1, embeddings + 1,
+						xtmp, ytmp);
+				xtmp += blockSizeAfter * (MboGlobInd)dims[nextI];
+				ytmp += blockSizeAfter * (MboGlobInd)dims[nextI];
+			}
+		}
+	} else {
+		applyLeaf(alpha, x, y, blockSizeAfter);
 	}
 }
 
