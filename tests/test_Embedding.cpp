@@ -387,3 +387,114 @@ TEST(Embedding, ApplyEmbeddingsRmaxOutOfRange) {
   }
   mboElemOpDestroy(&sz);
 }
+
+struct ApplyLeafMask : public ::testing::Test {
+  struct Tile tile, mask;
+  struct MboAmplitude alpha;
+  std::vector<struct MboAmplitude> x;
+  std::vector<struct MboAmplitude> y;
+
+  void SetUp() {
+    alpha.re = 1.0;
+    alpha.im = 0.0;
+    tile.rmin = 0;
+    tile.cmin = 0;
+    tile.rmax = 0;
+    tile.cmax = 0;
+    mask.rmin = 0;
+    mask.cmin = 0;
+    mask.rmax = 0;
+    mask.cmax = 0;
+  }
+};
+
+TEST_F(ApplyLeafMask, Empty) {
+  y.resize(1);
+  y[0].re = 0;
+  y[0].im = 0;
+  applyLeafMask(alpha, &x[0], &y[0], &tile, &mask);
+  EXPECT_FLOAT_EQ(0, y[0].re);
+}
+
+TEST_F(ApplyLeafMask, TileEmpty) {
+  y.resize(1);
+  y[0].re = 0;
+  y[0].im = 0;
+  mask.rmax = 1;
+  mask.cmax = 1;
+  applyLeafMask(alpha, &x[0], &y[0], &tile, &mask);
+  EXPECT_FLOAT_EQ(0, y[0].re);
+}
+
+TEST_F(ApplyLeafMask, MaskEmpty) {
+  y.resize(1);
+  y[0].re = 0;
+  y[0].im = 0;
+  tile.rmax = 1;
+  tile.cmax = 1;
+  applyLeafMask(alpha, &x[0], &y[0], &tile, &mask);
+  EXPECT_FLOAT_EQ(0, y[0].re);
+}
+
+TEST_F(ApplyLeafMask, MaskAndTileEqual) {
+  y.resize(1);
+  y[0].re = 12.0;
+  y[0].im = 20.0;
+  x = y;
+  tile.rmax = 1;
+  tile.cmax = 1;
+  mask = tile;
+  applyLeafMask(alpha, &x[0], &y[0], &tile, &mask);
+  EXPECT_FLOAT_EQ(24.0, y[0].re);
+  EXPECT_FLOAT_EQ(40.0, y[0].im);
+}
+
+TEST_F(ApplyLeafMask, TileFullyInsideMask) {
+  y.resize(4);
+  struct MboAmplitude yIn;
+  yIn.re = 12.0;
+  yIn.im = 20.0;
+  std::fill(y.begin(), y.end(), yIn);
+  struct MboAmplitude xIn;
+  xIn.re = 2.0;
+  xIn.im = 5.0;
+  x.resize(3);
+  std::fill(x.begin(), x.end(), xIn);
+  tile.rmin = 1;
+  tile.cmin = 1;
+  tile.rmax = 2;
+  tile.cmax = 2;
+  mask.rmax = 4;
+  mask.cmax = 3;
+  applyLeafMask(alpha, &x[0], &y[0], &tile, &mask);
+  EXPECT_FLOAT_EQ(yIn.re, y[0].re);
+  EXPECT_FLOAT_EQ(yIn.im, y[0].im);
+  EXPECT_FLOAT_EQ(yIn.re + xIn.re, y[1].re);
+  EXPECT_FLOAT_EQ(yIn.im + xIn.im, y[1].im);
+  EXPECT_FLOAT_EQ(yIn.re, y[2].re);
+  EXPECT_FLOAT_EQ(yIn.im, y[2].im);
+  EXPECT_FLOAT_EQ(yIn.re, y[3].re);
+  EXPECT_FLOAT_EQ(yIn.im, y[3].im);
+}
+
+TEST_F(ApplyLeafMask, MaskFullyInsideTile) {
+  y.resize(1);
+  struct MboAmplitude yIn;
+  yIn.re = 12.0;
+  yIn.im = 20.0;
+  std::fill(y.begin(), y.end(), yIn);
+  struct MboAmplitude xIn;
+  xIn.re = 2.0;
+  xIn.im = 5.0;
+  x.resize(1);
+  std::fill(x.begin(), x.end(), xIn);
+  tile.rmax = 4;
+  tile.cmax = 5;
+  mask.rmin = 1;
+  mask.cmin = 0;
+  mask.rmax = 2;
+  mask.cmax = 3;
+  applyLeafMask(alpha, &x[0], &y[0], &tile, &mask);
+  EXPECT_FLOAT_EQ(yIn.re + xIn.re, y[0].re);
+  EXPECT_FLOAT_EQ(yIn.im + xIn.im, y[0].im);
+}
