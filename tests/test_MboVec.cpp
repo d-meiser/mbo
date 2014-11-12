@@ -443,3 +443,74 @@ TEST(MboVec, UnitVector) {
   mboVecReleaseView(x, &xarr);
   mboVecDestroy(&x);
 }
+
+TEST(MboVec, Swap) {
+  MboVec x;
+  mboVecCreate(2, &x);
+  MboVec y;
+  mboVecCreate(2, &y);
+
+  struct MboAmplitude *view;
+  mboVecGetViewRW(x, &view);
+  view[0].re = 12.0;
+  view[0].im = 20.0;
+  view[1].re = 1.0;
+  view[1].im = 33.0;
+  mboVecReleaseView(x, &view);
+
+  mboVecGetViewRW(y, &view);
+  view[0].re = 0;
+  view[0].im = 0;
+  view[1].re = 0;
+  view[1].im = 0;
+  mboVecReleaseView(y, &view);
+
+  MBO_STATUS err = mboVecSwap(x, y);
+  ASSERT_EQ(MBO_SUCCESS, err);
+
+  mboVecGetViewR(x, &view);
+  for (int i = 0; i < 4; ++i) {
+    EXPECT_FLOAT_EQ(0, ((double*)view)[i]);
+  }
+  mboVecReleaseView(x, &view);
+
+  mboVecGetViewR(y, &view);
+  EXPECT_FLOAT_EQ(12.0, view[0].re);
+  EXPECT_FLOAT_EQ(20.0, view[0].im);
+  EXPECT_FLOAT_EQ(1.0, view[1].re);
+  EXPECT_FLOAT_EQ(33.0, view[1].im);
+  mboVecReleaseView(y, &view);
+
+  mboVecDestroy(&x);
+  mboVecDestroy(&y);
+}
+
+TEST(MboVec, SwapDimensionMismatch) {
+  MboVec x;
+  mboVecCreate(2, &x);
+  MboVec y;
+  mboVecCreate(3, &y);
+
+  MBO_STATUS err = mboVecSwap(x, y);
+  EXPECT_EQ(MBO_DIMENSIONS_MISMATCH, err);
+
+  mboVecDestroy(&x);
+  mboVecDestroy(&y);
+}
+
+TEST(MboVec, SwapVectorInUse) {
+  MboVec x;
+  mboVecCreate(2, &x);
+  MboVec y;
+  mboVecCreate(2, &y);
+
+  struct MboAmplitude *arr;
+  mboVecGetViewR(x, &arr);
+  MBO_STATUS err = mboVecSwap(x, y);
+  EXPECT_EQ(MBO_VEC_IN_USE, err);
+  mboVecReleaseView(x, &arr);
+
+  mboVecDestroy(&x);
+  mboVecDestroy(&y);
+}
+
