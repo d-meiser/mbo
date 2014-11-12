@@ -111,25 +111,25 @@ static MboGlobInd max(MboGlobInd a, MboGlobInd b)
 	}
 }
 
-static void applyLeafMask(struct MboAmplitude alpha, struct MboAmplitude *x,
+void applyLeafMask(struct MboAmplitude alpha, struct MboAmplitude *x,
 		      struct MboAmplitude *y, const struct Tile *tile,
 		      const struct Tile *mask)
 {
-	MboGlobInd drmin, dcmin, rmax, cmax, nMin, nMax, n;
+	MboGlobInd drmin, dcmin, rMin, rMax, r;
+	struct Tile intersection = tileIntersection(*tile, *mask);
 
-	drmin = max(mask->rmin - tile->rmin, 0);
-	dcmin = max(mask->cmin - tile->cmin, 0);
-	rmax = min(mask->rmax, tile->rmax);
-	cmax = min(mask->cmax, tile->cmax);
-	nMin = tile->rmin + max(drmin, dcmin);
-	nMax = nMin +
-	       min(rmax - (tile->rmin + drmin), cmax - (tile->cmin + dcmin));
-	x += tile->cmin - tile->rmin;
-	x -= mask->cmin;
-	y -= mask->rmin;
-	for (n = nMin; n < nMax; ++n) {
-		y[n].re += alpha.re * x[n].re - alpha.im * x[n].im;
-		y[n].im += alpha.re * x[n].im + alpha.im * x[n].re;
+	rMin = tile->rmin + max(intersection.rmin - tile->rmin,
+				intersection.cmin - tile->cmin);
+	rMax = tile->rmin + min(intersection.rmax - tile->rmin,
+				intersection.cmax - tile->cmin);
+
+	drmin = intersection.rmin - tile->rmin;
+	dcmin = intersection.cmin - tile->cmin;
+	x -= dcmin;
+	y -= drmin;
+	for (r = rMin; r < rMax; ++r) {
+		y[r].re += alpha.re * x[r].re - alpha.im * x[r].im;
+		y[r].im += alpha.re * x[r].im + alpha.im * x[r].re;
 	}
 }
 
