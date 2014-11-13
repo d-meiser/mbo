@@ -78,6 +78,9 @@ void applyEmbeddings(int i, int numSpaces, MboLocInd *dims,
 		     MboGlobInd blockSize, struct MboAmplitude alpha,
 		     int numFactors, struct Embedding *embeddings,
 		     struct MboAmplitude *x, struct MboAmplitude *y);
+void applyLeafMask(struct MboAmplitude alpha, struct MboAmplitude *x,
+		      struct MboAmplitude *y, const struct Tile *tile,
+		      const struct Tile *mask);
 
 void embeddingDenseMatrix(int i, int numSpaces, MboLocInd *dims,
 			  MboGlobInd blockSize, MboGlobInd dim,

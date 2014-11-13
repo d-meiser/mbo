@@ -134,4 +134,43 @@ TEST_F(MboNumSubMatrixFixture, MatVecFirstColumn) {
   mboNumSubMatrixDestroy(&m);
 }
 
+TEST_F(MboNumSubMatrixFixture, MatVecTopLeftCorner) {
+  MboGlobInd dim = mboProdSpaceDim(h);
+  MboNumSubMatrix m = mboNumSubMatrixCreate(Jx, 0, 2, 0, 2);
 
+  std::vector<struct MboAmplitude> x(2);
+  struct MboAmplitude one = {1, 0};
+  std::fill(x.begin(), x.end(), one);
+  std::vector<struct MboAmplitude> y(2);
+  std::fill(y.begin(), y.end(), one);
+
+  struct MboAmplitude zero = {0, 0};
+  mboNumSubMatrixMatVec(one, m, &x[0], zero, &y[0]);
+  EXPECT_FLOAT_EQ(0.5, y[0].re);
+  EXPECT_FLOAT_EQ(0.0, y[0].im);
+  EXPECT_FLOAT_EQ(0.5, y[1].re);
+  EXPECT_FLOAT_EQ(0.0, y[1].im);
+
+  mboNumSubMatrixDestroy(&m);
+}
+
+TEST_F(MboNumSubMatrixFixture, MatVecTopRightCorner) {
+  MboGlobInd dim = mboProdSpaceDim(h);
+  std::cout << "dim == " << dim << std::endl;
+  MboNumSubMatrix m = mboNumSubMatrixCreate(Jx, 0, 2, 14, 16);
+
+  std::vector<struct MboAmplitude> x(2);
+  struct MboAmplitude one = {1, 0};
+  std::fill(x.begin(), x.end(), one);
+  std::vector<struct MboAmplitude> y(2);
+  std::fill(y.begin(), y.end(), one);
+
+  struct MboAmplitude zero = {0, 0};
+  mboNumSubMatrixMatVec(one, m, &x[0], zero, &y[0]);
+  EXPECT_FLOAT_EQ(0.0, y[0].re);
+  EXPECT_FLOAT_EQ(0.0, y[0].im);
+  EXPECT_FLOAT_EQ(0.0, y[1].re);
+  EXPECT_FLOAT_EQ(0.0, y[1].im);
+
+  mboNumSubMatrixDestroy(&m);
+}
