@@ -486,7 +486,7 @@ TEST_F(ApplyLeafMask, MaskFullyInsideTile) {
   struct MboAmplitude xIn;
   xIn.re = 2.0;
   xIn.im = 5.0;
-  x.resize(1);
+  x.resize(3);
   std::fill(x.begin(), x.end(), xIn);
   tile.rmax = 4;
   tile.cmax = 5;
@@ -497,4 +497,92 @@ TEST_F(ApplyLeafMask, MaskFullyInsideTile) {
   applyLeafMask(alpha, &x[0], &y[0], &tile, &mask);
   EXPECT_FLOAT_EQ(yIn.re + xIn.re, y[0].re);
   EXPECT_FLOAT_EQ(yIn.im + xIn.im, y[0].im);
+}
+
+TEST_F(ApplyLeafMask, MaskBeyondRowRange) {
+  y.resize(4);
+  struct MboAmplitude yIn;
+  yIn.re = 12.0;
+  yIn.im = 20.0;
+  std::fill(y.begin(), y.end(), yIn);
+  struct MboAmplitude xIn;
+  xIn.re = 2.0;
+  xIn.im = 5.0;
+  x.resize(3);
+  std::fill(x.begin(), x.end(), xIn);
+  tile.rmax = 4;
+  tile.cmax = 5;
+  mask.rmin = 1;
+  mask.cmin = 0;
+  mask.rmax = 5;
+  mask.cmax = 3;
+  applyLeafMask(alpha, &x[0], &y[0], &tile, &mask);
+  for (int i = 0; i < 2; ++i) {
+    EXPECT_FLOAT_EQ(yIn.re + xIn.re, y[i].re) << "i == " << i;
+    EXPECT_FLOAT_EQ(yIn.im + xIn.im, y[i].im) << "i == " << i;
+  }
+  for (int i = 2; i < 4; ++i) {
+    EXPECT_FLOAT_EQ(yIn.re, y[i].re) << "i == " << i;
+    EXPECT_FLOAT_EQ(yIn.im, y[i].im) << "i == " << i;
+  }
+}
+
+TEST_F(ApplyLeafMask, MaskBeyondRowAndColRange) {
+  y.resize(3);
+  struct MboAmplitude yIn;
+  yIn.re = 12.0;
+  yIn.im = 20.0;
+  std::fill(y.begin(), y.end(), yIn);
+  struct MboAmplitude xIn;
+  xIn.re = 2.0;
+  xIn.im = 5.0;
+  x.resize(6);
+  std::fill(x.begin(), x.end(), xIn);
+  tile.rmin = 3;
+  tile.cmin = 3;
+  tile.rmax = 6;
+  tile.cmax = 6;
+  mask.rmin = 4;
+  mask.cmin = 0;
+  mask.rmax = 7;
+  mask.cmax = 6;
+  applyLeafMask(alpha, &x[0], &y[0], &tile, &mask);
+  for (int i = 0; i < 2; ++i) {
+    EXPECT_FLOAT_EQ(yIn.re + xIn.re, y[i].re) << "i == " << i;
+    EXPECT_FLOAT_EQ(yIn.im + xIn.im, y[i].im) << "i == " << i;
+  }
+  for (int i = 2; i < 3; ++i) {
+    EXPECT_FLOAT_EQ(yIn.re, y[i].re) << "i == " << i;
+    EXPECT_FLOAT_EQ(yIn.im, y[i].im) << "i == " << i;
+  }
+}
+
+TEST_F(ApplyLeafMask, MaskBeyondRowAndColRangeTranspose) {
+  y.resize(6);
+  struct MboAmplitude yIn;
+  yIn.re = 12.0;
+  yIn.im = 20.0;
+  std::fill(y.begin(), y.end(), yIn);
+  struct MboAmplitude xIn;
+  xIn.re = 2.0;
+  xIn.im = 5.0;
+  x.resize(3);
+  std::fill(x.begin(), x.end(), xIn);
+  tile.rmin = 3;
+  tile.cmin = 3;
+  tile.rmax = 6;
+  tile.cmax = 6;
+  mask.rmin = 0;
+  mask.cmin = 4;
+  mask.rmax = 6;
+  mask.cmax = 7;
+  applyLeafMask(alpha, &x[0], &y[0], &tile, &mask);
+  for (int i = 0; i < 4; ++i) {
+    EXPECT_FLOAT_EQ(yIn.re, y[i].re) << "i == " << i;
+    EXPECT_FLOAT_EQ(yIn.im, y[i].im) << "i == " << i;
+  }
+  for (int i = 4; i < 6; ++i) {
+    EXPECT_FLOAT_EQ(yIn.re + xIn.re, y[i].re) << "i == " << i;
+    EXPECT_FLOAT_EQ(yIn.im + xIn.im, y[i].im) << "i == " << i;
+  }
 }
