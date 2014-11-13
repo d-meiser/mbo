@@ -586,3 +586,30 @@ TEST_F(ApplyLeafMask, MaskBeyondRowAndColRangeTranspose) {
     EXPECT_FLOAT_EQ(yIn.im + xIn.im, y[i].im) << "i == " << i;
   }
 }
+
+TEST_F(ApplyLeafMask, MaskRowBand) {
+  y.resize(3);
+  struct MboAmplitude yIn;
+  yIn.re = 0.0;
+  yIn.im = 0.0;
+  std::fill(y.begin(), y.end(), yIn);
+  struct MboAmplitude xIn;
+  x.resize(6);
+  for (int i = 0; i < 6; ++i) {
+    x[i].re = i;
+    x[i].im = 0;
+  }
+  tile.rmin = 0;
+  tile.cmin = 3;
+  tile.rmax = 3;
+  tile.cmax = 6;
+  mask.rmin = 0;
+  mask.cmin = 0;
+  mask.rmax = 3;
+  mask.cmax = 6;
+  applyLeafMask(alpha, &x[0], &y[0], &tile, &mask);
+  for (int i = 0; i < 3; ++i) {
+    EXPECT_FLOAT_EQ(3.0 + i, y[i].re) << "i == " << i;
+    EXPECT_FLOAT_EQ(0.0, y[i].im) << "i == " << i;
+  }
+}
