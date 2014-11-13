@@ -115,7 +115,7 @@ void applyLeafMask(struct MboAmplitude alpha, struct MboAmplitude *x,
 		      struct MboAmplitude *y, const struct Tile *tile,
 		      const struct Tile *mask)
 {
-	MboGlobInd drmin, dcmin, rMin, rMax, r;
+	MboGlobInd rMin, rMax, r;
 	struct Tile intersection = tileIntersection(*tile, *mask);
 
 	rMin = tile->rmin + max(intersection.rmin - tile->rmin,
@@ -123,10 +123,8 @@ void applyLeafMask(struct MboAmplitude alpha, struct MboAmplitude *x,
 	rMax = tile->rmin + min(intersection.rmax - tile->rmin,
 				intersection.cmax - tile->cmin);
 
-	drmin = intersection.rmin - tile->rmin;
-	dcmin = intersection.cmin - tile->cmin;
-	x -= dcmin;
-	y -= drmin;
+	x -= rMin - max(rMin - mask->cmin, 0);
+	y -= rMin - max(rMin - mask->rmin, 0);
 	for (r = rMin; r < rMax; ++r) {
 		y[r].re += alpha.re * x[r].re - alpha.im * x[r].im;
 		y[r].im += alpha.re * x[r].im + alpha.im * x[r].re;
