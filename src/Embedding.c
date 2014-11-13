@@ -452,3 +452,32 @@ void embeddingDeleteDiagonal(struct Embedding *embedding)
 		}
 	}
 }
+
+MboGlobInd embeddingsDistanceFromDiagonal(int i, int numSpaces, MboLocInd *dims,
+					  MboGlobInd blockSizeAfter,
+					  int numFactors,
+					  struct Embedding *embeddings)
+{
+	int nextI, e;
+	MboGlobInd blockSizeBefore, meanDistance;
+	struct MboNonZeroEntry *entries;
+
+	if (numFactors > 0) {
+		nextI = embeddings->i;
+		blockSizeBefore = computeBlockSize(nextI - i, dims + i);
+		blockSizeAfter /= (blockSizeBefore * (MboGlobInd)dims[nextI]);
+		entries = mboElemOpGetEntries(embeddings->op);
+		meanDistance = 0;
+		for (e = 0; e < mboElemOpNumEntries(embeddings->op); ++e) {
+			meanDistance +=
+			    (entries[e].m - entries[e].n) * blockSizeAfter;
+			meanDistance += embeddingsDistanceFromDiagonal(
+			    nextI + 1, numSpaces, dims, blockSizeAfter,
+			    numFactors - 1, embeddings + 1);
+		}
+		meanDistance /= mboElemOpNumEntries(embeddings->op);
+		return meanDistance;
+	} else {
+		return 0;
+	}
+}

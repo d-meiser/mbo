@@ -125,3 +125,118 @@ TEST(SimpleTOp, DenseMatrixIdentityTwoSpaces) {
   destroySimpleTOp(&sto);
   mboProdSpaceDestroy(&h);
 }
+
+TEST(DistanceFromDiagonal, Identity) {
+  MboLocInd d = 2;
+  MboProdSpace h = mboProdSpaceCreate(d);
+  struct SimpleTOp sto;
+  sto.numFactors = 0;
+  sto.embeddings = 0;
+
+  MboGlobInd distDiag = simpleTOpDistanceFromDiagonal(h, &sto);
+  EXPECT_EQ(0, distDiag);
+
+  destroySimpleTOp(&sto);
+  mboProdSpaceDestroy(&h);
+}
+
+TEST(DistanceFromDiagonal, SpSm) {
+  MboLocInd d = 2;
+  MboProdSpace h = mboProdSpaceCreate(d);
+  struct SimpleTOp sto;
+  sto.numFactors = 1;
+  sto.embeddings = (struct Embedding*)malloc(sizeof(*sto.embeddings));
+  sto.embeddings[0].i = 0;
+  mboElemOpCreate(&sto.embeddings[0].op); 
+  struct MboAmplitude dummy;
+  mboElemOpAddTo(0, 0, &dummy, &sto.embeddings[0].op);
+
+  MboGlobInd distDiag = simpleTOpDistanceFromDiagonal(h, &sto);
+  EXPECT_EQ(0, distDiag);
+
+  destroySimpleTOp(&sto);
+  mboProdSpaceDestroy(&h);
+}
+
+TEST(DistanceFromDiagonal, Sp) {
+  MboLocInd d = 2;
+  MboProdSpace h = mboProdSpaceCreate(d);
+  struct SimpleTOp sto;
+  sto.numFactors = 1;
+  sto.embeddings = (struct Embedding*)malloc(sizeof(*sto.embeddings));
+  sto.embeddings[0].i = 0;
+  mboElemOpCreate(&sto.embeddings[0].op); 
+  struct MboAmplitude dummy;
+  mboElemOpAddTo(1, 0, &dummy, &sto.embeddings[0].op);
+
+  MboGlobInd distDiag = simpleTOpDistanceFromDiagonal(h, &sto);
+  EXPECT_EQ(1, distDiag);
+
+  destroySimpleTOp(&sto);
+  mboProdSpaceDestroy(&h);
+}
+
+TEST(DistanceFromDiagonal, SpInLargerSpace) {
+  MboLocInd d = 2;
+  MboProdSpace h = mboProdSpaceCreate(d);
+  mboProdSpaceMul(h, &h);
+  mboProdSpaceMul(h, &h);
+  struct SimpleTOp sto;
+  sto.numFactors = 1;
+  sto.embeddings = (struct Embedding*)malloc(sizeof(*sto.embeddings));
+  sto.embeddings[0].i = 1;
+  mboElemOpCreate(&sto.embeddings[0].op); 
+  struct MboAmplitude dummy;
+  mboElemOpAddTo(1, 0, &dummy, &sto.embeddings[0].op);
+
+  MboGlobInd distDiag = simpleTOpDistanceFromDiagonal(h, &sto);
+  EXPECT_EQ(4, distDiag);
+
+  destroySimpleTOp(&sto);
+  mboProdSpaceDestroy(&h);
+}
+
+TEST(DistanceFromDiagonal, SxInLargerSpace) {
+  MboLocInd d = 2;
+  MboProdSpace h = mboProdSpaceCreate(d);
+  mboProdSpaceMul(h, &h);
+  mboProdSpaceMul(h, &h);
+  struct SimpleTOp sto;
+  sto.numFactors = 1;
+  sto.embeddings = (struct Embedding*)malloc(sizeof(*sto.embeddings));
+  sto.embeddings[0].i = 1;
+  mboElemOpCreate(&sto.embeddings[0].op); 
+  struct MboAmplitude dummy;
+  mboElemOpAddTo(1, 0, &dummy, &sto.embeddings[0].op);
+  mboElemOpAddTo(0, 1, &dummy, &sto.embeddings[0].op);
+
+  MboGlobInd distDiag = simpleTOpDistanceFromDiagonal(h, &sto);
+  EXPECT_EQ(0, distDiag);
+
+  destroySimpleTOp(&sto);
+  mboProdSpaceDestroy(&h);
+}
+
+TEST(DistanceFromDiagonal, SxSp) {
+  MboLocInd d = 2;
+  MboProdSpace h = mboProdSpaceCreate(d);
+  mboProdSpaceMul(h, &h);
+  mboProdSpaceMul(h, &h);
+  struct SimpleTOp sto;
+  sto.numFactors = 2;
+  sto.embeddings = (struct Embedding*)malloc(2 * sizeof(*sto.embeddings));
+  sto.embeddings[0].i = 1;
+  mboElemOpCreate(&sto.embeddings[0].op); 
+  struct MboAmplitude dummy;
+  mboElemOpAddTo(1, 0, &dummy, &sto.embeddings[0].op);
+  mboElemOpAddTo(0, 1, &dummy, &sto.embeddings[0].op);
+  sto.embeddings[1].i = 2;
+  mboElemOpCreate(&sto.embeddings[1].op); 
+  mboElemOpAddTo(1, 0, &dummy, &sto.embeddings[1].op);
+
+  MboGlobInd distDiag = simpleTOpDistanceFromDiagonal(h, &sto);
+  EXPECT_EQ(2, distDiag);
+
+  destroySimpleTOp(&sto);
+  mboProdSpaceDestroy(&h);
+}

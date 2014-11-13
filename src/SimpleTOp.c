@@ -296,3 +296,20 @@ void simpleTOpNormalize(struct SimpleTOp *simpleOp)
 	gatherAllEmbeddings(&simpleOp->numFactors, &simpleOp->embeddings);
 	sortEmbeddings(simpleOp->numFactors, simpleOp->embeddings);
 }
+
+MboGlobInd simpleTOpDistanceFromDiagonal(MboProdSpace h,
+					 struct SimpleTOp *simpleOp)
+{
+	MboGlobInd blockSize;
+	int numSpaces;
+	MboLocInd *dims;
+
+	blockSize = mboProdSpaceDim(h);
+	numSpaces = mboProdSpaceSize(h);
+	dims = malloc(numSpaces * sizeof(*dims));
+	mboProdSpaceGetDims(h, numSpaces, dims);
+
+	return embeddingsDistanceFromDiagonal(0, numSpaces, dims, blockSize,
+					      simpleOp->numFactors,
+					      simpleOp->embeddings);
+}

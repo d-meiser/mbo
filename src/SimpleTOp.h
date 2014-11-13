@@ -69,6 +69,8 @@ void simpleTOpDiagonal(MboProdSpace h, struct SimpleTOp *simpleOp,
 		       struct MboAmplitude *diag);
 void simpleTOpDeleteDiagonal(struct SimpleTOp *simpleOp);
 void simpleTOpNormalize(struct SimpleTOp *simpleOp);
+MboGlobInd simpleTOpDistanceFromDiagonal(MboProdSpace h,
+					 struct SimpleTOp *simpleOp);
 
 #ifdef __cplusplus
 }
