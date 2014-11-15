@@ -300,12 +300,11 @@ void simpleTOpNormalize(struct SimpleTOp *simpleOp)
 MboGlobInd simpleTOpDistanceFromDiagonal(MboProdSpace h,
 					 struct SimpleTOp *simpleOp)
 {
-	MboGlobInd blockSize, distance;
-	int numSpaces;
+	MboGlobInd blockSize = mboProdSpaceDim(h);
+	MboGlobInd distance;
+	int numSpaces = mboProdSpaceSize(h);
 	MboLocInd dims[numSpaces];
 
-	blockSize = mboProdSpaceDim(h);
-	numSpaces = mboProdSpaceSize(h);
 	mboProdSpaceGetDims(h, numSpaces, dims);
 
 	distance = embeddingsDistanceFromDiagonal(0, numSpaces, dims, blockSize,
