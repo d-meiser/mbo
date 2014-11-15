@@ -310,5 +310,6 @@ MboGlobInd simpleTOpDistanceFromDiagonal(MboProdSpace h,
 	distance = embeddingsDistanceFromDiagonal(0, numSpaces, dims, blockSize,
 					      simpleOp->numFactors,
 					      simpleOp->embeddings);
-  return distance;
+	if (distance < 0) distance += blockSize;
+	return distance;
 }
