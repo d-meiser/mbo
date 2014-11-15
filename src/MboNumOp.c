@@ -18,10 +18,43 @@ with mbo.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <stdlib.h>
+#include <string.h>
+#include <assert.h>
 #include <MboTensorOpPrivate.h>
 #include <SimpleTOp.h>
 #include <MboNumOpPrivate.h>
 #include <MboNumSubMatrix.h>
+
+struct SOpCompCtx {
+  struct SimpleTOp* op;
+  MboProdSpace h;
+};
+
+static int compSimpleOps(const void* a, const void* b) {
+	struct SimpleTOp *opA = ((struct SOpCompCtx *)a)->op;
+	struct SimpleTOp *opB = ((struct SOpCompCtx *)b)->op;
+	assert(((struct SOpCompCtx *)a)->h == ((struct SOpCompCtx *)b)->h);
+	MboProdSpace h = ((struct SOpCompCtx *)a)->h;
+	MboGlobInd distA = simpleTOpDistanceFromDiagonal(h, opA);
+	MboGlobInd distB = simpleTOpDistanceFromDiagonal(h, opB);
+	return distA - distB;
+}
+
+static void sortOps(struct SimpleTOp* ops, int numOps, MboProdSpace h) {
+	struct SOpCompCtx opCtxs[numOps];
+	struct SimpleTOp reorderedOps[numOps];
+	int i;
+
+	for (i = 0; i < numOps; ++i) {
+		opCtxs[i].op = ops + i;
+		opCtxs[i].h = h;
+	}
+	qsort(opCtxs, numOps, sizeof(*opCtxs), &compSimpleOps);
+	for (i = 0; i < numOps; ++i) {
+		reorderedOps[i] = *opCtxs[i].op;
+	}
+	memcpy(ops, reorderedOps, numOps * sizeof(*reorderedOps));
+}
 
 MboNumOp mboNumOpCompile(MboTensorOp op)
 {
