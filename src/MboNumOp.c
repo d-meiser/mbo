@@ -73,6 +73,7 @@ MboNumOp mboNumOpCompile(MboTensorOp op)
 		copySimpleTOp(numOp->sum + i, terms + i);
 		simpleTOpNormalize(numOp->sum + i);
 	}
+	sortOps(numOp->sum, numOp->numTerms, numOp->space);
 	return numOp;
 }
 
