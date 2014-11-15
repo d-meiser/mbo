@@ -3,7 +3,7 @@
 #include <MboNumOp.h>
 #include <MboAmplitude.h>
 #include <vector>
-
+#include <algorithm>
 
 static MboGlobInd computeBlockSize(int N, MboLocInd *dims) {
   int i;
@@ -623,6 +623,9 @@ TEST(MboTensorOp, SparseMatrixTwoEmbeddings) {
   std::vector<int> j(i[mboProdSpaceDim(h)]);
   std::vector<struct MboAmplitude> a(i[mboProdSpaceDim(h)]);
   mboNumOpSparseMatrix(Spc, 0, mboProdSpaceDim(h), &i[0], &j[0], &a[0]);
+  for (int m = 0; m < totalDim; ++m) {
+    std::sort(&j[0] + i[m], &j[0] + i[m + 1]);
+  }
   EXPECT_EQ(16, j.size());
   EXPECT_EQ(0, j[0]);
   EXPECT_EQ(2, j[1]);
@@ -672,6 +675,9 @@ TEST(MboTensorOp, SparseMatrixTwoEmbeddingsSubrange) {
   std::vector<int> j(i[rmax - rmin]);
   std::vector<struct MboAmplitude> a(i[rmax - rmin]);
   mboNumOpSparseMatrix(Spc, rmin, rmax, &i[0], &j[0], &a[0]);
+  for (int m = 0; m < rmax - rmin; ++m) {
+    std::sort(&j[0] + i[m], &j[0] + i[m + 1]);
+  }
   EXPECT_EQ(8, j.size());
   EXPECT_EQ(2, j[0]);
   EXPECT_EQ(0, j[1]);
