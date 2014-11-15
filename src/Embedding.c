@@ -143,6 +143,46 @@ static void applyLeaf(struct MboAmplitude alpha, struct MboAmplitude *x,
 	}
 }
 
+static void applyLeaf1(struct MboAmplitude alpha, struct MboAmplitude *x,
+		       struct MboAmplitude *y, MboGlobInd blockSizeBefore,
+		       MboGlobInd blockSizeAfterAndSelf,
+		       MboGlobInd blockSizeAfter)
+{
+	MboGlobInd m, n;
+	for (m = 0; m < blockSizeBefore; ++m) {
+		for (n = 0; n < blockSizeAfter; ++n) {
+			y[n].re += alpha.re * x[n].re - alpha.im * x[n].im;
+			y[n].im += alpha.re * x[n].im + alpha.im * x[n].re;
+		}
+		x += blockSizeAfterAndSelf;
+		y += blockSizeAfterAndSelf;
+	}
+}
+
+static void applyLeaf2(struct MboAmplitude alpha, struct MboAmplitude *x,
+		       struct MboAmplitude *y, MboGlobInd M, MboGlobInd N,
+		       MboGlobInd O, MboGlobInd P, MboGlobInd Q)
+{
+	MboGlobInd m, n, o;
+	struct MboAmplitude *xtmp, *ytmp;
+	for (m = 0; m < M; ++m) {
+		xtmp = x;
+		ytmp = y;
+		for (n = 0; n < O; ++n) {
+			for (o = 0; o < Q; ++o) {
+				ytmp[o].re += alpha.re * xtmp[o].re -
+					      alpha.im * xtmp[o].im;
+				ytmp[o].im += alpha.re * xtmp[o].im +
+					      alpha.im * xtmp[o].re;
+			}
+			xtmp += P;
+			ytmp += P;
+		}
+		x += N;
+		y += N;
+	}
+}
+
 void applyEmbeddingsMask(int i, int numSpaces, MboLocInd *dims,
 		     MboGlobInd blockSizeAfter, struct MboAmplitude alpha,
 		     int numFactors, struct Embedding *embeddings,
@@ -206,12 +246,60 @@ void applyEmbeddings(int i, int numSpaces, MboLocInd *dims,
 		     int numFactors, struct Embedding *embeddings,
 		     struct MboAmplitude *x, struct MboAmplitude *y)
 {
-	int nextI, e;
-	MboGlobInd blockSizeBefore, n;
-	struct MboNonZeroEntry *entries;
-	struct MboAmplitude tmp, *xtmp, *ytmp;
+	int nextI, e, ep;
+	MboGlobInd blockSizeBefore, n, M, N, O, P, Q;
+	struct MboNonZeroEntry *entries, *entriesB;
+	struct MboAmplitude tmp, tmpp, *xtmp, *ytmp;
 
-	if (numFactors > 0) {
+	if (numFactors == 0) {
+		applyLeaf(alpha, x, y, blockSizeAfter);
+	} else if (numFactors == 1) {
+		nextI = embeddings->i;
+		blockSizeBefore = computeBlockSize(nextI - i, dims + i);
+		blockSizeAfter /= (blockSizeBefore * (MboGlobInd)dims[nextI]);
+		entries = mboElemOpGetEntries(embeddings->op);
+		for (e = 0; e < mboElemOpNumEntries(embeddings->op); ++e) {
+			tmp.re = alpha.re * entries[e].val.re -
+				 alpha.im * entries[e].val.im;
+			tmp.im = alpha.re * entries[e].val.im +
+				 alpha.im * entries[e].val.re;
+			xtmp = x + entries[e].n * blockSizeAfter;
+			ytmp = y + entries[e].m * blockSizeAfter;
+			applyLeaf1(tmp, xtmp, ytmp, blockSizeBefore,
+				   blockSizeAfter * (MboGlobInd)dims[nextI],
+				   blockSizeAfter);
+		}
+	} else if (numFactors == 2) {
+		nextI = embeddings[0].i;
+		M = computeBlockSize(nextI - i, dims + i);
+		N = blockSizeAfter / M;
+		O = computeBlockSize(embeddings[1].i - nextI - 1,
+				     dims + nextI + 1);
+		nextI = embeddings[1].i;
+		P = computeBlockSize(numSpaces - nextI, dims + nextI);
+		Q = computeBlockSize(numSpaces - nextI - 1, dims + nextI + 1);
+		entries = mboElemOpGetEntries(embeddings[0].op);
+		entriesB = mboElemOpGetEntries(embeddings[1].op);
+		for (e = 0; e < mboElemOpNumEntries(embeddings[0].op); ++e) {
+			tmp.re = alpha.re * entries[e].val.re -
+				 alpha.im * entries[e].val.im;
+			tmp.im = alpha.re * entries[e].val.im +
+				 alpha.im * entries[e].val.re;
+			for (ep = 0; ep < mboElemOpNumEntries(embeddings[1].op);
+			     ++ep) {
+				tmpp.re = tmp.re * entriesB[ep].val.re -
+					  tmp.im * entriesB[ep].val.im;
+				tmpp.im = tmp.re * entriesB[ep].val.im +
+					  tmp.im * entriesB[ep].val.re;
+				xtmp =
+				    x + entries[e].n * O * P + entriesB[ep].n * Q;
+				ytmp =
+				    y + entries[e].m * O * P + entriesB[ep].m * Q;
+				applyLeaf2(tmpp, xtmp, ytmp, M, N, O, P, Q);
+			}
+		}
+
+	} else {
 		nextI = embeddings->i;
 		blockSizeBefore = computeBlockSize(nextI - i, dims + i);
 		blockSizeAfter /= (blockSizeBefore * (MboGlobInd)dims[nextI]);
@@ -233,8 +321,6 @@ void applyEmbeddings(int i, int numSpaces, MboLocInd *dims,
 				ytmp += blockSizeAfter * (MboGlobInd)dims[nextI];
 			}
 		}
-	} else {
-		applyLeaf(alpha, x, y, blockSizeAfter);
 	}
 }
 
