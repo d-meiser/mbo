@@ -133,8 +133,8 @@ static void applyLeafMask(struct MboAmplitude alpha, struct MboAmplitude *x,
 	}
 }
 
-static void applyLeaf(struct MboAmplitude alpha, struct MboAmplitude *x,
-		      struct MboAmplitude *y, MboGlobInd blockSize)
+static void applyLeaf0(struct MboAmplitude alpha, struct MboAmplitude *x,
+		       struct MboAmplitude *y, MboGlobInd blockSize)
 {
 	MboGlobInd n;
 	for (n = 0; n < blockSize; ++n) {
@@ -252,7 +252,7 @@ void applyEmbeddings(int i, int numSpaces, MboLocInd *dims,
 	struct MboAmplitude tmp, tmpp, *xtmp, *ytmp;
 
 	if (numFactors == 0) {
-		applyLeaf(alpha, x, y, blockSizeAfter);
+		applyLeaf0(alpha, x, y, blockSizeAfter);
 	} else if (numFactors == 1) {
 		nextI = embeddings->i;
 		blockSizeBefore = computeBlockSize(nextI - i, dims + i);
