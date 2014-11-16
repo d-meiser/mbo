@@ -20,6 +20,7 @@ with mbo.  If not, see <http://www.gnu.org/licenses/>.
 #define INTEGRATOR_H
 
 #include <MboIndices.h>
+#include <MboAmplitude.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -28,18 +29,22 @@ extern "C" {
 struct Integrator;
 
 struct IntegratorOps {
-	void (*create)(struct Integrator* self, MboGlobInd dim);
-	void (*takeStep)(struct Integrator *self, const double *x,
-			 double *y,
-			 void (*f)(const double *x, double *y, void *ctx),
+	void (*create)(struct Integrator *self, MboGlobInd dim);
+	void (*takeStep)(struct Integrator *self, const struct MboAmplitude *x,
+			 struct MboAmplitude *y,
+			 void (*f)(const struct MboAmplitude *x,
+				   struct MboAmplitude *y, void *ctx),
 			 void *ctx);
 	void (*advanceBeyond)(struct Integrator *self, double t,
-			      const double *x, double *y,
-			      void (*f)(const double *x, double *y, void *ctx),
+			      const struct MboAmplitude *x,
+			      struct MboAmplitude *y,
+			      void (*f)(const struct MboAmplitude *x,
+					struct MboAmplitude *y, void *ctx),
 			      void *ctx);
 	void (*advanceTo)(struct Integrator *self, double t,
-			  const double *x, double *y,
-			  void (*f)(const double *x, double *y, void *ctx),
+			  const struct MboAmplitude *x, struct MboAmplitude *y,
+			  void (*f)(const struct MboAmplitude *x,
+				    struct MboAmplitude *y, void *ctx),
 			  void *ctx);
 	void (*destroy)(struct Integrator *self);
 };
@@ -51,7 +56,7 @@ struct Integrator {
 	void *data;
 };
 
-void integratorCreate(struct Integrator* integrator);
+void integratorCreate(struct Integrator* integrator, MboGlobInd dim);
 void integratorDestroy(struct Integrator* integrator);
 
 #ifdef __cplusplus

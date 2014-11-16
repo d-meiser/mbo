@@ -3,6 +3,6 @@
 
 TEST(Integrator, Create) {
   struct Integrator integrator;
-  integratorCreate(&integrator);
+  integratorCreate(&integrator, 2);
   integratorDestroy(&integrator);
 }
