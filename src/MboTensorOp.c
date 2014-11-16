@@ -98,6 +98,14 @@ void mboTensorOpAddScaledTo(struct MboAmplitude *alpha, MboElemOp a, int i,
 	++op->numTerms;
 }
 
+MboTensorOp mboTensorOpCopy(MboTensorOp a)
+{
+	MboTensorOp copy;
+	mboTensorOpNull(mboTensorOpGetSpace(a), &copy);
+	mboTensorOpPlus(a, &copy);
+	return copy;
+}
+
 void mboTensorOpMul(MboTensorOp a, MboTensorOp b, MboTensorOp *c)
 {
 	int i, j;
