@@ -8,19 +8,12 @@ struct RK4_ctx {
 void rk4_create(struct Integrator *self, MboGlobInd dim);
 void rk4_destroy(struct Integrator *self);
 void rk4_takeStep(struct Integrator *self, const struct MboAmplitude *x,
-		  struct MboAmplitude *y,
-		  void (*f)(const struct MboAmplitude *x,
-			    struct MboAmplitude *y, void *ctx),
-		  void *ctx);
+		  struct MboAmplitude *y, RHS f, void *ctx);
 void rk4_advanceBeyond(struct Integrator *self, double t,
 		       const struct MboAmplitude *x, struct MboAmplitude *y,
-		       void (*f)(const struct MboAmplitude *x,
-				 struct MboAmplitude *y, void *ctx),
-		       void *ctx);
+		       RHS f, void *ctx);
 void rk4_advanceTo(struct Integrator *self, double t,
-		   const struct MboAmplitude *x, struct MboAmplitude *y,
-		   void (*f)(const struct MboAmplitude *x,
-			     struct MboAmplitude *y, void *ctx),
+		   const struct MboAmplitude *x, struct MboAmplitude *y, RHS f,
 		   void *ctx);
 
 void integratorCreate(struct Integrator *integrator, MboGlobInd dim)
@@ -36,6 +29,18 @@ void integratorDestroy(struct Integrator* integrator)
 		integrator->ops.destroy(integrator);
 	}
 }
+
+void integratorSetTime(struct Integrator *integrator, double t)
+{
+	integrator->t = t;
+}
+
+double integratorGetTime(struct Integrator *integrator)
+{
+	return integrator->t;
+}
+
+/* Implementation of RK4 integrator */
 
 void rk4_create(struct Integrator *self, MboGlobInd dim)
 {
@@ -69,25 +74,18 @@ void rk4_destroy(struct Integrator* self) {
 }
 
 void rk4_takeStep(struct Integrator *self, const struct MboAmplitude *x,
-		  struct MboAmplitude *y,
-		  void (*f)(const struct MboAmplitude *x,
-			    struct MboAmplitude *y, void *ctx),
-		  void *ctx)
+		  struct MboAmplitude *y, RHS f, void *ctx)
 {
 }
 
 void rk4_advanceBeyond(struct Integrator *self, double t,
 		       const struct MboAmplitude *x, struct MboAmplitude *y,
-		       void (*f)(const struct MboAmplitude *x,
-				 struct MboAmplitude *y, void *ctx),
-		       void *ctx)
+		       RHS f, void *ctx)
 {
 }
 
 void rk4_advanceTo(struct Integrator *self, double t,
-		   const struct MboAmplitude *x, struct MboAmplitude *y,
-		   void (*f)(const struct MboAmplitude *x,
-			     struct MboAmplitude *y, void *ctx),
+		   const struct MboAmplitude *x, struct MboAmplitude *y, RHS f,
 		   void *ctx)
 {
 }

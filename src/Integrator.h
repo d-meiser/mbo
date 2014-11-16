@@ -27,25 +27,19 @@ extern "C" {
 #endif
 
 struct Integrator;
+typedef void (*RHS)(double, const struct MboAmplitude *, struct MboAmplitude *,
+		 void *);
 
 struct IntegratorOps {
 	void (*create)(struct Integrator *self, MboGlobInd dim);
 	void (*takeStep)(struct Integrator *self, const struct MboAmplitude *x,
-			 struct MboAmplitude *y,
-			 void (*f)(const struct MboAmplitude *x,
-				   struct MboAmplitude *y, void *ctx),
-			 void *ctx);
+			 struct MboAmplitude *y, RHS f, void *ctx);
 	void (*advanceBeyond)(struct Integrator *self, double t,
 			      const struct MboAmplitude *x,
-			      struct MboAmplitude *y,
-			      void (*f)(const struct MboAmplitude *x,
-					struct MboAmplitude *y, void *ctx),
-			      void *ctx);
+			      struct MboAmplitude *y, RHS f, void *ctx);
 	void (*advanceTo)(struct Integrator *self, double t,
 			  const struct MboAmplitude *x, struct MboAmplitude *y,
-			  void (*f)(const struct MboAmplitude *x,
-				    struct MboAmplitude *y, void *ctx),
-			  void *ctx);
+			  RHS f, void *ctx);
 	void (*destroy)(struct Integrator *self);
 };
 
@@ -58,6 +52,11 @@ struct Integrator {
 
 void integratorCreate(struct Integrator* integrator, MboGlobInd dim);
 void integratorDestroy(struct Integrator* integrator);
+void integratorSetTime(struct Integrator* integrator, double t);
+double integratorGetTime(struct Integrator* integrator);
+
+void integratorTakeStep(const struct MboAmplitude *x, struct MboAmplitude *y,
+			RHS f, void *ctx);
 
 #ifdef __cplusplus
 }
