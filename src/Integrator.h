@@ -47,6 +47,7 @@ struct Integrator {
 	struct IntegratorOps ops;
 	double t;
 	double dt;
+	MboGlobInd dim;
 	void *data;
 };
 
@@ -56,7 +57,8 @@ void integratorSetTime(struct Integrator* integrator, double t);
 double integratorGetTime(struct Integrator* integrator);
 void integratorTimeStepHint(struct Integrator* integrator, double dt);
 
-void integratorTakeStep(const struct MboAmplitude *x, struct MboAmplitude *y,
+void integratorTakeStep(struct Integrator *integrator,
+			const struct MboAmplitude *x, struct MboAmplitude *y,
 			RHS f, void *ctx);
 
 #ifdef __cplusplus
