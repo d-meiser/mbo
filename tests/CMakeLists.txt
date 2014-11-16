@@ -8,6 +8,7 @@ include_directories(
 set(TESTS
   test_DenseMatrices
   test_Embedding
+  test_Integrator
   test_MboElemOp
   test_MboNumOp
   test_MboNumSubMatrix

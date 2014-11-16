@@ -13,6 +13,7 @@ set(MBO_SRCS
   MboTensorOpPrivate.c
   MboVec.c
   Embedding.c
+  Integrator.c
   SimpleTOp.c
   Tile.c
   Utilities.c
