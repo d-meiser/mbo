@@ -25,22 +25,34 @@ with mbo.  If not, see <http://www.gnu.org/licenses/>.
 extern "C" {
 #endif
 
+struct Integrator;
+
 struct IntegratorOps {
-	void (*initialize)(MboGlobInd dim);
-	void (*setTimeStepHint)(double dt);
-	void (*setTime)(double t);
-	double (*getTime)();
-	void (*takeStep)(const double *x, double *y,
+	void (*create)(struct Integrator* self, MboGlobInd dim);
+	void (*takeStep)(struct Integrator *self, const double *x,
+			 double *y,
 			 void (*f)(const double *x, double *y, void *ctx),
 			 void *ctx);
-	void (*advanceBeyond)(double t, const double *x, double *y,
+	void (*advanceBeyond)(struct Integrator *self, double t,
+			      const double *x, double *y,
 			      void (*f)(const double *x, double *y, void *ctx),
 			      void *ctx);
-	void (*advanceTo)(double t, const double *x, double *y,
-			      void (*f)(const double *x, double *y, void *ctx),
-			      void *ctx);
-	void (*destroy)();
+	void (*advanceTo)(struct Integrator *self, double t,
+			  const double *x, double *y,
+			  void (*f)(const double *x, double *y, void *ctx),
+			  void *ctx);
+	void (*destroy)(struct Integrator *self);
 };
+
+struct Integrator {
+	struct IntegratorOps ops;
+	double t;
+	double dt;
+	void *data;
+};
+
+void integratorCreate(struct Integrator* integrator);
+void integratorDestroy(struct Integrator* integrator);
 
 #ifdef __cplusplus
 }
