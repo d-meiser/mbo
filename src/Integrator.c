@@ -7,14 +7,12 @@ struct RK4_ctx {
 
 void rk4_create(struct Integrator *self, MboGlobInd dim);
 void rk4_destroy(struct Integrator *self);
-void rk4_takeStep(struct Integrator *self, const struct MboAmplitude *x,
-		  struct MboAmplitude *y, RHS f, void *ctx);
+void rk4_takeStep(struct Integrator *self, struct MboAmplitude *x, RHS f,
+		  void *ctx);
 void rk4_advanceBeyond(struct Integrator *self, double t,
-		       const struct MboAmplitude *x, struct MboAmplitude *y,
-		       RHS f, void *ctx);
-void rk4_advanceTo(struct Integrator *self, double t,
-		   const struct MboAmplitude *x, struct MboAmplitude *y, RHS f,
-		   void *ctx);
+		       struct MboAmplitude *x, RHS f, void *ctx);
+void rk4_advanceTo(struct Integrator *self, double t, struct MboAmplitude *x,
+		   RHS f, void *ctx);
 
 void integratorCreate(struct Integrator *integrator, MboGlobInd dim)
 {
@@ -48,11 +46,16 @@ void integratorTimeStepHint(struct Integrator *integrator, double dt)
 	integrator->dt = dt;
 }
 
-void integratorTakeStep(struct Integrator *integrator,
-			const struct MboAmplitude *x, struct MboAmplitude *y,
+void integratorTakeStep(struct Integrator *integrator, struct MboAmplitude *x,
 			RHS f, void *ctx)
 {
-	integrator->ops.takeStep(integrator, x, y, f, ctx);
+	integrator->ops.takeStep(integrator, x, f, ctx);
+}
+
+void integratorAdvanceBeyond(struct Integrator *integrator, double t,
+			     struct MboAmplitude *x, RHS f, void *ctx)
+{
+	integrator->ops.advanceBeyond(integrator, t, x, f, ctx);
 }
 
 /* Implementation of RK4 integrator */
@@ -101,8 +104,8 @@ static void zaxpy(struct MboAmplitude *w, double alpha,
 	}
 }
 
-void rk4_takeStep(struct Integrator *self, const struct MboAmplitude *x,
-		  struct MboAmplitude *y, RHS f, void *ctx)
+void rk4_takeStep(struct Integrator *self, struct MboAmplitude *x, RHS f,
+		  void *ctx)
 {
 	double prefactor;
 	MboGlobInd i;
@@ -117,13 +120,11 @@ void rk4_takeStep(struct Integrator *self, const struct MboAmplitude *x,
 	f(self->t + self->dt, rk4ctx->work, rk4ctx->k4, ctx);
 	prefactor = self->dt / 6.0;
 	for (i = 0; i < self->dim; ++i) {
-		y[i].re =
-		    x[i].re +
+		x[i].re +=
 		    prefactor * (rk4ctx->k1[i].re +
 				 2.0 * (rk4ctx->k2[i].re + rk4ctx->k3[i].re) +
 				 rk4ctx->k4[i].re);
-		y[i].im =
-		    x[i].im +
+		x[i].im +=
 		    prefactor * (rk4ctx->k1[i].im +
 				 2.0 * (rk4ctx->k2[i].im + rk4ctx->k3[i].im) +
 				 rk4ctx->k4[i].im);
@@ -132,13 +133,16 @@ void rk4_takeStep(struct Integrator *self, const struct MboAmplitude *x,
 }
 
 void rk4_advanceBeyond(struct Integrator *self, double t,
-		       const struct MboAmplitude *x, struct MboAmplitude *y,
+		       struct MboAmplitude *x, 
 		       RHS f, void *ctx)
 {
+	while (self->t < t) {
+		rk4_takeStep(self, x, f, ctx);
+	}
 }
 
 void rk4_advanceTo(struct Integrator *self, double t,
-		   const struct MboAmplitude *x, struct MboAmplitude *y, RHS f,
+		   struct MboAmplitude *x, RHS f,
 		   void *ctx)
 {
 }

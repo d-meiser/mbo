@@ -42,12 +42,28 @@ TEST(Integrator, TakeStep) {
   struct MboAmplitude x;
   x.re = 1.0;
   x.im = 0.0;
-  struct MboAmplitude y;
   struct DecayCtx ctx;
   ctx.gamma = 1.0;
-  integratorTakeStep(&integrator, &x, &y, &exponentialDecay, &ctx);
-  EXPECT_FLOAT_EQ(x.re * exp(-ctx.gamma * dt), y.re);
-  EXPECT_FLOAT_EQ(0, y.im);
+  integratorTakeStep(&integrator, &x, &exponentialDecay, &ctx);
+  EXPECT_FLOAT_EQ(exp(-ctx.gamma * dt), x.re);
+  EXPECT_FLOAT_EQ(0, x.im);
+  integratorDestroy(&integrator);
+}
+
+TEST(Integrator, AdvanceBeyond) {
+  struct Integrator integrator;
+  integratorCreate(&integrator, 1);
+  double dt = 1.0e-3;
+  integratorTimeStepHint(&integrator, dt);
+  struct MboAmplitude x;
+  x.re = 1.0;
+  x.im = 0.0;
+  struct DecayCtx ctx;
+  ctx.gamma = 1.0;
+  integratorAdvanceBeyond(&integrator, 0.3, &x, &exponentialDecay, &ctx);
+  double finalTime = integratorGetTime(&integrator);
+  EXPECT_GE(finalTime, 0.3);
+  EXPECT_FLOAT_EQ(exp(-finalTime * ctx.gamma), x.re);
   integratorDestroy(&integrator);
 }
 

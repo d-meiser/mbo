@@ -32,14 +32,12 @@ typedef void (*RHS)(double, const struct MboAmplitude *, struct MboAmplitude *,
 
 struct IntegratorOps {
 	void (*create)(struct Integrator *self, MboGlobInd dim);
-	void (*takeStep)(struct Integrator *self, const struct MboAmplitude *x,
-			 struct MboAmplitude *y, RHS f, void *ctx);
+	void (*takeStep)(struct Integrator *self, struct MboAmplitude *x, RHS f,
+			 void *ctx);
 	void (*advanceBeyond)(struct Integrator *self, double t,
-			      const struct MboAmplitude *x,
-			      struct MboAmplitude *y, RHS f, void *ctx);
+			      struct MboAmplitude *x, RHS f, void *ctx);
 	void (*advanceTo)(struct Integrator *self, double t,
-			  const struct MboAmplitude *x, struct MboAmplitude *y,
-			  RHS f, void *ctx);
+			  struct MboAmplitude *x, RHS f, void *ctx);
 	void (*destroy)(struct Integrator *self);
 };
 
@@ -56,10 +54,10 @@ void integratorDestroy(struct Integrator* integrator);
 void integratorSetTime(struct Integrator* integrator, double t);
 double integratorGetTime(struct Integrator* integrator);
 void integratorTimeStepHint(struct Integrator* integrator, double dt);
-
-void integratorTakeStep(struct Integrator *integrator,
-			const struct MboAmplitude *x, struct MboAmplitude *y,
+void integratorTakeStep(struct Integrator *integrator, struct MboAmplitude *x,
 			RHS f, void *ctx);
+void integratorAdvanceBeyond(struct Integrator *integrator, double t,
+			     struct MboAmplitude *x, RHS f, void *ctx);
 
 #ifdef __cplusplus
 }
