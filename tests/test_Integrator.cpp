@@ -62,7 +62,25 @@ TEST(Integrator, AdvanceBeyond) {
   ctx.gamma = 1.0;
   integratorAdvanceBeyond(&integrator, 0.3, &x, &exponentialDecay, &ctx);
   double finalTime = integratorGetTime(&integrator);
-  EXPECT_GE(finalTime, 0.3);
+  EXPECT_LE(0.3, finalTime);
+  EXPECT_FLOAT_EQ(exp(-finalTime * ctx.gamma), x.re);
+  integratorDestroy(&integrator);
+}
+
+TEST(Integrator, AdvanceTo) {
+  struct Integrator integrator;
+  integratorCreate(&integrator, 1);
+  double dt = 1.0e-3;
+  integratorTimeStepHint(&integrator, dt);
+  struct MboAmplitude x;
+  x.re = 1.0;
+  x.im = 0.0;
+  struct DecayCtx ctx;
+  ctx.gamma = 1.0;
+  double targetTime = 0.33458;
+  integratorAdvanceTo(&integrator, targetTime, &x, &exponentialDecay, &ctx);
+  double finalTime = integratorGetTime(&integrator);
+  EXPECT_FLOAT_EQ(targetTime, finalTime);
   EXPECT_FLOAT_EQ(exp(-finalTime * ctx.gamma), x.re);
   integratorDestroy(&integrator);
 }

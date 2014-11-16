@@ -58,6 +58,8 @@ void integratorTakeStep(struct Integrator *integrator, struct MboAmplitude *x,
 			RHS f, void *ctx);
 void integratorAdvanceBeyond(struct Integrator *integrator, double t,
 			     struct MboAmplitude *x, RHS f, void *ctx);
+void integratorAdvanceTo(struct Integrator *integrator, double t,
+			 struct MboAmplitude *x, RHS f, void *ctx);
 
 #ifdef __cplusplus
 }

@@ -58,6 +58,12 @@ void integratorAdvanceBeyond(struct Integrator *integrator, double t,
 	integrator->ops.advanceBeyond(integrator, t, x, f, ctx);
 }
 
+void integratorAdvanceTo(struct Integrator *integrator, double t,
+			 struct MboAmplitude *x, RHS f, void *ctx)
+{
+	integrator->ops.advanceTo(integrator, t, x, f, ctx);
+}
+
 /* Implementation of RK4 integrator */
 
 void rk4_create(struct Integrator *self, MboGlobInd dim)
@@ -145,4 +151,12 @@ void rk4_advanceTo(struct Integrator *self, double t,
 		   struct MboAmplitude *x, RHS f,
 		   void *ctx)
 {
+	double saveDt;
+	while (self->t + self->dt < t) {
+		rk4_takeStep(self, x, f, ctx);
+	}
+	saveDt = self->dt;
+	self->dt = t - self->t;
+	rk4_takeStep(self, x, f, ctx);
+	self->dt = saveDt;
 }
