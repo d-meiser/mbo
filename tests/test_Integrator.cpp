@@ -16,3 +16,10 @@ TEST(Integrator, SetTime) {
   integratorDestroy(&integrator);
 }
 
+TEST(Integrator, TimeStepHint) {
+  struct Integrator integrator;
+  integratorCreate(&integrator, 2);
+  integratorTimeStepHint(&integrator, 1.0e-6);
+  integratorDestroy(&integrator);
+}
+

@@ -54,6 +54,7 @@ void integratorCreate(struct Integrator* integrator, MboGlobInd dim);
 void integratorDestroy(struct Integrator* integrator);
 void integratorSetTime(struct Integrator* integrator, double t);
 double integratorGetTime(struct Integrator* integrator);
+void integratorTimeStepHint(struct Integrator* integrator, double dt);
 
 void integratorTakeStep(const struct MboAmplitude *x, struct MboAmplitude *y,
 			RHS f, void *ctx);

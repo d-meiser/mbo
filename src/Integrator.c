@@ -40,6 +40,12 @@ double integratorGetTime(struct Integrator *integrator)
 	return integrator->t;
 }
 
+void integratorTimeStepHint(struct Integrator *integrator, double dt)
+{
+	integrator->dt = dt;
+}
+
+
 /* Implementation of RK4 integrator */
 
 void rk4_create(struct Integrator *self, MboGlobInd dim)
