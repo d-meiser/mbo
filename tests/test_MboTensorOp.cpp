@@ -409,3 +409,41 @@ TEST(MboTensorOp, Check) {
   mboProdSpaceDestroy(&h);
 }
 
+TEST(MboTensorOp, Copy) {
+  MboProdSpace h = mboProdSpaceCreate(2);
+  MboElemOp eop = mboSigmaZ();
+  MboTensorOp A;
+  mboTensorOpNull(h, &A);
+  mboTensorOpAddTo(eop, 0, A);
+
+  MboTensorOp B = mboTensorOpCopy(A);
+  MboNumOp Acomp = mboNumOpCompile(A);
+  MboNumOp Bcomp = mboNumOpCompile(B);
+  std::vector<struct MboAmplitude> x(2);
+  x[0].re = 134.3;
+  x[0].im = 11.0;
+  x[1].re = -12.0;
+  x[1].im = 0.57;
+  struct MboAmplitude one;
+  one.re = 1.0;
+  one.im = 0.0;
+  struct MboAmplitude zero;
+  zero.re = 0.0;
+  zero.im = 0.0;
+  std::vector<struct MboAmplitude> ya(2);
+  std::vector<struct MboAmplitude> yb(2);
+  mboNumOpMatVec(one, Acomp, &x[0], zero, &ya[0]);
+  mboNumOpMatVec(one, Bcomp, &x[0], zero, &yb[0]);
+  EXPECT_FLOAT_EQ(ya[0].re, yb[0].re);
+  EXPECT_FLOAT_EQ(ya[0].im, yb[0].im);
+  EXPECT_FLOAT_EQ(ya[1].re, yb[1].re);
+  EXPECT_FLOAT_EQ(ya[1].im, yb[1].im);
+
+  mboNumOpDestroy(&Acomp);
+  mboNumOpDestroy(&Bcomp);
+  mboTensorOpDestroy(&A);
+  mboTensorOpDestroy(&B);
+  mboElemOpDestroy(&eop);
+  mboProdSpaceDestroy(&h);
+}
+

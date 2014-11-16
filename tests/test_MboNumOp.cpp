@@ -3,7 +3,7 @@
 #include <MboNumOp.h>
 #include <MboAmplitude.h>
 #include <vector>
-
+#include <algorithm>
 
 static MboGlobInd computeBlockSize(int N, MboLocInd *dims) {
   int i;
@@ -238,6 +238,128 @@ TEST(MboTensorOp, Flops) {
   mboNumOpDestroy(&ac);
   mboProdSpaceDestroy(&h);
   mboProdSpaceDestroy(&h1);
+}
+
+TEST(MboTensorOp, MulSelf) {
+  MboProdSpace h = mboProdSpaceCreate(2);
+  MboElemOp eop = mboSigmaZ();
+  MboTensorOp A;
+  mboTensorOpNull(h, &A);
+  mboTensorOpAddTo(eop, 0, A);
+  mboTensorOpMul(A, A, &A);
+
+  std::vector<struct MboAmplitude> x(2);
+  x[0].re = 134.3;
+  x[0].im = 11.0;
+  x[1].re = -12.0;
+  x[1].im = 0.57;
+  std::vector<struct MboAmplitude> y(2);
+  struct MboAmplitude one;
+  one.re = 1.0;
+  one.im = 0.0;
+  struct MboAmplitude zero;
+  zero.re = 0.0;
+  zero.im = 0.0;
+
+  MboNumOp Acomp = mboNumOpCompile(A);
+  mboNumOpMatVec(one, Acomp, &x[0], zero, &y[0]);
+  EXPECT_FLOAT_EQ(0.0, y[0].re);
+  EXPECT_FLOAT_EQ(0.0, y[0].im);
+  EXPECT_FLOAT_EQ(2.0 * x[1].re, y[1].re);
+  EXPECT_FLOAT_EQ(2.0 * x[1].im, y[1].im);
+
+  mboNumOpDestroy(&Acomp);
+  mboTensorOpDestroy(&A);
+  mboElemOpDestroy(&eop);
+  mboProdSpaceDestroy(&h);
+}
+
+TEST(MboTensorOp, MatVec3BodyOperator) {
+  MboGlobInd i;
+  MboLocInd *dims, dim;
+  MboProdSpace h1, h2;
+  MboTensorOp A, B, C, D;
+  struct MboAmplitude a, b, one, result, *arr, expectedResult;
+  MboElemOp eop;
+
+  one.re = 1.0;
+  one.im = 0.0;
+  a = one;
+  b.re = 0.0;
+  b.im = 0.0;
+
+  // h2 == 2 x 3 x 2 x 2 x 3 x 2
+  h1 = mboProdSpaceCreate(2);
+  h2 = mboProdSpaceCreate(0);
+  mboProdSpaceMul(h1, &h2);
+  mboProdSpaceDestroy(&h1);
+  h1 = mboProdSpaceCreate(3);
+  mboProdSpaceMul(h1, &h2);
+  mboProdSpaceDestroy(&h1);
+  h1 = mboProdSpaceCreate(2);
+  mboProdSpaceMul(h1, &h2);
+  mboProdSpaceMul(h2, &h2);
+  mboProdSpaceDestroy(&h1);
+  dim = mboProdSpaceDim(h2);
+
+  mboTensorOpNull(h2, &D);
+
+  // D == sz1 x sp3 x sm4
+  mboProdSpaceDestroy(&h2);
+  h2 = mboProdSpaceCreate(3);
+  h1 = mboProdSpaceCreate(2);
+  mboProdSpaceMul(h1, &h2);
+  mboProdSpaceMul(h2, &h1);
+  eop =  mboSigmaZ();
+  mboTensorOpNull(h1, &A);
+  mboTensorOpAddTo(eop, 1, A);
+  mboElemOpDestroy(&eop);
+  mboProdSpaceDestroy(&h1);
+  mboProdSpaceDestroy(&h2);
+
+  eop = mboSigmaPlus();
+  h2 = mboProdSpaceCreate(2);
+  mboTensorOpNull(h2, &B);
+  mboTensorOpAddTo(eop, 0, B);
+  mboElemOpDestroy(&eop);
+  mboProdSpaceDestroy(&h2);
+
+  eop = mboSigmaMinus();
+  h1 = mboProdSpaceCreate(3);
+  h2 = mboProdSpaceCreate(2);
+  mboProdSpaceMul(h1, &h2);
+  mboTensorOpNull(h2, &C);
+  mboTensorOpAddTo(eop, 0, C);
+  mboElemOpDestroy(&eop);
+  mboProdSpaceDestroy(&h1);
+  mboProdSpaceDestroy(&h2);
+
+  MboTensorOp ops[3] = {A, B, C};
+  MBO_STATUS err = mboTensorOpKron(3, ops, &D);
+  ASSERT_EQ(MBO_SUCCESS, err);
+
+  MboNumOp Dcomp = mboNumOpCompile(D);
+  std::vector<struct MboAmplitude> x(dim);
+  for (int i = 0; i < x.size(); ++i) {
+    x[i].re = i;
+    x[i].im = -2.7 * i;
+  }
+  std::vector<struct MboAmplitude> y(dim);
+  err = mboNumOpMatVec(a, Dcomp, &x[0], b, &y[0]);
+  EXPECT_EQ(MBO_SUCCESS, err);
+  EXPECT_FLOAT_EQ(0.0, y[1].re);
+  EXPECT_FLOAT_EQ(0.0, y[5].re);
+  EXPECT_FLOAT_EQ(-2.0, y[6].re);
+  EXPECT_FLOAT_EQ(-3.0, y[7].re);
+  EXPECT_FLOAT_EQ(0.0, y[8].re);
+  EXPECT_FLOAT_EQ(-14.0, y[18].re);
+  EXPECT_FLOAT_EQ(26.0, y[30].re);
+
+  mboNumOpDestroy(&Dcomp);
+  mboTensorOpDestroy(&A);
+  mboTensorOpDestroy(&B);
+  mboTensorOpDestroy(&C);
+  mboTensorOpDestroy(&D);
 }
 
 TEST(MboTensorOp, DenseMatrixNull) {
@@ -623,6 +745,9 @@ TEST(MboTensorOp, SparseMatrixTwoEmbeddings) {
   std::vector<int> j(i[mboProdSpaceDim(h)]);
   std::vector<struct MboAmplitude> a(i[mboProdSpaceDim(h)]);
   mboNumOpSparseMatrix(Spc, 0, mboProdSpaceDim(h), &i[0], &j[0], &a[0]);
+  for (int m = 0; m < totalDim; ++m) {
+    std::sort(&j[0] + i[m], &j[0] + i[m + 1]);
+  }
   EXPECT_EQ(16, j.size());
   EXPECT_EQ(0, j[0]);
   EXPECT_EQ(2, j[1]);
@@ -672,6 +797,9 @@ TEST(MboTensorOp, SparseMatrixTwoEmbeddingsSubrange) {
   std::vector<int> j(i[rmax - rmin]);
   std::vector<struct MboAmplitude> a(i[rmax - rmin]);
   mboNumOpSparseMatrix(Spc, rmin, rmax, &i[0], &j[0], &a[0]);
+  for (int m = 0; m < rmax - rmin; ++m) {
+    std::sort(&j[0] + i[m], &j[0] + i[m + 1]);
+  }
   EXPECT_EQ(8, j.size());
   EXPECT_EQ(2, j[0]);
   EXPECT_EQ(0, j[1]);

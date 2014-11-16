@@ -109,6 +109,11 @@ void embeddingDiagonal(int i, int numSpaces, MboLocInd *dims,
 
 void embeddingDeleteDiagonal(struct Embedding *embedding);
 
+MboGlobInd embeddingsDistanceFromDiagonal(int i, int numSpaces, MboLocInd *dims,
+					  MboGlobInd blockSizeAfter,
+					  int numFactors,
+					  struct Embedding *embeddings);
+
 #ifdef __cplusplus
 }
 #endif

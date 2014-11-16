@@ -111,6 +111,15 @@ MBO_EXPORT MboProdSpace mboTensorOpGetSpace(MboTensorOp op);
 MBO_EXPORT void mboTensorOpAddScaledTo(struct MboAmplitude *alpha,
 				    MboElemOp elemop, int i, MboTensorOp top);
 
+
+/**
+ * @brief Create a deep copy of a tensor operator
+ *
+ * @param a Operator to copy.
+ * @return  Deeop copy of a.
+ * */
+MBO_EXPORT MboTensorOp mboTensorOpCopy(MboTensorOp a);
+
 /** 
  * @brief Multiply two operators and add result to third
  *      (*c) += a * b
