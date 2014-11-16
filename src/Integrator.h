@@ -19,9 +19,28 @@ with mbo.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef INTEGRATOR_H
 #define INTEGRATOR_H
 
+#include <MboIndices.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+struct IntegratorOps {
+	void (*initialize)(MboGlobInd dim);
+	void (*setTimeStepHint)(double dt);
+	void (*setTime)(double t);
+	double (*getTime)();
+	void (*takeStep)(const double *x, double *y,
+			 void (*f)(const double *x, double *y, void *ctx),
+			 void *ctx);
+	void (*advanceBeyond)(double t, const double *x, double *y,
+			      void (*f)(const double *x, double *y, void *ctx),
+			      void *ctx);
+	void (*advanceTo)(double t, const double *x, double *y,
+			      void (*f)(const double *x, double *y, void *ctx),
+			      void *ctx);
+	void (*destroy)();
+};
 
 #ifdef __cplusplus
 }
