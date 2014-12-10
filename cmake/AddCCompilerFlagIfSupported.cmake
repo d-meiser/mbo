@@ -1,6 +1,7 @@
 include(CheckCCompilerFlag)
 include(CheckCXXCompilerFlag)
 macro(add_c_compiler_flag_if_supported FLAG)
+  set(CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS} ${FLAG}")
   CHECK_C_COMPILER_FLAG(${FLAG} FLAG_SUPPORTED)
   if(FLAG_SUPPORTED)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${FLAG}")
