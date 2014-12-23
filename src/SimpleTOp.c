@@ -303,13 +303,14 @@ MboGlobInd simpleTOpDistanceFromDiagonal(MboProdSpace h,
 	MboGlobInd blockSize = mboProdSpaceDim(h);
 	MboGlobInd distance;
 	int numSpaces = mboProdSpaceSize(h);
-	MboLocInd dims[numSpaces];
+	MboLocInd *dims;
 
+  dims = (MboLocInd*)malloc(numSpaces * sizeof(*dims));
 	mboProdSpaceGetDims(h, numSpaces, dims);
-
 	distance = embeddingsDistanceFromDiagonal(0, numSpaces, dims, blockSize,
 					      simpleOp->numFactors,
 					      simpleOp->embeddings);
 	if (distance < 0) distance += blockSize;
+  free(dims);
 	return distance;
 }
