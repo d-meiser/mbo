@@ -37,13 +37,23 @@ static int compSimpleOps(const void* a, const void* b) {
 	MboProdSpace h = ((struct SOpCompCtx *)a)->h;
 	MboGlobInd distA = simpleTOpDistanceFromDiagonal(h, opA);
 	MboGlobInd distB = simpleTOpDistanceFromDiagonal(h, opB);
-	return distA - distB;
+	if (distA > distB) {
+		return 1;
+	} else if (distA < distB) {
+		return -1;
+	} else {
+		return 0;
+	}
 }
 
 static void sortOps(struct SimpleTOp* ops, int numOps, MboProdSpace h) {
-	struct SOpCompCtx opCtxs[numOps];
-	struct SimpleTOp reorderedOps[numOps];
+	struct SOpCompCtx *opCtxs;
+	struct SimpleTOp *reorderedOps;
 	int i;
+
+	opCtxs = (struct SOpCompCtx *)malloc(numOps * sizeof(*opCtxs));
+	reorderedOps =
+	    (struct SimpleTOp *)malloc(numOps * sizeof(*reorderedOps));
 
 	for (i = 0; i < numOps; ++i) {
 		opCtxs[i].op = ops + i;
@@ -54,6 +64,8 @@ static void sortOps(struct SimpleTOp* ops, int numOps, MboProdSpace h) {
 		reorderedOps[i] = *opCtxs[i].op;
 	}
 	memcpy(ops, reorderedOps, numOps * sizeof(*reorderedOps));
+	free(opCtxs);
+	free(reorderedOps);
 }
 
 MboNumOp mboNumOpCompile(MboTensorOp op)
