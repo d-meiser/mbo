@@ -93,7 +93,7 @@ int findEmbedding(int i, int numEmbeddings, struct Embedding *emb)
 	return -1;
 }
 
-static MboGlobInd min(MboGlobInd a, MboGlobInd b)
+static MboGlobInd mboMin(MboGlobInd a, MboGlobInd b)
 {
 	if (a < b) {
 		return a;
@@ -102,7 +102,7 @@ static MboGlobInd min(MboGlobInd a, MboGlobInd b)
 	}
 }
 
-static MboGlobInd max(MboGlobInd a, MboGlobInd b)
+static MboGlobInd mboMax(MboGlobInd a, MboGlobInd b)
 {
 	if (a > b) {
 		return a;
@@ -118,15 +118,15 @@ void applyLeafMask(struct MboAmplitude alpha, struct MboAmplitude *x,
 	MboGlobInd rMin, cMin, rMax, r;
 	struct Tile intersection = tileIntersection(*tile, *mask);
 
-	rMin = tile->rmin + max(intersection.rmin - tile->rmin,
+	rMin = tile->rmin + mboMax(intersection.rmin - tile->rmin,
 				intersection.cmin - tile->cmin);
-	cMin = tile->cmin + max(intersection.rmin - tile->rmin,
+	cMin = tile->cmin + mboMax(intersection.rmin - tile->rmin,
 				intersection.cmin - tile->cmin);
-	rMax = tile->rmin + min(intersection.rmax - tile->rmin,
+	rMax = tile->rmin + mboMin(intersection.rmax - tile->rmin,
 				intersection.cmax - tile->cmin);
 
-	x -= rMin - max(cMin - mask->cmin, 0);
-	y -= rMin - max(rMin - mask->rmin, 0);
+	x -= rMin - mboMax(cMin - mask->cmin, 0);
+	y -= rMin - mboMax(rMin - mask->rmin, 0);
 	for (r = rMin; r < rMax; ++r) {
 		y[r].re += alpha.re * x[r].re - alpha.im * x[r].im;
 		y[r].im += alpha.re * x[r].im + alpha.im * x[r].re;

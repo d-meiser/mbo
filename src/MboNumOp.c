@@ -149,7 +149,8 @@ void mboNumOpSparseMatrix(MboNumOp op, MboGlobInd rmin, MboGlobInd rmax, int *i,
 	int *numInserted, r, s;
 
 	if (rmax <= rmin) return;
-	numInserted = malloc((rmax - rmin) * sizeof(*numInserted));
+  assert(rmax - rmin < (size_t)-1);
+  numInserted = malloc((size_t)(rmax - rmin) * sizeof(*numInserted));
 	for (r = 0; r < rmax - rmin; ++r) {
 		numInserted[r] = 0;
 	}
