@@ -15,7 +15,7 @@ script:
   - make -j4
   - ctest -j4 --output-on-failure
   - rm -rf *
-  - cmake -DCMAKE_BUILD_TYPE=Debug -DMBO_ENABLE_COVERAGE=ON -DMBO_BUILD_TESTS=ON -DRUN_EXAMPLES_AS_TESTS=ON -DBUILD_SHARED_LIBS=ON -Dgtest_disable_pthreads=ON ..
+  - cmake -DCMAKE_BUILD_TYPE=Debug -DMBO_ENABLE_COVERAGE=ON -DMBO_BUILD_TESTS=ON -DRUN_EXAMPLES_AS_TESTS=ON -DBUILD_SHARED_LIBS=ON -DGTEST_DISABLE_PTHREADS=ON ..
   - make -j4 
   - ctest -j4 --output-on-failure
   - rm -rf *
