@@ -152,7 +152,7 @@ MBO_EXPORT void mboNumOpRowOffsets(MboNumOp op, MboGlobInd rmin,
  * @sa mboNumOpDenseMatrix, mboNumOpRowOffsets.
  * */
 MBO_EXPORT void mboNumOpSparseMatrix(MboNumOp op, MboGlobInd rmin,
-				     MboGlobInd rmax, int *i, int *j,
+				     MboGlobInd rmax, MboGlobInd *i, MboGlobInd *j,
 				     struct MboAmplitude *a);
 
 /**

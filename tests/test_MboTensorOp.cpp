@@ -434,10 +434,10 @@ TEST(MboTensorOp, Copy) {
   std::vector<struct MboAmplitude> yb(2);
   mboNumOpMatVec(one, Acomp, &x[0], zero, &ya[0]);
   mboNumOpMatVec(one, Bcomp, &x[0], zero, &yb[0]);
-  EXPECT_FLOAT_EQ(ya[0].re, yb[0].re);
-  EXPECT_FLOAT_EQ(ya[0].im, yb[0].im);
-  EXPECT_FLOAT_EQ(ya[1].re, yb[1].re);
-  EXPECT_FLOAT_EQ(ya[1].im, yb[1].im);
+  EXPECT_DOUBLE_EQ(ya[0].re, yb[0].re);
+  EXPECT_DOUBLE_EQ(ya[0].im, yb[0].im);
+  EXPECT_DOUBLE_EQ(ya[1].re, yb[1].re);
+  EXPECT_DOUBLE_EQ(ya[1].im, yb[1].im);
 
   mboNumOpDestroy(&Acomp);
   mboNumOpDestroy(&Bcomp);

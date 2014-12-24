@@ -13,7 +13,7 @@ TEST(Integrator, SetTime) {
   integratorCreate(&integrator, 2);
   integratorSetTime(&integrator, 3.5);
   double t = integratorGetTime(&integrator);
-  EXPECT_FLOAT_EQ(3.5, t);
+  EXPECT_DOUBLE_EQ(3.5, t);
   integratorDestroy(&integrator);
 }
 
@@ -45,8 +45,8 @@ TEST(Integrator, TakeStep) {
   struct DecayCtx ctx;
   ctx.gamma = 1.0;
   integratorTakeStep(&integrator, &x, &exponentialDecay, &ctx);
-  EXPECT_FLOAT_EQ(exp(-ctx.gamma * dt), x.re);
-  EXPECT_FLOAT_EQ(0, x.im);
+  EXPECT_DOUBLE_EQ(exp(-ctx.gamma * dt), x.re);
+  EXPECT_DOUBLE_EQ(0, x.im);
   integratorDestroy(&integrator);
 }
 
@@ -63,7 +63,7 @@ TEST(Integrator, AdvanceBeyond) {
   integratorAdvanceBeyond(&integrator, 0.3, &x, &exponentialDecay, &ctx);
   double finalTime = integratorGetTime(&integrator);
   EXPECT_LE(0.3, finalTime);
-  EXPECT_FLOAT_EQ(exp(-finalTime * ctx.gamma), x.re);
+  EXPECT_DOUBLE_EQ(exp(-finalTime * ctx.gamma), x.re);
   integratorDestroy(&integrator);
 }
 
@@ -80,8 +80,8 @@ TEST(Integrator, AdvanceTo) {
   double targetTime = 0.33458;
   integratorAdvanceTo(&integrator, targetTime, &x, &exponentialDecay, &ctx);
   double finalTime = integratorGetTime(&integrator);
-  EXPECT_FLOAT_EQ(targetTime, finalTime);
-  EXPECT_FLOAT_EQ(exp(-finalTime * ctx.gamma), x.re);
+  EXPECT_DOUBLE_EQ(targetTime, finalTime);
+  EXPECT_DOUBLE_EQ(exp(-finalTime * ctx.gamma), x.re);
   integratorDestroy(&integrator);
 }
 

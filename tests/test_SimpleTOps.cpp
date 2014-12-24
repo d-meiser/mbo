@@ -84,9 +84,9 @@ TEST(SimpleTOp, DenseMatrixIdentityOneSpace) {
       expectedResult.re = 0;
       expectedResult.im = 0;
     }
-    EXPECT_FLOAT_EQ(expectedResult.re, mat[i].re) << "(row, col == (" << row
+    EXPECT_DOUBLE_EQ(expectedResult.re, mat[i].re) << "(row, col == (" << row
                                                   << ", " << col << ")";
-    EXPECT_FLOAT_EQ(expectedResult.im, mat[i].im) << "(row, col == (" << row
+    EXPECT_DOUBLE_EQ(expectedResult.im, mat[i].im) << "(row, col == (" << row
                                                   << ", " << col << ")";
   }
 
@@ -116,9 +116,9 @@ TEST(SimpleTOp, DenseMatrixIdentityTwoSpaces) {
       expectedResult.re = 0;
       expectedResult.im = 0;
     }
-    EXPECT_FLOAT_EQ(expectedResult.re, mat[i].re) << "(row, col == (" << row
+    EXPECT_DOUBLE_EQ(expectedResult.re, mat[i].re) << "(row, col == (" << row
                                                   << ", " << col << ")";
-    EXPECT_FLOAT_EQ(expectedResult.im, mat[i].im) << "(row, col == (" << row
+    EXPECT_DOUBLE_EQ(expectedResult.im, mat[i].im) << "(row, col == (" << row
                                                   << ", " << col << ")";
   }
 

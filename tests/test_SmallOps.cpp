@@ -24,8 +24,8 @@ TEST(SmallOps, SigmaP) {
   expectedResult[3].re = 0;
   expectedResult[3].im = 0;
   for (size_t i = 0; i < mat.size(); ++i) {
-    EXPECT_FLOAT_EQ(expectedResult[i].re, mat[i].re) << " i == " << i;
-    EXPECT_FLOAT_EQ(expectedResult[i].im, mat[i].im) << " i == " << i;
+    EXPECT_DOUBLE_EQ(expectedResult[i].re, mat[i].re) << " i == " << i;
+    EXPECT_DOUBLE_EQ(expectedResult[i].im, mat[i].im) << " i == " << i;
   }
   mboTensorOpDestroy(&Sp);
   mboElemOpDestroy(&sp);
@@ -52,8 +52,8 @@ TEST(SmallOps, SigmaM) {
   expectedResult[3].re = 0;
   expectedResult[3].im = 0;
   for (size_t i = 0; i < mat.size(); ++i) {
-    EXPECT_FLOAT_EQ(expectedResult[i].re, mat[i].re) << " i == " << i;
-    EXPECT_FLOAT_EQ(expectedResult[i].im, mat[i].im) << " i == " << i;
+    EXPECT_DOUBLE_EQ(expectedResult[i].re, mat[i].re) << " i == " << i;
+    EXPECT_DOUBLE_EQ(expectedResult[i].im, mat[i].im) << " i == " << i;
   }
   mboTensorOpDestroy(&Sp);
   mboElemOpDestroy(&sp);
@@ -80,8 +80,8 @@ TEST(SmallOps, SigmaZ) {
   expectedResult[3].re = 1;
   expectedResult[3].im = 0;
   for (size_t i = 0; i < mat.size(); ++i) {
-    EXPECT_FLOAT_EQ(expectedResult[i].re, mat[i].re) << " i == " << i;
-    EXPECT_FLOAT_EQ(expectedResult[i].im, mat[i].im) << " i == " << i;
+    EXPECT_DOUBLE_EQ(expectedResult[i].re, mat[i].re) << " i == " << i;
+    EXPECT_DOUBLE_EQ(expectedResult[i].im, mat[i].im) << " i == " << i;
   }
   mboTensorOpDestroy(&Sp);
   mboElemOpDestroy(&sp);
@@ -109,8 +109,8 @@ TEST(SmallOps, Eye) {
     expectedResult[i].im = 0.0;
   }
   for (size_t i = 0; i < mat.size(); ++i) {
-    EXPECT_FLOAT_EQ(expectedResult[i].re, mat[i].re) << " i == " << i;
-    EXPECT_FLOAT_EQ(expectedResult[i].im, mat[i].im) << " i == " << i;
+    EXPECT_DOUBLE_EQ(expectedResult[i].re, mat[i].re) << " i == " << i;
+    EXPECT_DOUBLE_EQ(expectedResult[i].im, mat[i].im) << " i == " << i;
   }
   mboTensorOpDestroy(&Sp);
   mboElemOpDestroy(&sp);
@@ -140,8 +140,8 @@ TEST(SmallOps, NumOp) {
     expectedResult[i].im = 0.0;
   }
   for (size_t i = 0; i < mat.size(); ++i) {
-    EXPECT_FLOAT_EQ(expectedResult[i].re, mat[i].re) << " i == " << i;
-    EXPECT_FLOAT_EQ(expectedResult[i].im, mat[i].im) << " i == " << i;
+    EXPECT_DOUBLE_EQ(expectedResult[i].re, mat[i].re) << " i == " << i;
+    EXPECT_DOUBLE_EQ(expectedResult[i].im, mat[i].im) << " i == " << i;
   }
   mboTensorOpDestroy(&Sp);
   mboElemOpDestroy(&sp);
@@ -171,8 +171,8 @@ TEST(SmallOps, AnnihilationOp) {
     expectedResult[i].im = 0.0;
   }
   for (size_t i = 0; i < mat.size(); ++i) {
-    EXPECT_FLOAT_EQ(expectedResult[i].re, mat[i].re) << " i == " << i;
-    EXPECT_FLOAT_EQ(expectedResult[i].im, mat[i].im) << " i == " << i;
+    EXPECT_DOUBLE_EQ(expectedResult[i].re, mat[i].re) << " i == " << i;
+    EXPECT_DOUBLE_EQ(expectedResult[i].im, mat[i].im) << " i == " << i;
   }
   mboTensorOpDestroy(&Sp);
   mboElemOpDestroy(&sp);
@@ -202,8 +202,8 @@ TEST(SmallOps, CreationOp) {
     expectedResult[i].im = 0.0;
   }
   for (size_t i = 0; i < mat.size(); ++i) {
-    EXPECT_FLOAT_EQ(expectedResult[i].re, mat[i].re) << " i == " << i;
-    EXPECT_FLOAT_EQ(expectedResult[i].im, mat[i].im) << " i == " << i;
+    EXPECT_DOUBLE_EQ(expectedResult[i].re, mat[i].re) << " i == " << i;
+    EXPECT_DOUBLE_EQ(expectedResult[i].im, mat[i].im) << " i == " << i;
   }
   mboTensorOpDestroy(&Sp);
   mboElemOpDestroy(&sp);

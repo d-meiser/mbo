@@ -52,8 +52,8 @@ TEST(MboTensorOp, MatVec) {
   err = mboNumOpMatVec(a, Ac, &x[0], b, &y[0]);
   EXPECT_EQ(err, MBO_SUCCESS);
   for (i = 0; i < mboProdSpaceDim(h2); ++i) {
-    EXPECT_FLOAT_EQ(y[i].re, 1.0);
-    EXPECT_FLOAT_EQ(y[i].im, 0.0);
+    EXPECT_DOUBLE_EQ(y[i].re, 1.0);
+    EXPECT_DOUBLE_EQ(y[i].im, 0.0);
   }
   mboTensorOpDestroy(&A);
   mboNumOpDestroy(&Ac);
@@ -76,8 +76,8 @@ TEST(MboTensorOp, MatVec) {
   err = mboNumOpMatVec(a, Ac, &x[0], b, &y[0]);
   EXPECT_EQ(err, MBO_SUCCESS);
   for (i = 0; i < mboProdSpaceDim(h2); ++i) {
-    EXPECT_FLOAT_EQ(y[i].re, result.re);
-    EXPECT_FLOAT_EQ(y[i].im, result.im);
+    EXPECT_DOUBLE_EQ(y[i].re, result.re);
+    EXPECT_DOUBLE_EQ(y[i].im, result.im);
   }
   mboTensorOpDestroy(&A);
   mboNumOpDestroy(&Ac);
@@ -100,12 +100,12 @@ TEST(MboTensorOp, MatVec) {
   err = mboNumOpMatVec(one, Ac, &x[0], b, &y[0]);
   EXPECT_EQ(err, MBO_SUCCESS);
   for (i = 0; i < mboProdSpaceDim(h2) / 2; ++i) {
-    EXPECT_FLOAT_EQ(a.re, y[i].re);
-    EXPECT_FLOAT_EQ(a.im, y[i].im);
+    EXPECT_DOUBLE_EQ(a.re, y[i].re);
+    EXPECT_DOUBLE_EQ(a.im, y[i].im);
   }
   for (i = mboProdSpaceDim(h2) / 2; i < mboProdSpaceDim(h2); ++i) {
-    EXPECT_FLOAT_EQ(0, y[i].re);
-    EXPECT_FLOAT_EQ(0, y[i].im);
+    EXPECT_DOUBLE_EQ(0, y[i].re);
+    EXPECT_DOUBLE_EQ(0, y[i].im);
   }
   mboTensorOpDestroy(&A);
   mboNumOpDestroy(&Ac);
@@ -129,12 +129,12 @@ TEST(MboTensorOp, MatVec) {
   err = mboNumOpMatVec(one, Ac, &x[0], b, &y[0]);
   EXPECT_EQ(err, MBO_SUCCESS);
   for (i = 0; i < mboProdSpaceDim(h2) / 2; ++i) {
-    EXPECT_FLOAT_EQ(y[i].re, 2.0 * a.re);
-    EXPECT_FLOAT_EQ(y[i].im, 2.0 * a.im);
+    EXPECT_DOUBLE_EQ(y[i].re, 2.0 * a.re);
+    EXPECT_DOUBLE_EQ(y[i].im, 2.0 * a.im);
   }
   for (i = mboProdSpaceDim(h2) / 2; i < mboProdSpaceDim(h2); ++i) {
-    EXPECT_FLOAT_EQ(y[i].re, a.re);
-    EXPECT_FLOAT_EQ(y[i].im, a.im);
+    EXPECT_DOUBLE_EQ(y[i].re, a.re);
+    EXPECT_DOUBLE_EQ(y[i].im, a.im);
   }
   mboTensorOpDestroy(&A);
   mboNumOpDestroy(&Ac);
@@ -173,8 +173,8 @@ TEST(MboTensorOp, MatVec) {
       expectedResult.re += a.re;
       expectedResult.im += a.im;
     }
-    EXPECT_FLOAT_EQ(y[i].re, expectedResult.re) << "i == " << i;
-    EXPECT_FLOAT_EQ(y[i].im, expectedResult.im) << "i == " << i;
+    EXPECT_DOUBLE_EQ(y[i].re, expectedResult.re) << "i == " << i;
+    EXPECT_DOUBLE_EQ(y[i].im, expectedResult.im) << "i == " << i;
   }
   free(dims);
   mboTensorOpDestroy(&C);
@@ -194,7 +194,7 @@ TEST(MboTensorOp, Flops) {
   mboTensorOpNull(h, &a);
   ac = mboNumOpCompile(a);
   flops = mboNumOpFlops(ac);
-  EXPECT_FLOAT_EQ(flops, 0.0);
+  EXPECT_DOUBLE_EQ(flops, 0.0);
   mboTensorOpDestroy(&a);
   mboProdSpaceDestroy(&h);
   mboNumOpDestroy(&ac);
@@ -203,7 +203,7 @@ TEST(MboTensorOp, Flops) {
   mboTensorOpIdentity(h, &a);
   ac = mboNumOpCompile(a);
   flops = mboNumOpFlops(ac);
-  EXPECT_FLOAT_EQ(flops, 5 * 8);
+  EXPECT_DOUBLE_EQ(flops, 5 * 8);
   mboTensorOpDestroy(&a);
   mboNumOpDestroy(&ac);
   mboProdSpaceDestroy(&h);
@@ -216,7 +216,7 @@ TEST(MboTensorOp, Flops) {
   mboTensorOpIdentity(h, &a);
   ac = mboNumOpCompile(a);
   flops = mboNumOpFlops(ac);
-  EXPECT_FLOAT_EQ(flops, 5 * 5 * 5 * 8);
+  EXPECT_DOUBLE_EQ(flops, 5 * 5 * 5 * 8);
   mboTensorOpDestroy(&a);
   mboNumOpDestroy(&ac);
   mboProdSpaceDestroy(&h);
@@ -232,7 +232,7 @@ TEST(MboTensorOp, Flops) {
   mboTensorOpAddTo(sz, 0, a);
   ac = mboNumOpCompile(a);
   flops = mboNumOpFlops(ac);
-  EXPECT_FLOAT_EQ(flops, (5 * 5 * 5 + 2 * 5 * 5) * 8);
+  EXPECT_DOUBLE_EQ(flops, (5 * 5 * 5 + 2 * 5 * 5) * 8);
   mboElemOpDestroy(&sz);
   mboTensorOpDestroy(&a);
   mboNumOpDestroy(&ac);
@@ -263,10 +263,10 @@ TEST(MboTensorOp, MulSelf) {
 
   MboNumOp Acomp = mboNumOpCompile(A);
   mboNumOpMatVec(one, Acomp, &x[0], zero, &y[0]);
-  EXPECT_FLOAT_EQ(0.0, y[0].re);
-  EXPECT_FLOAT_EQ(0.0, y[0].im);
-  EXPECT_FLOAT_EQ(2.0 * x[1].re, y[1].re);
-  EXPECT_FLOAT_EQ(2.0 * x[1].im, y[1].im);
+  EXPECT_DOUBLE_EQ(0.0, y[0].re);
+  EXPECT_DOUBLE_EQ(0.0, y[0].im);
+  EXPECT_DOUBLE_EQ(2.0 * x[1].re, y[1].re);
+  EXPECT_DOUBLE_EQ(2.0 * x[1].im, y[1].im);
 
   mboNumOpDestroy(&Acomp);
   mboTensorOpDestroy(&A);
@@ -347,13 +347,13 @@ TEST(MboTensorOp, MatVec3BodyOperator) {
   std::vector<struct MboAmplitude> y(dim);
   err = mboNumOpMatVec(a, Dcomp, &x[0], b, &y[0]);
   EXPECT_EQ(MBO_SUCCESS, err);
-  EXPECT_FLOAT_EQ(0.0, y[1].re);
-  EXPECT_FLOAT_EQ(0.0, y[5].re);
-  EXPECT_FLOAT_EQ(-2.0, y[6].re);
-  EXPECT_FLOAT_EQ(-3.0, y[7].re);
-  EXPECT_FLOAT_EQ(0.0, y[8].re);
-  EXPECT_FLOAT_EQ(-14.0, y[18].re);
-  EXPECT_FLOAT_EQ(26.0, y[30].re);
+  EXPECT_DOUBLE_EQ(0.0, y[1].re);
+  EXPECT_DOUBLE_EQ(0.0, y[5].re);
+  EXPECT_DOUBLE_EQ(-2.0, y[6].re);
+  EXPECT_DOUBLE_EQ(-3.0, y[7].re);
+  EXPECT_DOUBLE_EQ(0.0, y[8].re);
+  EXPECT_DOUBLE_EQ(-14.0, y[18].re);
+  EXPECT_DOUBLE_EQ(26.0, y[30].re);
 
   mboNumOpDestroy(&Dcomp);
   mboTensorOpDestroy(&A);
@@ -373,8 +373,8 @@ TEST(MboTensorOp, DenseMatrixNull) {
   nullc = mboNumOpCompile(null);
   mboNumOpDenseMatrix(nullc, mat);
   for (int i = 0; i < dim * dim; ++i) {
-    EXPECT_FLOAT_EQ(mat[i].re, 0);
-    EXPECT_FLOAT_EQ(mat[i].im, 0);
+    EXPECT_DOUBLE_EQ(mat[i].re, 0);
+    EXPECT_DOUBLE_EQ(mat[i].im, 0);
   }
 
   delete [] mat;
@@ -402,8 +402,8 @@ TEST(MboTensorOp, DenseMatrixIdentity) {
       expectedResult.re = 0.0;
       expectedResult.im = 0.0;
     }
-    EXPECT_FLOAT_EQ(mat[i].re, expectedResult.re);
-    EXPECT_FLOAT_EQ(mat[i].im, expectedResult.im);
+    EXPECT_DOUBLE_EQ(mat[i].re, expectedResult.re);
+    EXPECT_DOUBLE_EQ(mat[i].im, expectedResult.im);
   }
 
   delete [] mat;
@@ -636,10 +636,10 @@ TEST(MboTensorOp, SparseMatrixIdentity) {
   mboNumOpSparseMatrix(identityc, 0, 2, &i[0], &j[0], &a[0]);
   EXPECT_EQ(0, j[0]);
   EXPECT_EQ(1, j[1]);
-  EXPECT_FLOAT_EQ(1.0, a[0].re);
-  EXPECT_FLOAT_EQ(0.0, a[0].im);
-  EXPECT_FLOAT_EQ(1.0, a[1].re);
-  EXPECT_FLOAT_EQ(0.0, a[1].im);
+  EXPECT_DOUBLE_EQ(1.0, a[0].re);
+  EXPECT_DOUBLE_EQ(0.0, a[0].im);
+  EXPECT_DOUBLE_EQ(1.0, a[1].re);
+  EXPECT_DOUBLE_EQ(0.0, a[1].im);
 
   mboTensorOpDestroy(&identity);
   mboProdSpaceDestroy(&h);
@@ -661,8 +661,8 @@ TEST(MboTensorOp, SparseMatrixSigmaPlus) {
   std::vector<struct MboAmplitude> a(i[dim]);
   mboNumOpSparseMatrix(Spc, 0, 2, &i[0], &j[0], &a[0]);
   EXPECT_EQ(0, j[0]);
-  EXPECT_FLOAT_EQ(1.0, a[0].re);
-  EXPECT_FLOAT_EQ(0.0, a[0].im);
+  EXPECT_DOUBLE_EQ(1.0, a[0].re);
+  EXPECT_DOUBLE_EQ(0.0, a[0].im);
 
   mboElemOpDestroy(&sp);
   mboTensorOpDestroy(&Sp);
@@ -698,8 +698,8 @@ TEST(MboTensorOp, SparseMatrixInBiggerSpace) {
   EXPECT_EQ(11, j[7]);
   EXPECT_EQ(8, a.size());
   for (size_t i = 0; i < a.size(); ++i) {
-	  EXPECT_FLOAT_EQ(1.0, a[i].re) << "i = " << i;
-	  EXPECT_FLOAT_EQ(0.0, a[i].im) << "i = " << i;
+	  EXPECT_DOUBLE_EQ(1.0, a[i].re) << "i = " << i;
+	  EXPECT_DOUBLE_EQ(0.0, a[i].im) << "i = " << i;
   }
 
   mboElemOpDestroy(&sp);
@@ -767,8 +767,8 @@ TEST(MboTensorOp, SparseMatrixTwoEmbeddings) {
   EXPECT_EQ(14, j[15]);
   EXPECT_EQ(16, a.size());
   for (size_t i = 0; i < a.size(); ++i) {
-    EXPECT_FLOAT_EQ(1.0, a[i].re) << "i = " << i;
-    EXPECT_FLOAT_EQ(0.0, a[i].im) << "i = " << i;
+    EXPECT_DOUBLE_EQ(1.0, a[i].re) << "i = " << i;
+    EXPECT_DOUBLE_EQ(0.0, a[i].im) << "i = " << i;
   }
 
   mboElemOpDestroy(&sp);
@@ -811,8 +811,8 @@ TEST(MboTensorOp, SparseMatrixTwoEmbeddingsSubrange) {
   EXPECT_EQ(8, j[7]);
   EXPECT_EQ(8, a.size());
   for (size_t i = 0; i < a.size(); ++i) {
-    EXPECT_FLOAT_EQ(1.0, a[i].re) << "i = " << i;
-    EXPECT_FLOAT_EQ(0.0, a[i].im) << "i = " << i;
+    EXPECT_DOUBLE_EQ(1.0, a[i].re) << "i = " << i;
+    EXPECT_DOUBLE_EQ(0.0, a[i].im) << "i = " << i;
   }
 
   mboElemOpDestroy(&sp);
@@ -846,8 +846,8 @@ TEST(MboNumOp, GetDiagonalIdentity) {
   MboNumOp identityc = mboNumOpCompile(identity);
   mboNumOpDiagonal(identityc, 0, dim, &diag[0]);
   for (int i = 0; i < dim; ++i) {
-    EXPECT_FLOAT_EQ(1.0, diag[i].re) << "i = " << i;
-    EXPECT_FLOAT_EQ(0.0, diag[i].im) << "i = " << i;
+    EXPECT_DOUBLE_EQ(1.0, diag[i].re) << "i = " << i;
+    EXPECT_DOUBLE_EQ(0.0, diag[i].im) << "i = " << i;
   }
 
   mboTensorOpDestroy(&identity);
@@ -866,10 +866,10 @@ TEST(MboNumOp, GetDiagonalSigmaPlus) {
   std::vector<struct MboAmplitude> diag(dim);
   MboNumOp Spc = mboNumOpCompile(Sp);
   mboNumOpDiagonal(Spc, 0, dim, &diag[0]);
-  EXPECT_FLOAT_EQ(0.0, diag[0].re);
-  EXPECT_FLOAT_EQ(0.0, diag[0].im);
-  EXPECT_FLOAT_EQ(0.0, diag[1].re);
-  EXPECT_FLOAT_EQ(0.0, diag[1].im);
+  EXPECT_DOUBLE_EQ(0.0, diag[0].re);
+  EXPECT_DOUBLE_EQ(0.0, diag[0].im);
+  EXPECT_DOUBLE_EQ(0.0, diag[1].re);
+  EXPECT_DOUBLE_EQ(0.0, diag[1].im);
 
   mboElemOpDestroy(&sp);
   mboNumOpDestroy(&Spc);
@@ -888,10 +888,10 @@ TEST(MboNumOp, GetDiagonalSigmaZ) {
   std::vector<struct MboAmplitude> diag(dim);
   MboNumOp Szc = mboNumOpCompile(Sz);
   mboNumOpDiagonal(Szc, 0, dim, &diag[0]);
-  EXPECT_FLOAT_EQ(-1.0, diag[0].re);
-  EXPECT_FLOAT_EQ(0.0, diag[0].im);
-  EXPECT_FLOAT_EQ(1.0, diag[1].re);
-  EXPECT_FLOAT_EQ(0.0, diag[1].im);
+  EXPECT_DOUBLE_EQ(-1.0, diag[0].re);
+  EXPECT_DOUBLE_EQ(0.0, diag[0].im);
+  EXPECT_DOUBLE_EQ(1.0, diag[1].re);
+  EXPECT_DOUBLE_EQ(0.0, diag[1].im);
 
   mboElemOpDestroy(&sz);
   mboTensorOpDestroy(&Sz);
@@ -915,14 +915,14 @@ TEST(MboNumOp, GetDiagonalSigmaZInBiggerSpace) {
   for (int i = 0; i < 4; ++i) {
     for (int j = 0; j < 4; ++j) {
       if (j / 2 == 0) {
-        EXPECT_FLOAT_EQ(-1.0, diag[i * 4 + j].re) << " i == " << i
+        EXPECT_DOUBLE_EQ(-1.0, diag[i * 4 + j].re) << " i == " << i
                                                   << " j == " << j;
-        EXPECT_FLOAT_EQ(0.0, diag[i * 4 + j].im) << " i == " << i
+        EXPECT_DOUBLE_EQ(0.0, diag[i * 4 + j].im) << " i == " << i
                                                  << " j == " << j;
       } else {
-        EXPECT_FLOAT_EQ(1.0, diag[i * 4 + j].re) << " i == " << i
+        EXPECT_DOUBLE_EQ(1.0, diag[i * 4 + j].re) << " i == " << i
                                                  << " j == " << j;
-        EXPECT_FLOAT_EQ(0.0, diag[i * 4 + j].im) << " i == " << i
+        EXPECT_DOUBLE_EQ(0.0, diag[i * 4 + j].im) << " i == " << i
                                                  << " j == " << j;
       }
     }
@@ -945,8 +945,8 @@ TEST(MboNumOp, DeleteDiagonalNull) {
   std::vector<struct MboAmplitude> mat(dim * dim);
   mboNumOpDenseMatrix(null_comp, &mat[0]);
   for (int i = 0; i < dim * dim; ++i) {
-    EXPECT_FLOAT_EQ(0, mat[i].re) << " i == " << i;
-    EXPECT_FLOAT_EQ(0, mat[i].im) << " i == " << i;
+    EXPECT_DOUBLE_EQ(0, mat[i].re) << " i == " << i;
+    EXPECT_DOUBLE_EQ(0, mat[i].im) << " i == " << i;
   }
 
   mboTensorOpDestroy(&null);
@@ -965,8 +965,8 @@ TEST(MboNumOp, DeleteDiagonalIdentity) {
   std::vector<struct MboAmplitude> mat(dim * dim);
   mboNumOpDenseMatrix(identity_comp, &mat[0]);
   for (int i = 0; i < dim * dim; ++i) {
-    EXPECT_FLOAT_EQ(0, mat[i].re) << " i == " << i;
-    EXPECT_FLOAT_EQ(0, mat[i].im) << " i == " << i;
+    EXPECT_DOUBLE_EQ(0, mat[i].re) << " i == " << i;
+    EXPECT_DOUBLE_EQ(0, mat[i].im) << " i == " << i;
   }
 
   mboTensorOpDestroy(&identity);
@@ -990,8 +990,8 @@ TEST(MboNumOp, DeleteDiagonalSz) {
   std::vector<struct MboAmplitude> mat(D * D);
   mboNumOpDenseMatrix(Op_comp, &mat[0]);
   for (int i = 0; i < D * D; ++i) {
-    EXPECT_FLOAT_EQ(0, mat[i].re) << " i == " << i;
-    EXPECT_FLOAT_EQ(0, mat[i].im) << " i == " << i;
+    EXPECT_DOUBLE_EQ(0, mat[i].re) << " i == " << i;
+    EXPECT_DOUBLE_EQ(0, mat[i].im) << " i == " << i;
   }
 
   mboElemOpDestroy(&sz);

@@ -83,8 +83,8 @@ TEST_F(MboNumSubMatrixFixture, MatVec) {
   struct MboAmplitude zero = {0, 0};
   mboNumSubMatrixMatVec(one, m, &x[0], zero, &y[0]);
   for (MboGlobInd i = 0; i < dim; ++i) {
-	  EXPECT_FLOAT_EQ(2.0, y[i].re) << "i == " << i;
-	  EXPECT_FLOAT_EQ(0.0, y[i].im) << "i == " << i;
+	  EXPECT_DOUBLE_EQ(2.0, y[i].re) << "i == " << i;
+	  EXPECT_DOUBLE_EQ(0.0, y[i].im) << "i == " << i;
   }
 
   mboNumSubMatrixDestroy(&m);
@@ -102,11 +102,11 @@ TEST_F(MboNumSubMatrixFixture, MatVecFirstRow) {
 
   struct MboAmplitude zero = {0, 0};
   mboNumSubMatrixMatVec(one, m, &x[0], zero, &y[0]);
-  EXPECT_FLOAT_EQ(2.0, y[0].re) << "i == " << 0;
-  EXPECT_FLOAT_EQ(0.0, y[0].im) << "i == " << 0;
+  EXPECT_DOUBLE_EQ(2.0, y[0].re) << "i == " << 0;
+  EXPECT_DOUBLE_EQ(0.0, y[0].im) << "i == " << 0;
   for (MboGlobInd i = 1; i < dim; ++i) {
-	  EXPECT_FLOAT_EQ(1.0, y[i].re) << "i == " << i;
-	  EXPECT_FLOAT_EQ(0.0, y[i].im) << "i == " << i;
+	  EXPECT_DOUBLE_EQ(1.0, y[i].re) << "i == " << i;
+	  EXPECT_DOUBLE_EQ(0.0, y[i].im) << "i == " << i;
   }
 
   mboNumSubMatrixDestroy(&m);
@@ -127,8 +127,8 @@ TEST_F(MboNumSubMatrixFixture, MatVecFirstColumn) {
   double expectedRealParts[] = {0,   0.5, 0.5, 0, 0.5, 0, 0, 0,
                                 0.5, 0,   0,   0, 0,   0, 0, 0};
   for (MboGlobInd i = 1; i < dim; ++i) {
-    EXPECT_FLOAT_EQ(expectedRealParts[i], y[i].re) << "i == " << i;
-    EXPECT_FLOAT_EQ(0, y[i].im) << "i == " << i;
+    EXPECT_DOUBLE_EQ(expectedRealParts[i], y[i].re) << "i == " << i;
+    EXPECT_DOUBLE_EQ(0, y[i].im) << "i == " << i;
   }
 
   mboNumSubMatrixDestroy(&m);
@@ -146,10 +146,10 @@ TEST_F(MboNumSubMatrixFixture, MatVecTopLeftCorner) {
 
   struct MboAmplitude zero = {0, 0};
   mboNumSubMatrixMatVec(one, m, &x[0], zero, &y[0]);
-  EXPECT_FLOAT_EQ(0.5, y[0].re);
-  EXPECT_FLOAT_EQ(0.0, y[0].im);
-  EXPECT_FLOAT_EQ(0.5, y[1].re);
-  EXPECT_FLOAT_EQ(0.0, y[1].im);
+  EXPECT_DOUBLE_EQ(0.5, y[0].re);
+  EXPECT_DOUBLE_EQ(0.0, y[0].im);
+  EXPECT_DOUBLE_EQ(0.5, y[1].re);
+  EXPECT_DOUBLE_EQ(0.0, y[1].im);
 
   mboNumSubMatrixDestroy(&m);
 }
@@ -167,10 +167,10 @@ TEST_F(MboNumSubMatrixFixture, MatVecTopRightCorner) {
 
   struct MboAmplitude zero = {0, 0};
   mboNumSubMatrixMatVec(one, m, &x[0], zero, &y[0]);
-  EXPECT_FLOAT_EQ(0.0, y[0].re);
-  EXPECT_FLOAT_EQ(0.0, y[0].im);
-  EXPECT_FLOAT_EQ(0.0, y[1].re);
-  EXPECT_FLOAT_EQ(0.0, y[1].im);
+  EXPECT_DOUBLE_EQ(0.0, y[0].re);
+  EXPECT_DOUBLE_EQ(0.0, y[0].im);
+  EXPECT_DOUBLE_EQ(0.0, y[1].re);
+  EXPECT_DOUBLE_EQ(0.0, y[1].im);
 
   mboNumSubMatrixDestroy(&m);
 }

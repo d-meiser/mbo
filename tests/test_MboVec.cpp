@@ -79,8 +79,8 @@ TEST(MboVec, GetViewR) {
   err = mboVecGetViewR(v, &arr);
   EXPECT_EQ(err, MBO_SUCCESS);
   for (int i = 0; i < n; ++i) {
-    EXPECT_FLOAT_EQ(arr[i].re, i);
-    EXPECT_FLOAT_EQ(arr[i].im, -2.0 * i);
+    EXPECT_DOUBLE_EQ(arr[i].re, i);
+    EXPECT_DOUBLE_EQ(arr[i].im, -2.0 * i);
   }
   mboVecReleaseView(v, &arr);
   mboVecDestroy(&v);
@@ -194,8 +194,8 @@ TEST(MboVec, Duplicate) {
   mboVecGetViewR(x, &xarr);
   mboVecGetViewR(y, &yarr);
   for (int i = 0; i < mboVecDim(x); ++i) {
-    EXPECT_FLOAT_EQ(xarr[i].re, yarr[i].re);
-    EXPECT_FLOAT_EQ(xarr[i].im, yarr[i].im);
+    EXPECT_DOUBLE_EQ(xarr[i].re, yarr[i].re);
+    EXPECT_DOUBLE_EQ(xarr[i].im, yarr[i].im);
   }
   mboVecDestroy(&y);
   mboVecDestroy(&x);
@@ -268,10 +268,10 @@ TEST(MboVec, KronOne) {
   ASSERT_EQ(err, MBO_SUCCESS);
   struct MboAmplitude *arr;
   mboVecGetViewR(x, &arr);
-  EXPECT_FLOAT_EQ(arr[0].re, arrays[0][0].re);
-  EXPECT_FLOAT_EQ(arr[0].im, arrays[0][0].im);
-  EXPECT_FLOAT_EQ(arr[1].re, arrays[0][1].re);
-  EXPECT_FLOAT_EQ(arr[1].im, arrays[0][1].im);
+  EXPECT_DOUBLE_EQ(arr[0].re, arrays[0][0].re);
+  EXPECT_DOUBLE_EQ(arr[0].im, arrays[0][0].im);
+  EXPECT_DOUBLE_EQ(arr[1].re, arrays[0][1].re);
+  EXPECT_DOUBLE_EQ(arr[1].im, arrays[0][1].im);
   mboVecReleaseView(x, &arr);
   mboVecDestroy(&x);
   freeArrays(n, &arrays);
@@ -300,8 +300,8 @@ TEST(MboVec, KronTwo) {
           arrays[0][i].re * arrays[1][j].re - arrays[0][i].im * arrays[1][j].im;
       tmp.im =
           arrays[0][i].re * arrays[1][j].im + arrays[0][i].im * arrays[1][j].re;
-      EXPECT_FLOAT_EQ(tmp.re, arr[i * dims[1] + j].re);
-      EXPECT_FLOAT_EQ(tmp.im, arr[i * dims[1] + j].im);
+      EXPECT_DOUBLE_EQ(tmp.re, arr[i * dims[1] + j].re);
+      EXPECT_DOUBLE_EQ(tmp.im, arr[i * dims[1] + j].im);
     }
   }
   mboVecReleaseView(x, &arr);
@@ -346,19 +346,19 @@ TEST(MboVec, Map) {
   mboVecCreate(12, &x);
   mboVecMap(3, dims, f1, 0, x);
   mboVecGetViewR(x, &xarr);
-  EXPECT_FLOAT_EQ(xarr[0].re, 0);
-  EXPECT_FLOAT_EQ(xarr[0].im, 0);
-  EXPECT_FLOAT_EQ(xarr[1].re, 1);
-  EXPECT_FLOAT_EQ(xarr[2].re, 10);
-  EXPECT_FLOAT_EQ(xarr[3].re, 11);
-  EXPECT_FLOAT_EQ(xarr[4].re, 20);
-  EXPECT_FLOAT_EQ(xarr[5].re, 21);
-  EXPECT_FLOAT_EQ(xarr[6].re, 100);
-  EXPECT_FLOAT_EQ(xarr[7].re, 101);
-  EXPECT_FLOAT_EQ(xarr[8].re, 110);
-  EXPECT_FLOAT_EQ(xarr[9].re, 111);
-  EXPECT_FLOAT_EQ(xarr[10].re, 120);
-  EXPECT_FLOAT_EQ(xarr[11].re, 121);
+  EXPECT_DOUBLE_EQ(xarr[0].re, 0);
+  EXPECT_DOUBLE_EQ(xarr[0].im, 0);
+  EXPECT_DOUBLE_EQ(xarr[1].re, 1);
+  EXPECT_DOUBLE_EQ(xarr[2].re, 10);
+  EXPECT_DOUBLE_EQ(xarr[3].re, 11);
+  EXPECT_DOUBLE_EQ(xarr[4].re, 20);
+  EXPECT_DOUBLE_EQ(xarr[5].re, 21);
+  EXPECT_DOUBLE_EQ(xarr[6].re, 100);
+  EXPECT_DOUBLE_EQ(xarr[7].re, 101);
+  EXPECT_DOUBLE_EQ(xarr[8].re, 110);
+  EXPECT_DOUBLE_EQ(xarr[9].re, 111);
+  EXPECT_DOUBLE_EQ(xarr[10].re, 120);
+  EXPECT_DOUBLE_EQ(xarr[11].re, 121);
   mboVecReleaseView(x, &xarr);
   mboVecDestroy(&x);
 
@@ -368,8 +368,8 @@ TEST(MboVec, Map) {
   mboVecGetViewR(x, &xarr);
   EXPECT_EQ(i, 12);
   for (i = 0; i < 12; ++i) {
-    EXPECT_FLOAT_EQ(xarr[i].re, i);
-    EXPECT_FLOAT_EQ(xarr[i].im, 0);
+    EXPECT_DOUBLE_EQ(xarr[i].re, i);
+    EXPECT_DOUBLE_EQ(xarr[i].im, 0);
   }
   mboVecReleaseView(x, &xarr);
   mboVecDestroy(&x);
@@ -409,9 +409,9 @@ TEST(MboVec, Dot) {
   mboVecReleaseView(y, &dummy);
   err = mboVecDot(x, y, &result);
   EXPECT_EQ(err, MBO_SUCCESS);
-  EXPECT_FLOAT_EQ(result.re,
+  EXPECT_DOUBLE_EQ(result.re,
                   2.0 * 1.0 + 1.0 * 3.0 + 3.0 * 10.0 + (-1.0) * 15.0);
-  EXPECT_FLOAT_EQ(result.im,
+  EXPECT_DOUBLE_EQ(result.im,
                   2.0 * 3.0 - 1.0 * 1.0 + 3.0 * 15.0 - (-1.0) * 10.0);
   mboVecDestroy(&x);
   mboVecDestroy(&y);
@@ -436,10 +436,10 @@ TEST(MboVec, UnitVector) {
   err = mboVecUnitVector(1, x);
   EXPECT_EQ(err, MBO_SUCCESS);
   mboVecGetViewRW(x, &xarr);
-  EXPECT_FLOAT_EQ(xarr[0].re, 0);
-  EXPECT_FLOAT_EQ(xarr[0].im, 0);
-  EXPECT_FLOAT_EQ(xarr[1].re, 1);
-  EXPECT_FLOAT_EQ(xarr[1].im, 0);
+  EXPECT_DOUBLE_EQ(xarr[0].re, 0);
+  EXPECT_DOUBLE_EQ(xarr[0].im, 0);
+  EXPECT_DOUBLE_EQ(xarr[1].re, 1);
+  EXPECT_DOUBLE_EQ(xarr[1].im, 0);
   mboVecReleaseView(x, &xarr);
   mboVecDestroy(&x);
 }
@@ -470,15 +470,15 @@ TEST(MboVec, Swap) {
 
   mboVecGetViewR(x, &view);
   for (int i = 0; i < 4; ++i) {
-    EXPECT_FLOAT_EQ(0, ((double*)view)[i]);
+    EXPECT_DOUBLE_EQ(0, ((double*)view)[i]);
   }
   mboVecReleaseView(x, &view);
 
   mboVecGetViewR(y, &view);
-  EXPECT_FLOAT_EQ(12.0, view[0].re);
-  EXPECT_FLOAT_EQ(20.0, view[0].im);
-  EXPECT_FLOAT_EQ(1.0, view[1].re);
-  EXPECT_FLOAT_EQ(33.0, view[1].im);
+  EXPECT_DOUBLE_EQ(12.0, view[0].re);
+  EXPECT_DOUBLE_EQ(20.0, view[0].im);
+  EXPECT_DOUBLE_EQ(1.0, view[1].re);
+  EXPECT_DOUBLE_EQ(33.0, view[1].im);
   mboVecReleaseView(y, &view);
 
   mboVecDestroy(&x);

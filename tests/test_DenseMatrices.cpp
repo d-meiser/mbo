@@ -325,9 +325,9 @@ TEST_P(MboNumOpDenseMatrix, compAgainstNaive) {
   computeMatrix(op, &expected[0]);
   for (MboGlobInd i = 0; i < dim; ++i) {
     for (MboGlobInd j = 0; j < dim; ++j) {
-      EXPECT_FLOAT_EQ(expected[i * dim + j].re, mat[i * dim + j].re)
+      EXPECT_DOUBLE_EQ(expected[i * dim + j].re, mat[i * dim + j].re)
           << "Matrices differ in M(" << i << ", " << j << ").re";
-      EXPECT_FLOAT_EQ(expected[i * dim + j].im, mat[i * dim + j].im)
+      EXPECT_DOUBLE_EQ(expected[i * dim + j].im, mat[i * dim + j].im)
           << "Matrices differ in M(" << i << ", " << j << ").im";
     }
   }

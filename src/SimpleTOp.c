@@ -228,7 +228,7 @@ void simpleTOpGetNonZerosPerRow(MboProdSpace h, struct SimpleTOp *simpleOp,
 }
 
 void simpleTOpSparseMatrix(MboProdSpace h, struct SimpleTOp *simpleOp,
-			   MboGlobInd rmin, MboGlobInd rmax, int *i, int *j,
+			   MboGlobInd rmin, MboGlobInd rmax, MboGlobInd *i, MboGlobInd *j,
 			   struct MboAmplitude *a, int *numInserted)
 {
 	MboGlobInd blockSize;

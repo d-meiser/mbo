@@ -143,8 +143,8 @@ void mboNumOpRowOffsets(MboNumOp op, MboGlobInd rmin, MboGlobInd rmax, int *i)
 	}
 }
 
-void mboNumOpSparseMatrix(MboNumOp op, MboGlobInd rmin, MboGlobInd rmax, int *i,
-			  int *j, struct MboAmplitude *a)
+void mboNumOpSparseMatrix(MboNumOp op, MboGlobInd rmin, MboGlobInd rmax, MboGlobInd *i,
+			  MboGlobInd *j, struct MboAmplitude *a)
 {
 	int *numInserted, r, s;
 

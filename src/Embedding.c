@@ -429,7 +429,7 @@ void embeddingNonZeros(int i, int numSpaces, MboLocInd *dims,
 void embeddingSparseMatrix(int i, int numSpaces, MboLocInd *dims,
 			   MboGlobInd blockSizeAfter, struct MboAmplitude alpha,
 			   int numFactors, struct Embedding *embeddings,
-			   MboGlobInd rmin, MboGlobInd rmax, int *I, int *J,
+			   MboGlobInd rmin, MboGlobInd rmax, MboGlobInd *I, MboGlobInd *J,
 			   struct MboAmplitude *A, MboGlobInd offsetR,
 			   MboGlobInd offsetC, int *numInserted)
 {

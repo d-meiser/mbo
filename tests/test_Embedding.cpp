@@ -129,8 +129,8 @@ TEST_F(ApplyEmbedding, Identity) {
   tile.cmax = dim;
   applyEmbeddingsMask(0, 4, dims, dim, x[0], 0, 0, x, y, tile, &tile);
   for (int i = 0; i < computeBlockSize(4, dims); ++i) {
-    EXPECT_FLOAT_EQ(y[i].re, 0);
-    EXPECT_FLOAT_EQ(y[i].im, 0);
+    EXPECT_DOUBLE_EQ(y[i].re, 0);
+    EXPECT_DOUBLE_EQ(y[i].im, 0);
   }
 }
 
@@ -157,8 +157,8 @@ TEST_F(ApplyEmbedding, SzLast) {
       expectedResult.re = -alpha.re;
       expectedResult.im = -alpha.im;
     }
-    EXPECT_FLOAT_EQ(expectedResult.re, y[i].re) << " i == " << i;
-    EXPECT_FLOAT_EQ(expectedResult.im, y[i].im) << " i == " << i;
+    EXPECT_DOUBLE_EQ(expectedResult.re, y[i].re) << " i == " << i;
+    EXPECT_DOUBLE_EQ(expectedResult.im, y[i].im) << " i == " << i;
   }
   free(embeddings);
 }
@@ -196,8 +196,8 @@ TEST_F(ApplyEmbedding, SzInterior) {
         expectedResult.re = 0;
         expectedResult.im = 0;
     }
-    EXPECT_FLOAT_EQ(y[i].re, expectedResult.re);
-    EXPECT_FLOAT_EQ(y[i].im, expectedResult.im);
+    EXPECT_DOUBLE_EQ(y[i].re, expectedResult.re);
+    EXPECT_DOUBLE_EQ(y[i].im, expectedResult.im);
   }
   free(embeddings);
 }
@@ -237,8 +237,8 @@ TEST_F(ApplyEmbedding, TwoFactors) {
       expectedResult.re = 0;
       expectedResult.im = 0;
     }
-    EXPECT_FLOAT_EQ(y[i].re, expectedResult.re);
-    EXPECT_FLOAT_EQ(y[i].im, expectedResult.im);
+    EXPECT_DOUBLE_EQ(y[i].re, expectedResult.re);
+    EXPECT_DOUBLE_EQ(y[i].im, expectedResult.im);
   }
   free(embeddings);
 }
@@ -335,15 +335,15 @@ TEST(Embedding, ApplyEmbeddingsRowRange) {
   tile.cmax = computeBlockSize(2, dims);
   applyEmbeddingsMask(0, 2, dims, computeBlockSize(2, dims), alpha,
       1, &embeddings[0], &x[0], &y[0], tile, &tile);
-  EXPECT_FLOAT_EQ(-alpha.re, y[0].re) << " i == " << 0;
-  EXPECT_FLOAT_EQ(-alpha.im, y[0].im) << " i == " << 0;
-  EXPECT_FLOAT_EQ(-alpha.re, y[1].re) << " i == " << 1;
-  EXPECT_FLOAT_EQ(-alpha.im, y[1].im) << " i == " << 1;
-  EXPECT_FLOAT_EQ(-alpha.re, y[2].re) << " i == " << 2;
-  EXPECT_FLOAT_EQ(-alpha.im, y[2].im) << " i == " << 2;
+  EXPECT_DOUBLE_EQ(-alpha.re, y[0].re) << " i == " << 0;
+  EXPECT_DOUBLE_EQ(-alpha.im, y[0].im) << " i == " << 0;
+  EXPECT_DOUBLE_EQ(-alpha.re, y[1].re) << " i == " << 1;
+  EXPECT_DOUBLE_EQ(-alpha.im, y[1].im) << " i == " << 1;
+  EXPECT_DOUBLE_EQ(-alpha.re, y[2].re) << " i == " << 2;
+  EXPECT_DOUBLE_EQ(-alpha.im, y[2].im) << " i == " << 2;
   for (MboLocInd i = 3; i < computeBlockSize(2, dims); ++i) {
-    EXPECT_FLOAT_EQ(0, y[i].re) << " i == " << i;
-    EXPECT_FLOAT_EQ(0, y[i].im) << " i == " << i;
+    EXPECT_DOUBLE_EQ(0, y[i].re) << " i == " << i;
+    EXPECT_DOUBLE_EQ(0, y[i].im) << " i == " << i;
   }
   mboElemOpDestroy(&sz);
 }
@@ -377,13 +377,13 @@ TEST(Embedding, ApplyEmbeddingsRmaxOutOfRange) {
   fullTile.cmax = computeBlockSize(2, dims);
   applyEmbeddingsMask(0, 2, dims, computeBlockSize(2, dims), alpha,
       1, &embeddings[0], &x[0], &y[0] + 4, fullTile, &tile);
-  EXPECT_FLOAT_EQ(alpha.re, y[4].re) << " i == " << 4;
-  EXPECT_FLOAT_EQ(alpha.im, y[4].im) << " i == " << 4;
-  EXPECT_FLOAT_EQ(alpha.re, y[5].re) << " i == " << 5;
-  EXPECT_FLOAT_EQ(alpha.im, y[5].im) << " i == " << 5;
+  EXPECT_DOUBLE_EQ(alpha.re, y[4].re) << " i == " << 4;
+  EXPECT_DOUBLE_EQ(alpha.im, y[4].im) << " i == " << 4;
+  EXPECT_DOUBLE_EQ(alpha.re, y[5].re) << " i == " << 5;
+  EXPECT_DOUBLE_EQ(alpha.im, y[5].im) << " i == " << 5;
   for (MboLocInd i = 0; i < 4; ++i) {
-    EXPECT_FLOAT_EQ(0, y[i].re) << " i == " << i;
-    EXPECT_FLOAT_EQ(0, y[i].im) << " i == " << i;
+    EXPECT_DOUBLE_EQ(0, y[i].re) << " i == " << i;
+    EXPECT_DOUBLE_EQ(0, y[i].im) << " i == " << i;
   }
   mboElemOpDestroy(&sz);
 }
@@ -413,7 +413,7 @@ TEST_F(ApplyLeafMask, Empty) {
   y[0].re = 0;
   y[0].im = 0;
   applyLeafMask(alpha, &x[0], &y[0], &tile, &mask);
-  EXPECT_FLOAT_EQ(0, y[0].re);
+  EXPECT_DOUBLE_EQ(0, y[0].re);
 }
 
 TEST_F(ApplyLeafMask, TileEmpty) {
@@ -423,7 +423,7 @@ TEST_F(ApplyLeafMask, TileEmpty) {
   mask.rmax = 1;
   mask.cmax = 1;
   applyLeafMask(alpha, &x[0], &y[0], &tile, &mask);
-  EXPECT_FLOAT_EQ(0, y[0].re);
+  EXPECT_DOUBLE_EQ(0, y[0].re);
 }
 
 TEST_F(ApplyLeafMask, MaskEmpty) {
@@ -433,7 +433,7 @@ TEST_F(ApplyLeafMask, MaskEmpty) {
   tile.rmax = 1;
   tile.cmax = 1;
   applyLeafMask(alpha, &x[0], &y[0], &tile, &mask);
-  EXPECT_FLOAT_EQ(0, y[0].re);
+  EXPECT_DOUBLE_EQ(0, y[0].re);
 }
 
 TEST_F(ApplyLeafMask, MaskAndTileEqual) {
@@ -445,8 +445,8 @@ TEST_F(ApplyLeafMask, MaskAndTileEqual) {
   tile.cmax = 1;
   mask = tile;
   applyLeafMask(alpha, &x[0], &y[0], &tile, &mask);
-  EXPECT_FLOAT_EQ(24.0, y[0].re);
-  EXPECT_FLOAT_EQ(40.0, y[0].im);
+  EXPECT_DOUBLE_EQ(24.0, y[0].re);
+  EXPECT_DOUBLE_EQ(40.0, y[0].im);
 }
 
 TEST_F(ApplyLeafMask, TileFullyInsideMask) {
@@ -467,14 +467,14 @@ TEST_F(ApplyLeafMask, TileFullyInsideMask) {
   mask.rmax = 4;
   mask.cmax = 3;
   applyLeafMask(alpha, &x[0], &y[0], &tile, &mask);
-  EXPECT_FLOAT_EQ(yIn.re, y[0].re);
-  EXPECT_FLOAT_EQ(yIn.im, y[0].im);
-  EXPECT_FLOAT_EQ(yIn.re + xIn.re, y[1].re);
-  EXPECT_FLOAT_EQ(yIn.im + xIn.im, y[1].im);
-  EXPECT_FLOAT_EQ(yIn.re, y[2].re);
-  EXPECT_FLOAT_EQ(yIn.im, y[2].im);
-  EXPECT_FLOAT_EQ(yIn.re, y[3].re);
-  EXPECT_FLOAT_EQ(yIn.im, y[3].im);
+  EXPECT_DOUBLE_EQ(yIn.re, y[0].re);
+  EXPECT_DOUBLE_EQ(yIn.im, y[0].im);
+  EXPECT_DOUBLE_EQ(yIn.re + xIn.re, y[1].re);
+  EXPECT_DOUBLE_EQ(yIn.im + xIn.im, y[1].im);
+  EXPECT_DOUBLE_EQ(yIn.re, y[2].re);
+  EXPECT_DOUBLE_EQ(yIn.im, y[2].im);
+  EXPECT_DOUBLE_EQ(yIn.re, y[3].re);
+  EXPECT_DOUBLE_EQ(yIn.im, y[3].im);
 }
 
 TEST_F(ApplyLeafMask, MaskFullyInsideTile) {
@@ -495,8 +495,8 @@ TEST_F(ApplyLeafMask, MaskFullyInsideTile) {
   mask.rmax = 2;
   mask.cmax = 3;
   applyLeafMask(alpha, &x[0], &y[0], &tile, &mask);
-  EXPECT_FLOAT_EQ(yIn.re + xIn.re, y[0].re);
-  EXPECT_FLOAT_EQ(yIn.im + xIn.im, y[0].im);
+  EXPECT_DOUBLE_EQ(yIn.re + xIn.re, y[0].re);
+  EXPECT_DOUBLE_EQ(yIn.im + xIn.im, y[0].im);
 }
 
 TEST_F(ApplyLeafMask, MaskBeyondRowRange) {
@@ -518,12 +518,12 @@ TEST_F(ApplyLeafMask, MaskBeyondRowRange) {
   mask.cmax = 3;
   applyLeafMask(alpha, &x[0], &y[0], &tile, &mask);
   for (int i = 0; i < 2; ++i) {
-    EXPECT_FLOAT_EQ(yIn.re + xIn.re, y[i].re) << "i == " << i;
-    EXPECT_FLOAT_EQ(yIn.im + xIn.im, y[i].im) << "i == " << i;
+    EXPECT_DOUBLE_EQ(yIn.re + xIn.re, y[i].re) << "i == " << i;
+    EXPECT_DOUBLE_EQ(yIn.im + xIn.im, y[i].im) << "i == " << i;
   }
   for (int i = 2; i < 4; ++i) {
-    EXPECT_FLOAT_EQ(yIn.re, y[i].re) << "i == " << i;
-    EXPECT_FLOAT_EQ(yIn.im, y[i].im) << "i == " << i;
+    EXPECT_DOUBLE_EQ(yIn.re, y[i].re) << "i == " << i;
+    EXPECT_DOUBLE_EQ(yIn.im, y[i].im) << "i == " << i;
   }
 }
 
@@ -548,12 +548,12 @@ TEST_F(ApplyLeafMask, MaskBeyondRowAndColRange) {
   mask.cmax = 6;
   applyLeafMask(alpha, &x[0], &y[0], &tile, &mask);
   for (int i = 0; i < 2; ++i) {
-    EXPECT_FLOAT_EQ(yIn.re + xIn.re, y[i].re) << "i == " << i;
-    EXPECT_FLOAT_EQ(yIn.im + xIn.im, y[i].im) << "i == " << i;
+    EXPECT_DOUBLE_EQ(yIn.re + xIn.re, y[i].re) << "i == " << i;
+    EXPECT_DOUBLE_EQ(yIn.im + xIn.im, y[i].im) << "i == " << i;
   }
   for (int i = 2; i < 3; ++i) {
-    EXPECT_FLOAT_EQ(yIn.re, y[i].re) << "i == " << i;
-    EXPECT_FLOAT_EQ(yIn.im, y[i].im) << "i == " << i;
+    EXPECT_DOUBLE_EQ(yIn.re, y[i].re) << "i == " << i;
+    EXPECT_DOUBLE_EQ(yIn.im, y[i].im) << "i == " << i;
   }
 }
 
@@ -578,12 +578,12 @@ TEST_F(ApplyLeafMask, MaskBeyondRowAndColRangeTranspose) {
   mask.cmax = 7;
   applyLeafMask(alpha, &x[0], &y[0], &tile, &mask);
   for (int i = 0; i < 4; ++i) {
-    EXPECT_FLOAT_EQ(yIn.re, y[i].re) << "i == " << i;
-    EXPECT_FLOAT_EQ(yIn.im, y[i].im) << "i == " << i;
+    EXPECT_DOUBLE_EQ(yIn.re, y[i].re) << "i == " << i;
+    EXPECT_DOUBLE_EQ(yIn.im, y[i].im) << "i == " << i;
   }
   for (int i = 4; i < 6; ++i) {
-    EXPECT_FLOAT_EQ(yIn.re + xIn.re, y[i].re) << "i == " << i;
-    EXPECT_FLOAT_EQ(yIn.im + xIn.im, y[i].im) << "i == " << i;
+    EXPECT_DOUBLE_EQ(yIn.re + xIn.re, y[i].re) << "i == " << i;
+    EXPECT_DOUBLE_EQ(yIn.im + xIn.im, y[i].im) << "i == " << i;
   }
 }
 
@@ -609,8 +609,8 @@ TEST_F(ApplyLeafMask, MaskRowBand) {
   mask.cmax = 6;
   applyLeafMask(alpha, &x[0], &y[0], &tile, &mask);
   for (int i = 0; i < 3; ++i) {
-    EXPECT_FLOAT_EQ(3.0 + i, y[i].re) << "i == " << i;
-    EXPECT_FLOAT_EQ(0.0, y[i].im) << "i == " << i;
+    EXPECT_DOUBLE_EQ(3.0 + i, y[i].re) << "i == " << i;
+    EXPECT_DOUBLE_EQ(0.0, y[i].im) << "i == " << i;
   }
 }
 
@@ -636,7 +636,7 @@ TEST_F(ApplyLeafMask, MaskRowBand2) {
   mask.cmax = 6;
   applyLeafMask(alpha, &x[0], &y[0], &tile, &mask);
   for (int i = 0; i < 2; ++i) {
-    EXPECT_FLOAT_EQ(4.0 + i, y[i].re) << "i == " << i;
-    EXPECT_FLOAT_EQ(0.0, y[i].im) << "i == " << i;
+    EXPECT_DOUBLE_EQ(4.0 + i, y[i].re) << "i == " << i;
+    EXPECT_DOUBLE_EQ(0.0, y[i].im) << "i == " << i;
   }
 }
