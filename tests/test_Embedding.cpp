@@ -409,6 +409,7 @@ struct ApplyLeafMask : public ::testing::Test {
 };
 
 TEST_F(ApplyLeafMask, Empty) {
+  x.resize(1);
   y.resize(1);
   y[0].re = 0;
   y[0].im = 0;
@@ -417,6 +418,7 @@ TEST_F(ApplyLeafMask, Empty) {
 }
 
 TEST_F(ApplyLeafMask, TileEmpty) {
+  x.resize(1);
   y.resize(1);
   y[0].re = 0;
   y[0].im = 0;
@@ -427,6 +429,7 @@ TEST_F(ApplyLeafMask, TileEmpty) {
 }
 
 TEST_F(ApplyLeafMask, MaskEmpty) {
+  x.resize(1);
   y.resize(1);
   y[0].re = 0;
   y[0].im = 0;
@@ -437,6 +440,7 @@ TEST_F(ApplyLeafMask, MaskEmpty) {
 }
 
 TEST_F(ApplyLeafMask, MaskAndTileEqual) {
+  x.resize(1);
   y.resize(1);
   y[0].re = 12.0;
   y[0].im = 20.0;

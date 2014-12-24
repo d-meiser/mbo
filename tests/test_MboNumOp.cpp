@@ -612,8 +612,8 @@ TEST(MboTensorOp, SparseMatrixNull) {
   std::vector<MboGlobInd> i(dim + 1);
   MboNumOp nullc = mboNumOpCompile(null);
   mboNumOpRowOffsets(nullc, 0, 2, &i[0]);
-  std::vector<MboGlobInd> j(i[dim]);
-  std::vector<struct MboAmplitude> a(i[dim]);
+  std::vector<MboGlobInd> j(i[dim] + 1);
+  std::vector<struct MboAmplitude> a(i[dim] + 1);
   mboNumOpSparseMatrix(nullc, 0, 2, &i[0], &j[0], &a[0]);
 
   mboTensorOpDestroy(&null);

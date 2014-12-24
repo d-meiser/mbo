@@ -63,7 +63,7 @@ TEST(Integrator, AdvanceBeyond) {
   integratorAdvanceBeyond(&integrator, 0.3, &x, &exponentialDecay, &ctx);
   double finalTime = integratorGetTime(&integrator);
   EXPECT_LE(0.3, finalTime);
-  EXPECT_DOUBLE_EQ(exp(-finalTime * ctx.gamma), x.re);
+  EXPECT_LE(std::abs(exp(-finalTime * ctx.gamma) - x.re), 1.0e-8);
   integratorDestroy(&integrator);
 }
 
@@ -81,7 +81,7 @@ TEST(Integrator, AdvanceTo) {
   integratorAdvanceTo(&integrator, targetTime, &x, &exponentialDecay, &ctx);
   double finalTime = integratorGetTime(&integrator);
   EXPECT_DOUBLE_EQ(targetTime, finalTime);
-  EXPECT_DOUBLE_EQ(exp(-finalTime * ctx.gamma), x.re);
+  EXPECT_LE(std::abs(exp(-finalTime * ctx.gamma) - x.re), 1.0e-8);
   integratorDestroy(&integrator);
 }
 
