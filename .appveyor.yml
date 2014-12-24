@@ -1,0 +1,13 @@
+version: 1.0.{build}
+before_build:
+- cinst wget -x86
+- cinst 7zip.commandline -x86
+- wget -q http://googletest.googlecode.com/files/gtest-1.7.0.zip
+- 7z x gtest-1.7.0.zip > NUL
+- md build
+- cd build
+- cmake -DMBO_BUILD_TESTS:BOOL=ON -DRUN_EXAMPLES_AS_TESTS:BOOL=ON -Dgtest_force_shared_crt:BOOL=ON -Dgtest_disable_pthreads:BOOL=ON ..
+- cmake --build . --config Release
+- ctest -j2 --output-on-failure
+build:
+  verbosity: minimal
