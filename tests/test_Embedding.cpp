@@ -593,7 +593,6 @@ TEST_F(ApplyLeafMask, MaskRowBand) {
   yIn.re = 0.0;
   yIn.im = 0.0;
   std::fill(y.begin(), y.end(), yIn);
-  struct MboAmplitude xIn;
   x.resize(6);
   for (int i = 0; i < 6; ++i) {
     x[i].re = i;
@@ -620,7 +619,6 @@ TEST_F(ApplyLeafMask, MaskRowBand2) {
   yIn.re = 0.0;
   yIn.im = 0.0;
   std::fill(y.begin(), y.end(), yIn);
-  struct MboAmplitude xIn;
   x.resize(6);
   for (int i = 0; i < 6; ++i) {
     x[i].re = i;
