@@ -132,7 +132,7 @@ MBO_EXPORT void mboNumOpDenseMatrix(MboNumOp a, struct MboAmplitude *mat);
  * @sa mboNumOpSparseMatrix
  **/
 MBO_EXPORT void mboNumOpRowOffsets(MboNumOp op, MboGlobInd rmin,
-				   MboGlobInd rmax, int *i);
+				   MboGlobInd rmax, MboGlobInd *i);
 
 /**
  * @brief Create a sparse matrix representation for a numerical operator.

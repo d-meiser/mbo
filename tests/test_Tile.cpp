@@ -35,14 +35,14 @@ TEST(Tile, IsEmptyTrueR) {
   struct Tile t1 = {0, 1, 2, 3};
   struct Tile t2 = {1, 10, 0, 4};
   struct Tile intersection = tileIntersection(t1, t2);
-  EXPECT_TRUE(tileIsEmpty(&intersection));
+  EXPECT_NE(0, tileIsEmpty(&intersection));
 }
 
 TEST(Tile, IsEmptyTrueC) {
   struct Tile t1 = {0, 2, 2, 3};
   struct Tile t2 = {1, 10, 0, 2};
   struct Tile intersection = tileIntersection(t1, t2);
-  EXPECT_TRUE(tileIsEmpty(&intersection));
+  EXPECT_NE(0, tileIsEmpty(&intersection));
 }
 
 TEST(Tile, Divide) {

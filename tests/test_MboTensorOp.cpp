@@ -29,7 +29,7 @@ TEST(MboTensorOp, GetSpace) {
   MboProdSpace h = mboProdSpaceCreate(5);
   mboTensorOpIdentity(h, &op);
   MboProdSpace h2 = mboTensorOpGetSpace(op);
-  EXPECT_TRUE(mboProdSpaceEqual(h, h2));
+  EXPECT_NE(0, mboProdSpaceEqual(h, h2));
   mboTensorOpDestroy(&op);
   mboProdSpaceDestroy(&h);
 }
@@ -270,7 +270,6 @@ TEST(MboTensorOp, Kron) {
   MboProdSpace h1, h2, h3, hTot;
   MBO_STATUS err;
   MboElemOp sz;
-  MboLocInd dims[3];
 
   h1 = mboProdSpaceCreate(2);
   hTot = mboProdSpaceCreate(0);

@@ -91,7 +91,7 @@ void embeddingDenseMatrix(int i, int numSpaces, MboLocInd *dims,
 void embeddingNonZeros(int i, int numSpaces, MboLocInd *dims,
 		       MboGlobInd blockSizeAfter, int numFactors,
 		       struct Embedding *embeddings, MboGlobInd rmin,
-		       MboGlobInd rmax, MboGlobInd offset, int *nnz);
+		       MboGlobInd rmax, MboGlobInd offset, MboGlobInd *nnz);
 
 void embeddingSparseMatrix(int i, int numSpaces, MboLocInd *dims,
 			   MboGlobInd blockSizeAfter, struct MboAmplitude alpha,

@@ -105,7 +105,7 @@ TEST(MboProdSpace, GetDims)
   MboProdSpace h = buildProdSpace(dims);
   std::vector<MboLocInd> hDims(mboProdSpaceSize(h));
   EXPECT_EQ(4, hDims.size());
-  mboProdSpaceGetDims(h, hDims.size(), hDims.empty() ? 0 : &hDims[0]);
+  mboProdSpaceGetDims(h, (int)hDims.size(), hDims.empty() ? 0 : &hDims[0]);
   EXPECT_EQ(7, hDims[0]);
   EXPECT_EQ(3, hDims[1]);
   EXPECT_EQ(5, hDims[2]);
@@ -140,7 +140,7 @@ TEST(MboProdSpace, EqualCopy)
 {
 	MboProdSpace h1 = mboProdSpaceCreate(2);
 	MboProdSpace h2 = mboProdSpaceCopy(h1);
-	EXPECT_TRUE(mboProdSpaceEqual(h1, h2));
+	EXPECT_NE(0, mboProdSpaceEqual(h1, h2));
 	mboProdSpaceDestroy(&h1);
 	mboProdSpaceDestroy(&h2);
 }
@@ -164,7 +164,7 @@ TEST(MboProdSpace, Equal)
 	mboProdSpaceMul(h1, &h2);
 	mboProdSpaceMul(h1, &h3);
 	mboProdSpaceMul(h1, &h3);
-	EXPECT_TRUE(mboProdSpaceEqual(h2, h3));
+	EXPECT_NE(0, mboProdSpaceEqual(h2, h3));
 	mboProdSpaceDestroy(&h1);
 	mboProdSpaceDestroy(&h2);
 	mboProdSpaceDestroy(&h3);

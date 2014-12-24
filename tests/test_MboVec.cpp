@@ -237,7 +237,7 @@ static void freeArrays(int n, struct MboAmplitude ***arrays) {
 
 TEST(MboVec, KronDimensionsMismatch) {
   struct MboAmplitude **arrays;
-  struct MboAmplitude zero, tmp;
+  struct MboAmplitude zero;
   MboVec x;
   zero.re = 0;
   zero.im = 0;

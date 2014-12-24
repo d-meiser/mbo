@@ -60,7 +60,7 @@ double flopsSimpleTOp(int numSpaces, MboLocInd *dims, struct SimpleTOp *op);
 void simpleTOpDenseMatrix(MboProdSpace h, struct SimpleTOp *simpleOp,
 			  struct MboAmplitude *mat);
 void simpleTOpGetNonZerosPerRow(MboProdSpace h, struct SimpleTOp *simpleOp,
-				MboGlobInd rmin, MboGlobInd rmax, int *nnz);
+				MboGlobInd rmin, MboGlobInd rmax, MboGlobInd *nnz);
 void simpleTOpSparseMatrix(MboProdSpace h, struct SimpleTOp *simpleOp,
 			   MboGlobInd rmin, MboGlobInd rmax, MboGlobInd *i, MboGlobInd *j,
 			   struct MboAmplitude *a, int *numInserted);

@@ -20,7 +20,7 @@ TEST(MboTensorOp, MatVec) {
   MboProdSpace h1, h2;
   MboTensorOp A, B, C;
   MboNumOp Ac;
-  struct MboAmplitude a, b, one, result, *arr, expectedResult;
+  struct MboAmplitude a, b, one, result, expectedResult;
   std::vector<struct MboAmplitude> x, y;
   MboElemOp eop;
   MBO_STATUS err;
@@ -275,11 +275,10 @@ TEST(MboTensorOp, MulSelf) {
 }
 
 TEST(MboTensorOp, MatVec3BodyOperator) {
-  MboGlobInd i;
-  MboLocInd *dims, dim;
+  MboGlobInd dim;
   MboProdSpace h1, h2;
   MboTensorOp A, B, C, D;
-  struct MboAmplitude a, b, one, result, *arr, expectedResult;
+  struct MboAmplitude a, b, one;
   MboElemOp eop;
 
   one.re = 1.0;
@@ -419,7 +418,7 @@ TEST(MboTensorOp, RowOffsetsNull) {
   mboTensorOpNull(h, &null);
   MboNumOp nullc = mboNumOpCompile(null);
 
-  std::vector<int> i(dim + 1);
+  std::vector<MboGlobInd> i(dim + 1);
   mboNumOpRowOffsets(nullc, 0, 2, &i[0]);
   EXPECT_EQ(0, i[0]);
   EXPECT_EQ(0, i[1]);
@@ -437,7 +436,7 @@ TEST(MboTensorOp, RowOffsetsIdentity) {
   mboTensorOpIdentity(h, &id);
   MboNumOp idc = mboNumOpCompile(id);
 
-  std::vector<int> i(dim + 1);
+  std::vector<MboGlobInd> i(dim + 1);
   mboNumOpRowOffsets(idc, 0, 2, &i[0]);
   EXPECT_EQ(0, i[0]);
   EXPECT_EQ(1, i[1]);
@@ -453,7 +452,7 @@ TEST(MboTensorOp, RowOffsetsIdentityEmptyRange) {
   MboProdSpace h = mboProdSpaceCreate(dim);
   MboTensorOp id;
   mboTensorOpIdentity(h, &id);
-  std::vector<int> i(dim + 1);
+  std::vector<MboGlobInd> i(dim + 1);
   MboNumOp idc = mboNumOpCompile(id);
   mboNumOpRowOffsets(idc, 3, 2, &i[0]);
   mboNumOpRowOffsets(idc, 2, 2, &i[0]);
@@ -469,7 +468,7 @@ TEST(MboTensorOp, RowOffsetsIdentitySubrange) {
   mboTensorOpIdentity(h, &id);
   MboNumOp idc = mboNumOpCompile(id);
 
-  std::vector<int> i(3);
+  std::vector<MboGlobInd> i(3);
   mboNumOpRowOffsets(idc, 2, 4, &i[0]);
   EXPECT_EQ(0, i[0]);
   EXPECT_EQ(1, i[1]);
@@ -488,7 +487,7 @@ TEST(MboTensorOp, RowOffsetsSigmaPlus) {
   MboElemOp sp = mboSigmaPlus();
   mboTensorOpAddTo(sp, 0, Sp);
 
-  std::vector<int> i(dim + 1);
+  std::vector<MboGlobInd> i(dim + 1);
   MboNumOp Spc = mboNumOpCompile(Sp);
   mboNumOpRowOffsets(Spc, 0, 2, &i[0]);
   EXPECT_EQ(0, i[0]);
@@ -512,7 +511,7 @@ TEST(MboTensorOp, RowOffsetsInBiggerSpace) {
   mboTensorOpAddTo(sp, 1, Sp);
 
   MboGlobInd totalDim = mboProdSpaceDim(h);
-  std::vector<int> i(totalDim + 1);
+  std::vector<MboGlobInd> i(totalDim + 1);
   MboNumOp Spc = mboNumOpCompile(Sp);
   mboNumOpRowOffsets(Spc, 0, totalDim, &i[0]);
   EXPECT_EQ(0, i[0]);
@@ -551,7 +550,7 @@ TEST(MboTensorOp, RowOffsetsTwoEmbeddings) {
   mboTensorOpAddTo(sp, 3, Sp);
 
   MboGlobInd totalDim = mboProdSpaceDim(h);
-  std::vector<int> i(totalDim + 1);
+  std::vector<MboGlobInd> i(totalDim + 1);
   MboNumOp Spc = mboNumOpCompile(Sp);
   mboNumOpRowOffsets(Spc, 0, totalDim, &i[0]);
   EXPECT_EQ(0, i[0]);
@@ -590,7 +589,7 @@ TEST(MboTensorOp, RowOffsetsSubRange) {
   mboTensorOpAddTo(sp, 3, Sp);
 
   MboGlobInd totalDim = mboProdSpaceDim(h);
-  std::vector<int> i(4);
+  std::vector<MboGlobInd> i(4);
   MboNumOp Spc = mboNumOpCompile(Sp);
   mboNumOpRowOffsets(Spc, 5, 8, &i[0]);
   EXPECT_EQ(0, i[0]);
@@ -610,10 +609,10 @@ TEST(MboTensorOp, SparseMatrixNull) {
   MboTensorOp null;
   mboTensorOpNull(h, &null);
 
-  std::vector<int> i(dim + 1);
+  std::vector<MboGlobInd> i(dim + 1);
   MboNumOp nullc = mboNumOpCompile(null);
   mboNumOpRowOffsets(nullc, 0, 2, &i[0]);
-  std::vector<int> j(i[dim]);
+  std::vector<MboGlobInd> j(i[dim]);
   std::vector<struct MboAmplitude> a(i[dim]);
   mboNumOpSparseMatrix(nullc, 0, 2, &i[0], &j[0], &a[0]);
 
@@ -628,10 +627,10 @@ TEST(MboTensorOp, SparseMatrixIdentity) {
   MboTensorOp identity;
   mboTensorOpIdentity(h, &identity);
 
-  std::vector<int> i(dim + 1);
+  std::vector<MboGlobInd> i(dim + 1);
   MboNumOp identityc = mboNumOpCompile(identity);
   mboNumOpRowOffsets(identityc, 0, 2, &i[0]);
-  std::vector<int> j(i[dim]);
+  std::vector<MboGlobInd> j(i[dim]);
   std::vector<struct MboAmplitude> a(i[dim]);
   mboNumOpSparseMatrix(identityc, 0, 2, &i[0], &j[0], &a[0]);
   EXPECT_EQ(0, j[0]);
@@ -654,10 +653,10 @@ TEST(MboTensorOp, SparseMatrixSigmaPlus) {
   MboElemOp sp = mboSigmaPlus();
   mboTensorOpAddTo(sp, 0, Sp);
 
-  std::vector<int> i(dim + 1);
+  std::vector<MboGlobInd> i(dim + 1);
   MboNumOp Spc = mboNumOpCompile(Sp);
   mboNumOpRowOffsets(Spc, 0, 2, &i[0]);
-  std::vector<int> j(i[dim]);
+  std::vector<MboGlobInd> j(i[dim]);
   std::vector<struct MboAmplitude> a(i[dim]);
   mboNumOpSparseMatrix(Spc, 0, 2, &i[0], &j[0], &a[0]);
   EXPECT_EQ(0, j[0]);
@@ -681,10 +680,10 @@ TEST(MboTensorOp, SparseMatrixInBiggerSpace) {
   mboTensorOpAddTo(sp, 1, Sp);
 
   MboGlobInd totalDim = mboProdSpaceDim(h);
-  std::vector<int> i(totalDim + 1);
+  std::vector<MboGlobInd> i(totalDim + 1);
   MboNumOp Spc = mboNumOpCompile(Sp);
   mboNumOpRowOffsets(Spc, 0, totalDim, &i[0]);
-  std::vector<int> j(i[mboProdSpaceDim(h)]);
+  std::vector<MboGlobInd> j(i[mboProdSpaceDim(h)]);
   std::vector<struct MboAmplitude> a(i[mboProdSpaceDim(h)]);
   mboNumOpSparseMatrix(Spc, 0, mboProdSpaceDim(h), &i[0], &j[0], &a[0]);
   EXPECT_EQ(8, j.size());
@@ -713,8 +712,9 @@ static void printMatrixPattern(MboNumOp op) {
   std::vector<struct MboAmplitude> mat(dim * dim);
   mboNumOpDenseMatrix(op, &mat[0]);
   std::cout << "\n\n";
-  for (size_t i = 0; i < dim; ++i) {
-    for (size_t j = 0; j < dim; ++j) {
+  assert(dim > 0);
+  for (size_t i = 0; i < (size_t)dim; ++i) {
+    for (size_t j = 0; j < (size_t)dim; ++j) {
       if (mat[i * dim + j].re * mat[i * dim + j].re +
           mat[i * dim + j].im * mat[i * dim + j].im > 1.0e-16) {
 	      std::cout << "x";
@@ -739,10 +739,10 @@ TEST(MboTensorOp, SparseMatrixTwoEmbeddings) {
   mboTensorOpAddTo(sp, 3, Sp);
 
   MboGlobInd totalDim = mboProdSpaceDim(h);
-  std::vector<int> i(totalDim + 1);
+  std::vector<MboGlobInd> i(totalDim + 1);
   MboNumOp Spc = mboNumOpCompile(Sp);
   mboNumOpRowOffsets(Spc, 0, totalDim, &i[0]);
-  std::vector<int> j(i[mboProdSpaceDim(h)]);
+  std::vector<MboGlobInd> j(i[mboProdSpaceDim(h)]);
   std::vector<struct MboAmplitude> a(i[mboProdSpaceDim(h)]);
   mboNumOpSparseMatrix(Spc, 0, mboProdSpaceDim(h), &i[0], &j[0], &a[0]);
   for (int m = 0; m < totalDim; ++m) {
@@ -789,12 +789,12 @@ TEST(MboTensorOp, SparseMatrixTwoEmbeddingsSubrange) {
   mboTensorOpAddTo(sp, 3, Sp);
 
   MboGlobInd totalDim = mboProdSpaceDim(h);
-  std::vector<int> i(totalDim + 1);
+  std::vector<MboGlobInd> i(totalDim + 1);
   MboGlobInd rmin = 3;
   MboGlobInd rmax = 11;
   MboNumOp Spc = mboNumOpCompile(Sp);
   mboNumOpRowOffsets(Spc, rmin, rmax, &i[0]);
-  std::vector<int> j(i[rmax - rmin]);
+  std::vector<MboGlobInd> j(i[rmax - rmin]);
   std::vector<struct MboAmplitude> a(i[rmax - rmin]);
   mboNumOpSparseMatrix(Spc, rmin, rmax, &i[0], &j[0], &a[0]);
   for (int m = 0; m < rmax - rmin; ++m) {
@@ -986,7 +986,7 @@ TEST(MboNumOp, DeleteDiagonalSz) {
 
   MboNumOp Op_comp = mboNumOpCompile(Op);
   mboNumOpDeleteDiagonal(Op_comp);
-  int D = mboProdSpaceDim(h);
+  MboGlobInd D = mboProdSpaceDim(h);
   std::vector<struct MboAmplitude> mat(D * D);
   mboNumOpDenseMatrix(Op_comp, &mat[0]);
   for (int i = 0; i < D * D; ++i) {
@@ -1012,8 +1012,8 @@ TEST(MboNumOp, DeleteDiagonalSp) {
 
   MboNumOp Op_comp = mboNumOpCompile(Op);
   mboNumOpDeleteDiagonal(Op_comp);
-  int D = mboProdSpaceDim(h);
-  std::vector<int> I(D + 1);
+  MboGlobInd D = mboProdSpaceDim(h);
+  std::vector<MboGlobInd> I(D + 1);
   mboNumOpRowOffsets(Op_comp, 0, D, &I[0]);
   EXPECT_EQ(0, I[0]);
   EXPECT_EQ(0, I[1]);

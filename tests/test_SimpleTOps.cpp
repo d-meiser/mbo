@@ -106,8 +106,8 @@ TEST(SimpleTOp, DenseMatrixIdentityTwoSpaces) {
 
   simpleTOpDenseMatrix(h, &sto, &mat[0]);
   for (int i = 0; i < dim * dim; ++i) {
-    int row = i / dim;
-    int col = i % dim;
+    MboGlobInd row = i / dim;
+    MboGlobInd col = i % dim;
     struct MboAmplitude expectedResult;
     if (row == col) {
       expectedResult.re = 1;

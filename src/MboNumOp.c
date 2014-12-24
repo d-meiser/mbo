@@ -127,7 +127,7 @@ void mboNumOpDenseMatrix(MboNumOp a, struct MboAmplitude *mat)
 	}
 }
 
-void mboNumOpRowOffsets(MboNumOp op, MboGlobInd rmin, MboGlobInd rmax, int *i)
+void mboNumOpRowOffsets(MboNumOp op, MboGlobInd rmin, MboGlobInd rmax, MboGlobInd *i)
 {
 	int j, r;
 	for (r = 0; r < rmax - rmin; ++r) {
