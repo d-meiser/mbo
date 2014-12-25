@@ -37,6 +37,7 @@ with mbo.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <MboExport.h>
 #include <MboTensorOp.h>
+#include <MboErrors.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -55,13 +56,14 @@ typedef struct MboNumOp_t *MboNumOp;
 /**
  * @brief Build a numerical operator from a tensor operator.
  *
- * @param op Operator to compile.
- * @return   The compiled operator.  The generated MboNumOp has to be
- *           destroyed with #mboNumOpDestroy.
+ * @param op    Operator to compile.
+ * @param numOp On exit this pointer contains the compiled operator.
+ *              The generated MboNumOp has to be destroyed with
+ *              #mboNumOpDestroy.
  *
  * @sa MboNumOp, MboTensorOp, mboNumOpDestroy
  * */
-MBO_EXPORT MboNumOp mboNumOpCompile(MboTensorOp op);
+MBO_EXPORT MBO_STATUS mboNumOpCompile(MboTensorOp op, MboNumOp *numOp);
 
 /**
  * @brief Deallocate all resources associated with a MboNumOp.
@@ -148,12 +150,13 @@ MBO_EXPORT void mboNumOpRowOffsets(MboNumOp op, MboGlobInd rmin,
  * @param i    Offsets array computed by mboNumOpRowOffsets.
  * @param j    Column indices of nonzero entries.
  * @param a    Non-zero entries.
+ * @return     Error code.
  *
  * @sa mboNumOpDenseMatrix, mboNumOpRowOffsets.
  * */
-MBO_EXPORT void mboNumOpSparseMatrix(MboNumOp op, MboGlobInd rmin,
-				     MboGlobInd rmax, MboGlobInd *i, MboGlobInd *j,
-				     struct MboAmplitude *a);
+MBO_EXPORT MBO_STATUS mboNumOpSparseMatrix(MboNumOp op, MboGlobInd rmin,
+					   MboGlobInd rmax, MboGlobInd *i, MboGlobInd *j,
+					   struct MboAmplitude *a);
 
 /**
  * @brief Get diagonal entries from a numerical operator.

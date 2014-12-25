@@ -9,17 +9,22 @@ struct MboNumSubMatrix_t {
 	struct Tile tile;
 };
 
-MboNumSubMatrix mboNumSubMatrixCreate(MboNumOp op, MboGlobInd rmin,
-				      MboGlobInd rmax, MboGlobInd cmin,
-				      MboGlobInd cmax)
+MBO_STATUS mboNumSubMatrixCreate(MboNumOp op, MboGlobInd rmin,
+				 MboGlobInd rmax, MboGlobInd cmin,
+				 MboGlobInd cmax,
+				 MboNumSubMatrix *submat)
 {
-	MboNumSubMatrix submat = malloc(sizeof(*submat));
-	submat->op = op;
-	submat->tile.rmin = rmin;
-	submat->tile.rmax = rmax;
-	submat->tile.cmin = cmin;
-	submat->tile.cmax = cmax;
-	return submat;
+	MboNumSubMatrix sm = malloc(sizeof(*submat));
+	if (!sm) {
+		return MBO_OUT_OF_MEMORY;
+	}
+	sm->op = op;
+	sm->tile.rmin = rmin;
+	sm->tile.rmax = rmax;
+	sm->tile.cmin = cmin;
+	sm->tile.cmax = cmax;
+	*submat = sm;
+	return MBO_SUCCESS;
 }
 
 void mboNumSubMatrixDestroy(MboNumSubMatrix *m) 

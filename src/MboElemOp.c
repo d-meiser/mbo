@@ -29,11 +29,15 @@ struct MboElemOp_t
 	struct MboNonZeroEntry *entries;
 };
 
-void mboElemOpCreate(MboElemOp *eo)
+MBO_STATUS mboElemOpCreate(MboElemOp *eo)
 {
 	*eo = malloc(sizeof(**eo));
+	if (!*eo) {
+		return MBO_OUT_OF_MEMORY;
+	}
 	(*eo)->nOps = 0;
 	(*eo)->entries = 0;
+	return MBO_SUCCESS;
 }
 
 void mboElemOpDestroy(MboElemOp *eo)
@@ -43,16 +47,20 @@ void mboElemOpDestroy(MboElemOp *eo)
 	*eo = 0;
 }
 
-void mboElemOpAddTo(MboLocInd m, MboLocInd n, struct MboAmplitude *val,
+MBO_STATUS mboElemOpAddTo(MboLocInd m, MboLocInd n, struct MboAmplitude *val,
 		    MboElemOp *eo)
 {
 	MboElemOp a = *eo;
 	a->entries = realloc(a->entries, (a->nOps + 1) * sizeof(*a->entries));
+	if (!a->entries) {
+		return MBO_OUT_OF_MEMORY;
+	}
 	a->entries[a->nOps].m = m;
 	a->entries[a->nOps].n = n;
 	a->entries[a->nOps].val.re = val->re;
 	a->entries[a->nOps].val.im = val->im;
 	++a->nOps;
+	return MBO_SUCCESS;
 }
 
 void mboElemOpScale(struct MboAmplitude *alpha, MboElemOp eo)
@@ -68,13 +76,17 @@ void mboElemOpScale(struct MboAmplitude *alpha, MboElemOp eo)
 	}
 }
 
-void mboElemOpPlus(MboElemOp a, MboElemOp *b)
+MBO_STATUS mboElemOpPlus(MboElemOp a, MboElemOp *b)
 {
 	(*b)->entries = realloc((*b)->entries, ((*b)->nOps + a->nOps) *
 						   sizeof(*(*b)->entries));
+	if (!(*b)->entries) {
+		return MBO_OUT_OF_MEMORY;
+	}
 	memcpy((*b)->entries + (*b)->nOps, a->entries,
 	       a->nOps * sizeof(*a->entries));
 	(*b)->nOps += a->nOps;
+	return MBO_SUCCESS;
 }
 
 int mboElemOpNumEntries(MboElemOp op)
@@ -197,7 +209,7 @@ MboElemOp mboCreationOp(MboLocInd d)
 	return ad;
 }
 
-void mboElemOpMul(MboElemOp a, MboElemOp *b)
+MBO_STATUS mboElemOpMul(MboElemOp a, MboElemOp *b)
 {
 	MboElemOp prod;
 	int numOps, i, j;
@@ -212,6 +224,9 @@ void mboElemOpMul(MboElemOp a, MboElemOp *b)
 		}
 	}
 	prod->entries = realloc(prod->entries, numOps * sizeof(*prod->entries));
+	if (!prod->entries) {
+		return MBO_OUT_OF_MEMORY;
+	}
 	prod->nOps = numOps;
 	numOps = 0;
 	for (i = 0; i < a->nOps; ++i) {
@@ -235,6 +250,7 @@ void mboElemOpMul(MboElemOp a, MboElemOp *b)
 	}
 	mboElemOpDestroy(b);
 	*b = prod;
+	return MBO_SUCCESS;
 }
 
 MboElemOp mboElemOpCopy(MboElemOp a)

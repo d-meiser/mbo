@@ -51,21 +51,23 @@ typedef struct MboNumSubMatrix_t *MboNumSubMatrix;
 
 /** @brief Create a sub matrix from an existing #MboNumOp
  *
- * @param op   The operator from which to create the submatrix.  This operator
- *             must remain valid until the returned MboNumSubMatrix is destroyed
- *             or until the operator is replaced with #mboNumSubMatrixSetOp.
- * @param rmin First row of submatrix.
- * @param rmax One past last row of submatrix.
- * @param cmin First column of submatrix.
- * @param cmax One past last column of submatrix.
- * @return     The newly create #MboNumSubMatrix.  This must be destroyed with
- *             mboNumSubMatrixDestroy.
+ * @param op     The operator from which to create the submatrix.  This operator
+ *               must remain valid until the returned MboNumSubMatrix is destroyed
+ *               or until the operator is replaced with #mboNumSubMatrixSetOp.
+ * @param rmin   First row of submatrix.
+ * @param rmax   One past last row of submatrix.
+ * @param cmin   First column of submatrix.
+ * @param cmax   One past last column of submatrix.
+ * @param submat The newly create #MboNumSubMatrix.  This must be destroyed with
+ *               mboNumSubMatrixDestroy.
+ * @return       Error code.
  *
  * @sa mboNumSubMatrixDestroy, mboNumSubMatrixSetOp.
  * */
-MBO_EXPORT MboNumSubMatrix
+MBO_EXPORT MBO_STATUS
     mboNumSubMatrixCreate(MboNumOp op, MboGlobInd rmin, MboGlobInd rmax,
-			  MboGlobInd cmin, MboGlobInd cmax);
+			  MboGlobInd cmin, MboGlobInd cmax,
+			  MboNumSubMatrix *submat);
 
 MBO_EXPORT void mboNumSubMatrixDestroy(MboNumSubMatrix *m);
 MBO_EXPORT void mboNumSubMatrixSetTile(MboNumSubMatrix m, MboGlobInd rmin,

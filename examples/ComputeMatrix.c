@@ -21,6 +21,7 @@ with mbo.  If not, see <http://www.gnu.org/licenses/>.
  * Illustrates the conversion of a MBO operator to a dense matrix.
  * */
 #include <stdio.h>
+#include <assert.h>
 #include "MboVec.h"
 #include "Mbo.h"
 
@@ -32,9 +33,10 @@ int main()
 	MboVec x, y, result;
 	MboElemOp sp, sm;
 	MboTensorOp Jx;
-  MboNumOp Jx_compiled;
+	MboNumOp Jx_compiled;
 	MboProdSpace h1, hTot;
 	struct MboAmplitude pointFive, one, zero, dotProduct, *yarr, *resultarr;
+	MBO_STATUS err;
 
 	/* Build Hilbert space */
 	h1 = mboProdSpaceCreate(2);
@@ -66,7 +68,8 @@ int main()
 	mboVecCreate(mboProdSpaceDim(hTot), &y);
 	mboVecCreate(mboProdSpaceDim(hTot), &result);
 
-  Jx_compiled = mboNumOpCompile(Jx);
+	err = mboNumOpCompile(Jx, &Jx_compiled);
+	assert(err == MBO_SUCCESS);
 
 	printf("\nMatrix entries:\n");
 	for (i = 0; i < mboProdSpaceDim(hTot); ++i) {

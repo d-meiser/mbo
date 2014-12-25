@@ -34,6 +34,7 @@ with mbo.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <MboExport.h>
 #include <MboIndices.h>
+#include <MboErrors.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -64,7 +65,7 @@ struct MboAmplitude;
  *
  * @sa mboElemOpDestroy, MboElemOp
  * */
-MBO_EXPORT void mboElemOpCreate(MboElemOp *elemOp);
+MBO_EXPORT MBO_STATUS mboElemOpCreate(MboElemOp *elemOp);
 
 /**
  * @brief Destroy a MboElemOp object.
@@ -83,7 +84,7 @@ MBO_EXPORT void mboElemOpDestroy(MboElemOp *elemOp);
  *
  * @sa mboElemOpScale, MboElemOp
  * */
-MBO_EXPORT void mboElemOpAddTo(MboLocInd r, MboLocInd c, struct MboAmplitude *a,
+MBO_EXPORT MBO_STATUS mboElemOpAddTo(MboLocInd r, MboLocInd c, struct MboAmplitude *a,
 			       MboElemOp *elemOp);
 /**
  * @brief Rescale an elementary operator.
@@ -107,7 +108,7 @@ MBO_EXPORT void mboElemOpScale(struct MboAmplitude* a, MboElemOp elemOp);
  *
  * @sa mboElemOpScale, mboElemOpMul, MboElemOp
  * */
-MBO_EXPORT void mboElemOpPlus(MboElemOp elemOpA, MboElemOp *elemOpB);
+MBO_EXPORT MBO_STATUS mboElemOpPlus(MboElemOp elemOpA, MboElemOp *elemOpB);
 
 /**
  * @brief Add elementary operators.
@@ -119,7 +120,7 @@ MBO_EXPORT void mboElemOpPlus(MboElemOp elemOpA, MboElemOp *elemOpB);
  *
  * @sa mboElemOpScale, mboElemOpPlus, MboElemOp
  * */
-MBO_EXPORT void mboElemOpMul(MboElemOp elemOpA, MboElemOp *elemOpB);
+MBO_EXPORT MBO_STATUS mboElemOpMul(MboElemOp elemOpA, MboElemOp *elemOpB);
 
 /**
  * @brief copy an elementary operator

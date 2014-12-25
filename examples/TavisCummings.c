@@ -25,6 +25,7 @@ with mbo.  If not, see <http://www.gnu.org/licenses/>.
 #include <MboVec.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
 static const int nAtoms = 10;
 static const int nPhotons = 30;
@@ -43,6 +44,7 @@ int main()
 	struct MboAmplitude tmp, *xarr, *yarr;
 	MboVec x, y;
 	int i;
+	MBO_STATUS err;
 
 	/* build various Hilbert spaces */
 	hSingleAtom = mboProdSpaceCreate(2);
@@ -107,7 +109,8 @@ int main()
 	mboTensorOpKron(2, factors, &H);
 	free(factors);
 
-	H_compiled = mboNumOpCompile(H);
+	err = mboNumOpCompile(H, &H_compiled);
+	assert(err == MBO_SUCCESS);
 
 	printf("Dimension of total Hilbert Space: %lld\n",
 	       mboProdSpaceDim(hTot));

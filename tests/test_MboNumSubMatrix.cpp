@@ -52,27 +52,32 @@ class MboNumSubMatrixFixture : public ::testing::Test {
     }
     mboElemOpDestroy(&sp);
     mboElemOpDestroy(&sm);
-    Jx_compiled = mboNumOpCompile(Jx);
+    mboNumOpCompile(Jx, &Jx_compiled);
     mboTensorOpDestroy(&Jx);
     return Jx_compiled;
   }
 };
 
 TEST_F(MboNumSubMatrixFixture, Create) {
-  MboNumSubMatrix m = mboNumSubMatrixCreate(Jx, 10, 12, 13, 17);
-  ASSERT_NE((void*)0, m);
+  MboNumSubMatrix m;
+  MBO_STATUS err;
+  err = mboNumSubMatrixCreate(Jx, 10, 12, 13, 17, &m);
+  ASSERT_EQ(MBO_SUCCESS, err);
   mboNumSubMatrixDestroy(&m);
 }
 
 TEST_F(MboNumSubMatrixFixture, SetTile) {
-  MboNumSubMatrix m = mboNumSubMatrixCreate(Jx, 10, 12, 13, 17);
+  MboNumSubMatrix m;
+  MBO_STATUS err = mboNumSubMatrixCreate(Jx, 10, 12, 13, 17, &m);
+  ASSERT_EQ(MBO_SUCCESS, err);
   mboNumSubMatrixSetTile(m, 12, 13, 20, 30);
   mboNumSubMatrixDestroy(&m);
 }
 
 TEST_F(MboNumSubMatrixFixture, MatVec) {
   MboGlobInd dim = mboProdSpaceDim(h);
-  MboNumSubMatrix m = mboNumSubMatrixCreate(Jx, 0, dim, 0, dim);
+  MboNumSubMatrix m;
+  ASSERT_EQ(MBO_SUCCESS, mboNumSubMatrixCreate(Jx, 0, dim, 0, dim, &m));
 
   std::vector<struct MboAmplitude> x(dim);
   struct MboAmplitude one = {1, 0};
@@ -92,7 +97,8 @@ TEST_F(MboNumSubMatrixFixture, MatVec) {
 
 TEST_F(MboNumSubMatrixFixture, MatVecFirstRow) {
   MboGlobInd dim = mboProdSpaceDim(h);
-  MboNumSubMatrix m = mboNumSubMatrixCreate(Jx, 0, 1, 0, dim);
+  MboNumSubMatrix m;
+  ASSERT_EQ(MBO_SUCCESS, mboNumSubMatrixCreate(Jx, 0, 1, 0, dim, &m));
 
   std::vector<struct MboAmplitude> x(dim);
   struct MboAmplitude one = {1, 0};
@@ -114,7 +120,8 @@ TEST_F(MboNumSubMatrixFixture, MatVecFirstRow) {
 
 TEST_F(MboNumSubMatrixFixture, MatVecFirstColumn) {
   MboGlobInd dim = mboProdSpaceDim(h);
-  MboNumSubMatrix m = mboNumSubMatrixCreate(Jx, 0, dim, 0, 1);
+  MboNumSubMatrix m;
+  ASSERT_EQ(MBO_SUCCESS, mboNumSubMatrixCreate(Jx, 0, dim, 0, 1, &m));
 
   std::vector<struct MboAmplitude> x(dim);
   struct MboAmplitude one = {1, 0};
@@ -136,7 +143,8 @@ TEST_F(MboNumSubMatrixFixture, MatVecFirstColumn) {
 
 TEST_F(MboNumSubMatrixFixture, MatVecTopLeftCorner) {
   MboGlobInd dim = mboProdSpaceDim(h);
-  MboNumSubMatrix m = mboNumSubMatrixCreate(Jx, 0, 2, 0, 2);
+  MboNumSubMatrix m;
+  ASSERT_EQ(MBO_SUCCESS, mboNumSubMatrixCreate(Jx, 0, 2, 0, 2, &m));
 
   std::vector<struct MboAmplitude> x(2);
   struct MboAmplitude one = {1, 0};
@@ -157,7 +165,8 @@ TEST_F(MboNumSubMatrixFixture, MatVecTopLeftCorner) {
 TEST_F(MboNumSubMatrixFixture, MatVecTopRightCorner) {
   MboGlobInd dim = mboProdSpaceDim(h);
   std::cout << "dim == " << dim << std::endl;
-  MboNumSubMatrix m = mboNumSubMatrixCreate(Jx, 0, 2, 14, 16);
+  MboNumSubMatrix m;
+  ASSERT_EQ(MBO_SUCCESS, mboNumSubMatrixCreate(Jx, 0, 2, 14, 16, &m));
 
   std::vector<struct MboAmplitude> x(2);
   struct MboAmplitude one = {1, 0};

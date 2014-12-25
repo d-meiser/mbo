@@ -23,7 +23,8 @@ class Null : public TOpBuilder {
     MboTensorOp a;
     mboTensorOpNull(h, &a);
     mboProdSpaceDestroy(&h);
-    MboNumOp ac = mboNumOpCompile(a);
+    MboNumOp ac;
+    mboNumOpCompile(a, &ac);
     mboTensorOpDestroy(&a);
     return ac;
   }
@@ -39,7 +40,8 @@ class Identity : public TOpBuilder {
     MboTensorOp a;
     mboTensorOpIdentity(h, &a);
     mboProdSpaceDestroy(&h);
-    MboNumOp ac = mboNumOpCompile(a);
+    MboNumOp ac;
+    mboNumOpCompile(a, &ac);
     mboTensorOpDestroy(&a);
     return ac;
   }
@@ -58,7 +60,8 @@ class SigmaPlus : public TOpBuilder {
     mboTensorOpAddTo(sp, 0, a);
     mboElemOpDestroy(&sp);
     mboProdSpaceDestroy(&h);
-    MboNumOp ac = mboNumOpCompile(a);
+    MboNumOp ac;
+    mboNumOpCompile(a, &ac);
     mboTensorOpDestroy(&a);
     return ac;
   }
@@ -77,7 +80,8 @@ class SigmaMinus : public TOpBuilder {
     mboTensorOpAddTo(sp, 0, a);
     mboElemOpDestroy(&sp);
     mboProdSpaceDestroy(&h);
-    MboNumOp ac = mboNumOpCompile(a);
+    MboNumOp ac;
+    mboNumOpCompile(a, &ac);
     mboTensorOpDestroy(&a);
     return ac;
   }
@@ -96,7 +100,8 @@ class SigmaZ : public TOpBuilder {
     mboTensorOpAddTo(sp, 0, a);
     mboElemOpDestroy(&sp);
     mboProdSpaceDestroy(&h);
-    MboNumOp ac = mboNumOpCompile(a);
+    MboNumOp ac;
+    mboNumOpCompile(a, &ac);
     mboTensorOpDestroy(&a);
     return ac;
   }
@@ -115,7 +120,8 @@ class AnnihilationOp : public TOpBuilder {
     mboTensorOpAddTo(sp, 0, a);
     mboElemOpDestroy(&sp);
     mboProdSpaceDestroy(&h);
-    MboNumOp ac = mboNumOpCompile(a);
+    MboNumOp ac;
+    mboNumOpCompile(a, &ac);
     mboTensorOpDestroy(&a);
     return ac;
   }
@@ -134,7 +140,8 @@ class CreationOp : public TOpBuilder {
     mboTensorOpAddTo(sp, 0, a);
     mboElemOpDestroy(&sp);
     mboProdSpaceDestroy(&h);
-    MboNumOp ac = mboNumOpCompile(a);
+    MboNumOp ac;
+    mboNumOpCompile(a, &ac);
     mboTensorOpDestroy(&a);
     return ac;
   }
@@ -153,7 +160,8 @@ class NumOp : public TOpBuilder {
     mboTensorOpAddTo(sp, 0, a);
     mboElemOpDestroy(&sp);
     mboProdSpaceDestroy(&h);
-    MboNumOp ac = mboNumOpCompile(a);
+    MboNumOp ac;
+    mboNumOpCompile(a, &ac);
     mboTensorOpDestroy(&a);
     return ac;
   }
@@ -173,7 +181,8 @@ class SigmaPEnd : public TOpBuilder {
     mboTensorOpAddTo(sp, 1, a);
     mboElemOpDestroy(&sp);
     mboProdSpaceDestroy(&h);
-    MboNumOp ac = mboNumOpCompile(a);
+    MboNumOp ac;
+    mboNumOpCompile(a, &ac);
     mboTensorOpDestroy(&a);
     return ac;
   }
@@ -193,7 +202,8 @@ class SigmaZEnd : public TOpBuilder {
     mboTensorOpAddTo(sp, 1, a);
     mboElemOpDestroy(&sp);
     mboProdSpaceDestroy(&h);
-    MboNumOp ac = mboNumOpCompile(a);
+    MboNumOp ac;
+    mboNumOpCompile(a, &ac);
     mboTensorOpDestroy(&a);
     return ac;
   }
@@ -213,7 +223,8 @@ class SigmaZBegin : public TOpBuilder {
     mboTensorOpAddTo(sp, 0, a);
     mboElemOpDestroy(&sp);
     mboProdSpaceDestroy(&h);
-    MboNumOp ac = mboNumOpCompile(a);
+    MboNumOp ac;
+    mboNumOpCompile(a, &ac);
     mboTensorOpDestroy(&a);
     return ac;
   }
@@ -234,7 +245,8 @@ class SigmaZMiddle : public TOpBuilder {
     mboTensorOpAddTo(sp, 2, a);
     mboElemOpDestroy(&sp);
     mboProdSpaceDestroy(&h);
-    MboNumOp ac = mboNumOpCompile(a);
+    MboNumOp ac;
+    mboNumOpCompile(a, &ac);
     mboTensorOpDestroy(&a);
     return ac;
   }

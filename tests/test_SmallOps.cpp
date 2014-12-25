@@ -12,7 +12,8 @@ TEST(SmallOps, SigmaP) {
   mboTensorOpNull(h, &Sp);
   mboTensorOpAddTo(sp, 0, Sp);
   std::vector<struct MboAmplitude> mat(4);
-  MboNumOp Sp_comp = mboNumOpCompile(Sp);
+  MboNumOp Sp_comp;
+  ASSERT_EQ(MBO_SUCCESS, mboNumOpCompile(Sp, &Sp_comp));
   mboNumOpDenseMatrix(Sp_comp, &mat[0]);
   std::vector<struct MboAmplitude> expectedResult(4);
   expectedResult[0].re = 0;
@@ -40,7 +41,8 @@ TEST(SmallOps, SigmaM) {
   mboTensorOpNull(h, &Sp);
   mboTensorOpAddTo(sp, 0, Sp);
   std::vector<struct MboAmplitude> mat(4);
-  MboNumOp Sp_comp = mboNumOpCompile(Sp);
+  MboNumOp Sp_comp;
+  ASSERT_EQ(MBO_SUCCESS, mboNumOpCompile(Sp, &Sp_comp));
   mboNumOpDenseMatrix(Sp_comp, &mat[0]);
   std::vector<struct MboAmplitude> expectedResult(4);
   expectedResult[0].re = 0;
@@ -68,7 +70,8 @@ TEST(SmallOps, SigmaZ) {
   mboTensorOpNull(h, &Sp);
   mboTensorOpAddTo(sp, 0, Sp);
   std::vector<struct MboAmplitude> mat(4);
-  MboNumOp Sp_comp = mboNumOpCompile(Sp);
+  MboNumOp Sp_comp;
+  ASSERT_EQ(MBO_SUCCESS, mboNumOpCompile(Sp, &Sp_comp));
   mboNumOpDenseMatrix(Sp_comp, &mat[0]);
   std::vector<struct MboAmplitude> expectedResult(4);
   expectedResult[0].re = -1;
@@ -97,7 +100,8 @@ TEST(SmallOps, Eye) {
   mboTensorOpNull(h, &Sp);
   mboTensorOpAddTo(sp, 0, Sp);
   std::vector<struct MboAmplitude> mat(dim * dim);
-  MboNumOp Sp_comp = mboNumOpCompile(Sp);
+  MboNumOp Sp_comp;
+  ASSERT_EQ(MBO_SUCCESS, mboNumOpCompile(Sp, &Sp_comp));
   mboNumOpDenseMatrix(Sp_comp, &mat[0]);
   std::vector<struct MboAmplitude> expectedResult(dim * dim);
   for (int i = 0; i < dim * dim; ++i) {
@@ -126,7 +130,8 @@ TEST(SmallOps, NumOp) {
   mboTensorOpNull(h, &Sp);
   mboTensorOpAddTo(sp, 0, Sp);
   std::vector<struct MboAmplitude> mat(dim * dim);
-  MboNumOp Sp_comp = mboNumOpCompile(Sp);
+  MboNumOp Sp_comp;
+  ASSERT_EQ(MBO_SUCCESS, mboNumOpCompile(Sp, &Sp_comp));
   mboNumOpDenseMatrix(Sp_comp, &mat[0]);
   std::vector<struct MboAmplitude> expectedResult(dim * dim);
   for (int i = 0; i < dim * dim; ++i) {
@@ -157,7 +162,8 @@ TEST(SmallOps, AnnihilationOp) {
   mboTensorOpNull(h, &Sp);
   mboTensorOpAddTo(sp, 0, Sp);
   std::vector<struct MboAmplitude> mat(dim * dim);
-  MboNumOp Sp_comp = mboNumOpCompile(Sp);
+  MboNumOp Sp_comp;
+  ASSERT_EQ(MBO_SUCCESS, mboNumOpCompile(Sp, &Sp_comp));
   mboNumOpDenseMatrix(Sp_comp, &mat[0]);
   std::vector<struct MboAmplitude> expectedResult(dim * dim);
   for (int i = 0; i < dim * dim; ++i) {
@@ -188,7 +194,8 @@ TEST(SmallOps, CreationOp) {
   mboTensorOpNull(h, &Sp);
   mboTensorOpAddTo(sp, 0, Sp);
   std::vector<struct MboAmplitude> mat(dim * dim);
-  MboNumOp Sp_comp = mboNumOpCompile(Sp);
+  MboNumOp Sp_comp;
+  ASSERT_EQ(MBO_SUCCESS, mboNumOpCompile(Sp, &Sp_comp));
   mboNumOpDenseMatrix(Sp_comp, &mat[0]);
   std::vector<struct MboAmplitude> expectedResult(dim * dim);
   for (int i = 0; i < dim * dim; ++i) {

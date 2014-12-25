@@ -46,14 +46,20 @@ static int compSimpleOps(const void* a, const void* b) {
 	}
 }
 
-static void sortOps(struct SimpleTOp* ops, int numOps, MboProdSpace h) {
+static MBO_STATUS sortOps(struct SimpleTOp* ops, int numOps, MboProdSpace h) {
 	struct SOpCompCtx *opCtxs;
 	struct SimpleTOp *reorderedOps;
 	int i;
 
 	opCtxs = (struct SOpCompCtx *)malloc(numOps * sizeof(*opCtxs));
+	if (!opCtxs) {
+		return MBO_OUT_OF_MEMORY;
+	}
 	reorderedOps =
 	    (struct SimpleTOp *)malloc(numOps * sizeof(*reorderedOps));
+	if (!reorderedOps) {
+		return MBO_OUT_OF_MEMORY;
+	}
 
 	for (i = 0; i < numOps; ++i) {
 		opCtxs[i].op = ops + i;
@@ -66,27 +72,33 @@ static void sortOps(struct SimpleTOp* ops, int numOps, MboProdSpace h) {
 	memcpy(ops, reorderedOps, numOps * sizeof(*reorderedOps));
 	free(opCtxs);
 	free(reorderedOps);
+	return MBO_SUCCESS;
 }
 
-MboNumOp mboNumOpCompile(MboTensorOp op)
+MBO_STATUS mboNumOpCompile(MboTensorOp op, MboNumOp *numOp)
 {
 	struct SimpleTOp *terms;
 	int i;
-	MboNumOp numOp;
 
-	numOp = malloc(sizeof(*numOp));
-	numOp->space = mboProdSpaceCopy(mboTensorOpGetSpace(op));
-	numOp->numTerms = mboTensorOpGetNumTerms(op);
-	numOp->sum = malloc(numOp->numTerms * sizeof(*numOp->sum));
-	terms = mboTensorOpGetSimpleTOps(op);
-	for (i = 0; i < numOp->numTerms; ++i) {
-		numOp->sum[i].numFactors = 0;
-		numOp->sum[i].embeddings = 0;
-		copySimpleTOp(numOp->sum + i, terms + i);
-		simpleTOpNormalize(numOp->sum + i);
+	*numOp = malloc(sizeof(**numOp));
+	if (!(*numOp)) {
+		return MBO_OUT_OF_MEMORY;
 	}
-	sortOps(numOp->sum, numOp->numTerms, numOp->space);
-	return numOp;
+	(*numOp)->space = mboProdSpaceCopy(mboTensorOpGetSpace(op));
+	(*numOp)->numTerms = mboTensorOpGetNumTerms(op);
+	(*numOp)->sum = malloc((*numOp)->numTerms * sizeof(*(*numOp)->sum));
+	if (!(*numOp)->sum) {
+		return MBO_OUT_OF_MEMORY;
+	}
+	terms = mboTensorOpGetSimpleTOps(op);
+	for (i = 0; i < (*numOp)->numTerms; ++i) {
+		(*numOp)->sum[i].numFactors = 0;
+		(*numOp)->sum[i].embeddings = 0;
+		copySimpleTOp((*numOp)->sum + i, terms + i);
+		simpleTOpNormalize((*numOp)->sum + i);
+	}
+	sortOps((*numOp)->sum, (*numOp)->numTerms, (*numOp)->space);
+	return MBO_SUCCESS;
 }
 
 void mboNumOpDestroy(MboNumOp *op)
@@ -143,14 +155,17 @@ void mboNumOpRowOffsets(MboNumOp op, MboGlobInd rmin, MboGlobInd rmax, MboGlobIn
 	}
 }
 
-void mboNumOpSparseMatrix(MboNumOp op, MboGlobInd rmin, MboGlobInd rmax, MboGlobInd *i,
+MBO_STATUS mboNumOpSparseMatrix(MboNumOp op, MboGlobInd rmin, MboGlobInd rmax, MboGlobInd *i,
 			  MboGlobInd *j, struct MboAmplitude *a)
 {
 	int *numInserted, r, s;
 
-	if (rmax <= rmin) return;
-  assert(rmax - rmin < (size_t)-1);
-  numInserted = malloc((size_t)(rmax - rmin) * sizeof(*numInserted));
+	if (rmax <= rmin) return MBO_INVALID_ARGUMENT;
+	assert(rmax - rmin < (size_t)-1);
+	numInserted = malloc((size_t)(rmax - rmin) * sizeof(*numInserted));
+	if (!numInserted) {
+		return MBO_OUT_OF_MEMORY;
+	}
 	for (r = 0; r < rmax - rmin; ++r) {
 		numInserted[r] = 0;
 	}
@@ -159,6 +174,7 @@ void mboNumOpSparseMatrix(MboNumOp op, MboGlobInd rmin, MboGlobInd rmax, MboGlob
 				      a, numInserted);
 	}
 	free(numInserted);
+	return MBO_SUCCESS;
 }
 
 MBO_STATUS mboNumOpMatVec(struct MboAmplitude alpha, MboNumOp a,

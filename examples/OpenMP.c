@@ -24,6 +24,7 @@ with mbo.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#include <assert.h>
 #include "Mbo.h"
 #include <config.h>
 #ifdef HAVE_OPENMP
@@ -54,6 +55,7 @@ static MboNumOp buildJx(MboProdSpace h)
 	MboNumOp Jx_compiled;
 	struct MboAmplitude pointFive;
 	int i;
+	MBO_STATUS err;
 
 	sp = mboSigmaPlus();
 	sm = mboSigmaMinus();
@@ -66,7 +68,8 @@ static MboNumOp buildJx(MboProdSpace h)
 	}
 	mboElemOpDestroy(&sp);
 	mboElemOpDestroy(&sm);
-	Jx_compiled = mboNumOpCompile(Jx);
+	err = mboNumOpCompile(Jx, &Jx_compiled);
+	assert(err == MBO_SUCCESS);
 	mboTensorOpDestroy(&Jx);
 	return Jx_compiled;
 }
@@ -82,6 +85,7 @@ int main()
 	double deltat, difference;
 	int numThreads;
 	MboNumSubMatrix *chunks;
+	MBO_STATUS err;
 
 	hTot = buildSpace(numSpins);
 	dim = mboProdSpaceDim(hTot);
@@ -121,8 +125,9 @@ int main()
 	if (numChunks * chunkSize < dim) ++numChunks;
 	chunks = (MboNumSubMatrix*)malloc(numChunks * sizeof(*chunks));
 	for (chunk = 0; chunk < numChunks; ++chunk) {
-		chunks[chunk] = mboNumSubMatrixCreate(Jx, chunk * chunkSize,
-				(chunk + 1) * chunkSize, 0, dim);
+		err = mboNumSubMatrixCreate(Jx, chunk * chunkSize,
+			(chunk + 1) * chunkSize, 0, dim, &chunks[chunk]);
+		assert(err == MBO_SUCCESS);
 	}
 	tstart = clock();
 	for (i = 0; i < numIters; ++i) {

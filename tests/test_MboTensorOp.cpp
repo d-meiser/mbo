@@ -416,8 +416,10 @@ TEST(MboTensorOp, Copy) {
   mboTensorOpAddTo(eop, 0, A);
 
   MboTensorOp B = mboTensorOpCopy(A);
-  MboNumOp Acomp = mboNumOpCompile(A);
-  MboNumOp Bcomp = mboNumOpCompile(B);
+  MboNumOp Acomp;
+  ASSERT_EQ(MBO_SUCCESS, mboNumOpCompile(A, &Acomp));
+  MboNumOp Bcomp;
+  ASSERT_EQ(MBO_SUCCESS, mboNumOpCompile(B, &Bcomp));
   std::vector<struct MboAmplitude> x(2);
   x[0].re = 134.3;
   x[0].im = 11.0;
