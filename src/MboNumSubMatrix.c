@@ -14,7 +14,7 @@ MBO_STATUS mboNumSubMatrixCreate(MboNumOp op, MboGlobInd rmin,
 				 MboGlobInd cmax,
 				 MboNumSubMatrix *submat)
 {
-	MboNumSubMatrix sm = malloc(sizeof(*submat));
+	MboNumSubMatrix sm = malloc(sizeof(**submat));
 	if (!sm) {
 		return MBO_OUT_OF_MEMORY;
 	}
