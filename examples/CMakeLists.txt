@@ -1,4 +1,5 @@
 set(EXAMPLES
+    Benchmark
     ComputeMatrix
     TavisCummings
     Vectors
