@@ -1,9 +1,12 @@
 set(EXAMPLES
-    Benchmark
     ComputeMatrix
     TavisCummings
     Vectors
     OpenMP
+   )
+
+set(EXPENSIVE_EXAMPLES
+    Benchmark
    )
 
 include_directories(
@@ -11,11 +14,13 @@ include_directories(
     ${PROJECT_BINARY_DIR}
     )
 
-foreach(e ${EXAMPLES})
+foreach(e ${EXAMPLES} ${EXPENSIVE_EXAMPLES})
   add_executable(${e} ${e}.c)
   target_link_libraries(${e} MBO)
-  if(RUN_EXAMPLES_AS_TESTS)
-    add_test(${e} ${e})
-  endif()
 endforeach()
 
+if(RUN_EXAMPLES_AS_TESTS)
+  foreach(e ${EXAMPLES})
+    add_test(${e} ${e})
+  endforeach()
+endif()
