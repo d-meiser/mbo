@@ -642,3 +642,32 @@ TEST_F(ApplyLeafMask, MaskRowBand2) {
     EXPECT_DOUBLE_EQ(0.0, y[i].im) << "i == " << i;
   }
 }
+
+TEST(EmbeddingNonZeros, Jplus) {
+  struct Embedding jp;
+  jp.i = 0;
+  jp.op = mboSigmaPlus();
+
+  MboGlobInd nnz[2] = {0, 0};
+  MboLocInd dims[] = {2};
+  embeddingNonZeros(0, 1, dims, 2, 1, &jp, 0, 2, 0, nnz);
+  EXPECT_EQ(0, nnz[0]);
+  EXPECT_EQ(1, nnz[1]);
+
+  mboElemOpDestroy(&jp.op);
+}
+
+TEST(EmbeddingNonZeros, Jminus) {
+  struct Embedding jm;
+  jm.i = 0;
+  jm.op = mboSigmaMinus();
+
+  MboGlobInd nnz[2] = {0, 0};
+  MboLocInd dims[] = {2};
+  embeddingNonZeros(0, 1, dims, 2, 1, &jm, 0, 2, 0, nnz);
+  EXPECT_EQ(1, nnz[0]);
+  EXPECT_EQ(0, nnz[1]);
+
+  mboElemOpDestroy(&jm.op);
+}
+
