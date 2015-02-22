@@ -29,14 +29,18 @@ with mbo.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 #include <assert.h>
 #include <time.h>
+#include <math.h>
+
+static const double TOLERANCE = 1.0e-10;
 
 static MboNumOp buildTavisCummingsHamiltonian(int nAtoms, int nPhotons);
+static MboNumOp buildJx(int nAtoms);
 static void buildAllOps(int numOps, MboNumOp* ops);
 static void runBenchmark(MboNumOp op);
 
 int main() {
 	MboNumOp *ops;
-	int numOps = 10, i;
+	int numOps = 20, i;
 
 	ops = (MboNumOp*)malloc(numOps * sizeof(*ops));
 	buildAllOps(numOps, ops);
@@ -55,6 +59,12 @@ void buildAllOps(int numOps, MboNumOp* ops)
 {
 	int i;
 
+	for (i = 0; i < 10; ++i) {
+		if (numOps <= 0) return;
+		*ops = buildJx(8 + i);
+		++ops;
+		--numOps;
+	}
 	for (i = 0; i < 10; ++i) {
 		if (numOps <= 0) return;
 		*ops = buildTavisCummingsHamiltonian(10 + i, 10);
@@ -229,7 +239,7 @@ static double average(const double *x, int n)
 }
 
 static void printBenchmarkReport(struct BenchmarkData *assembledBM,
-				 struct BenchmarkData *mboBenchmark)
+				 struct BenchmarkData *mboBenchmark, int valid)
 {
 	double meanTimeAssembled, meanTimeMbo;
 	double gflopsAssembled, gflopsMbo;
@@ -240,18 +250,95 @@ static void printBenchmarkReport(struct BenchmarkData *assembledBM,
 
 	gflopsAssembled = assembledBM->numFlops / meanTimeAssembled / 1.0e9;
 	gflopsMbo = assembledBM->numFlops / meanTimeMbo / 1.0e9;
-	printf("%1.2lf (%1.2Es)   %1.2lf (%1.2Es)   %1.2lfx\n", gflopsMbo,
+	printf("%1.2lf (%1.2Es)   %1.2lf (%1.2Es)   %1.2lfx ", gflopsMbo,
 	       meanTimeMbo, gflopsAssembled, meanTimeMbo,
 	       meanTimeAssembled / meanTimeMbo);
+	if (valid) {
+		printf("[PASSED]\n");
+	} else {
+		printf("[FAILED]\n");
+	}
+}
+
+static double distance(MboVec x, MboVec y, MboGlobInd d)
+{
+	MboGlobInd i;
+	double dist = 0;
+	struct MboAmplitude diff, *xarr, *yarr;
+
+	mboVecGetViewR(x, &xarr);
+	mboVecGetViewR(y, &yarr);
+	for (i = 0; i < d; ++i) {
+		diff.re = xarr[i].re - yarr[i].re;
+		diff.im = xarr[i].im - yarr[i].im;
+		dist += diff.re * diff.re + diff.im * diff.im;
+	}
+	dist = sqrt(dist);
+	mboVecReleaseView(x, &xarr);
+	mboVecReleaseView(y, &yarr);
+	return dist;
+}
+
+static int verify(MboNumOp op)
+{
+	int valid = 0;
+	MboVec x, yMboNumOp, yAssembled;
+	struct MboAmplitude *xarr, *yarr, alpha, beta;
+	MboGlobInd dim;
+	struct CSR csr = createCSR();
+	double error;
+
+	dim = mboProdSpaceDim(mboNumOpGetSpace(op));
+	alpha.re = 2.7;
+	alpha.im = 0.8;
+	beta.re = 0;
+	beta.im = 0;
+	mboVecCreate(dim, &x);
+	mboVecSetRandom(x);
+
+	/* Compute result with MboNumOp */
+	mboVecCreate(dim, &yMboNumOp);
+	mboVecSet(&beta, yMboNumOp);
+	mboVecGetViewR(x, &xarr);
+	mboVecGetViewRW(yMboNumOp, &yarr);
+	mboNumOpMatVec(alpha, op, xarr, beta, yarr);
+	mboVecReleaseView(x, &xarr);
+	mboVecReleaseView(yMboNumOp, &yarr);
+
+	/* Compute result with assembled operator */
+	mboVecCreate(dim, &yAssembled);
+	mboVecSet(&beta, yAssembled);
+	mboVecGetViewR(x, &xarr);
+	mboVecGetViewRW(yAssembled, &yarr);
+	getCSRMatrix(op, &csr);
+	applyCSRMatrix(alpha, &csr, xarr, beta, yarr);
+	mboVecReleaseView(x, &xarr);
+	mboVecReleaseView(yAssembled, &yarr);
+
+	error = distance(yMboNumOp, yAssembled, dim) / sqrt((double)dim);
+
+	mboVecDestroy(&x);
+	mboVecDestroy(&yMboNumOp);
+	mboVecDestroy(&yAssembled);
+	destroyCSR(&csr);
+
+	if (error > TOLERANCE) {
+		valid = 0;
+	} else {
+		valid = 1;
+	}
+
+	return valid;
 }
 
 void runBenchmark(MboNumOp op)
 {
-	static const int numIters = 10;
+	static const int numIters = 2;
 	struct BenchmarkData assembledBenchmark =
 	    runAssembledBenchmark(op, numIters);
 	struct BenchmarkData mboBenchmark = runMboBenchmark(op, numIters);
-	printBenchmarkReport(&assembledBenchmark, &mboBenchmark);
+	int operatorValid = verify(op);
+	printBenchmarkReport(&assembledBenchmark, &mboBenchmark, operatorValid);
 	destroyBenchmarkData(&assembledBenchmark);
 	destroyBenchmarkData(&mboBenchmark);
 }
@@ -260,6 +347,7 @@ static double omega(int i)
 {
 	return 1.3 * i;
 }
+
 MboNumOp buildTavisCummingsHamiltonian(int nAtoms, int nPhotons)
 {
 	MboProdSpace hSingleAtom, hAtoms, hField, hTot;
@@ -361,3 +449,43 @@ MboNumOp buildTavisCummingsHamiltonian(int nAtoms, int nPhotons)
 	return H_compiled;
 }
 
+MboNumOp buildJx(int nAtoms)
+{
+	MboProdSpace hSingleAtom, hAtoms;
+	MboElemOp sm, sp;
+	MboTensorOp Jx;
+	MboNumOp Jx_compiled;
+	struct MboAmplitude tmp;
+	int i;
+	MBO_STATUS err;
+
+	/* build various Hilbert spaces */
+	hSingleAtom = mboProdSpaceCreate(2);
+	hAtoms = mboProdSpaceCreate(0);
+	for (i = 0; i < nAtoms; ++i) {
+		mboProdSpaceMul(hSingleAtom, &hAtoms);
+	}
+
+	/* build atomic operators */
+	sm = mboSigmaMinus();
+	sp = mboSigmaPlus();
+	mboTensorOpNull(hAtoms, &Jx);
+	for (i = 0; i < nAtoms; ++i) {
+		tmp.re = 0.5;
+		tmp.im = 0;
+		mboTensorOpAddScaledTo(&tmp, sm, i, Jx);
+		mboTensorOpAddScaledTo(&tmp, sp, i, Jx);
+	}
+
+	err = mboNumOpCompile(Jx, &Jx_compiled);
+	assert(err == MBO_SUCCESS);
+
+	/* Release all resources */
+	mboElemOpDestroy(&sm);
+	mboElemOpDestroy(&sp);
+	mboProdSpaceDestroy(&hSingleAtom);
+	mboProdSpaceDestroy(&hAtoms);
+	mboTensorOpDestroy(&Jx);
+
+	return Jx_compiled;
+}
