@@ -6,7 +6,7 @@ set(EXAMPLES
    )
 
 set(EXPENSIVE_EXAMPLES
-    Benchmark
+    MatVecBenchmark
    )
 
 include_directories(
@@ -26,7 +26,7 @@ if(RUN_EXAMPLES_AS_TESTS)
 endif()
 
 if(MBO_BUILD_DOCS)
-  set(EXAMPLE Benchmark)
+  set(EXAMPLE MatVecBenchmark)
   set(DOXIFIED_SOURCE ${PROJECT_BINARY_DIR}/doc/${EXAMPLE}.dox.c)
   add_custom_command(OUTPUT ${DOXIFIED_SOURCE}
       COMMAND runhaskell

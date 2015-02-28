@@ -17,8 +17,6 @@ You should have received a copy of the GNU General Public License along
 with mbo.  If not, see <http://www.gnu.org/licenses/>.
 */
 /*
-\page Benchmarks Some benchmarks of mbo operators
-
 \par
 These benchmarks compare the performance of #MboNumOp to assembled sparse
 matrix vector multiplies.
@@ -43,8 +41,8 @@ static MboNumOp buildJx(int nAtoms);
 /*
 The following function builds the operatars we're using for the comparison.
 Currently we're using the many particle angular momentum operator \f$J_x\f$ as
-well as the Tavis-Cummings Hamiltonian.  \code numOps \endcode specifies the
-total number of operators that have been allocated in the \code ops \endcode
+well as the Tavis-Cummings Hamiltonian.  `numOps` specifies the
+total number of operators that have been allocated in the `ops`
 array.
 */
 static void buildAllOps(int numOps, MboNumOp* ops)
