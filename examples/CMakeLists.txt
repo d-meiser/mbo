@@ -24,3 +24,16 @@ if(RUN_EXAMPLES_AS_TESTS)
     add_test(${e} ${e})
   endforeach()
 endif()
+
+if(MBO_BUILD_DOCS)
+  set(EXAMPLE Benchmark)
+  set(DOXIFIED_SOURCE ${PROJECT_BINARY_DIR}/doc/${EXAMPLE}.dox.c)
+  add_custom_command(OUTPUT ${DOXIFIED_SOURCE}
+      COMMAND runhaskell
+      ${PROJECT_SOURCE_DIR}/utilities/ProgramToDoxygen.hs
+      ${CMAKE_CURRENT_SOURCE_DIR}/${EXAMPLE}.c
+      ${EXAMPLE}
+      mbo_benchmarks ${DOXIFIED_SOURCE})
+  add_custom_target(${EXAMPLE}-doxygen DEPENDS ${DOXIFIED_SOURCE})
+  add_dependencies(doc ${EXAMPLE}-doxygen)
+endif()
