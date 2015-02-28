@@ -63,6 +63,21 @@ if(OPENMP_FOUND)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 endif()
 
+if(MBO_BUILD_DOCS)
+  find_package(Doxygen)
+  if(DOXYGEN_FOUND)
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doxyfile.in ${PROJECT_BINARY_DIR}/doxyfile @ONLY)
+  file(MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/doc")
+  add_custom_target(doc
+    ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/doxyfile
+    WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/doc"
+    COMMENT "Generating API documentation with Doxygen" VERBATIM
+  )
+  else()
+    message(STATUS "Doxygen not found -- not building docs")
+  endif()
+endif()
+
 include_directories(${PROJECT_BINARY_DIR})
 
 add_subdirectory(src)
@@ -85,19 +100,4 @@ if("${SizeOfLongLong}" STREQUAL "8")
   set(HAVE_64BIT_INTS TRUE)
 endif()
 configure_file(config.h.in config.h)
-
-if(MBO_BUILD_DOCS)
-  find_package(Doxygen)
-  if(DOXYGEN_FOUND)
-  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/doxyfile @ONLY)
-  file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/doc")
-  add_custom_target(doc
-    ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/doxyfile
-    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/doc"
-    COMMENT "Generating API documentation with Doxygen" VERBATIM
-  )
-  else()
-    message(STATUS "Doxygen not found -- not building docs")
-  endif()
-endif()
 
