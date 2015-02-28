@@ -26,15 +26,22 @@ if(RUN_EXAMPLES_AS_TESTS)
 endif()
 
 if(MBO_BUILD_DOCS)
-  set(EXAMPLE MatVecBenchmark)
-  set(DOXIFIED_SOURCE ${PROJECT_BINARY_DIR}/doc/${EXAMPLE}.dox.c)
-  add_custom_command(OUTPUT ${DOXIFIED_SOURCE}
-      COMMAND runhaskell
-      ${PROJECT_SOURCE_DIR}/utilities/ProgramToDoxygen.hs
-      ${CMAKE_CURRENT_SOURCE_DIR}/${EXAMPLE}.c
-      ${EXAMPLE}
-      mbo_benchmarks ${DOXIFIED_SOURCE}
-      DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${EXAMPLE}.c)
-  add_custom_target(${EXAMPLE}-doxygen DEPENDS ${DOXIFIED_SOURCE})
-  add_dependencies(doc ${EXAMPLE}-doxygen)
+  foreach(e ${EXAMPLES})
+    set(${e}_PARENT_GROUP mbo_examples)
+  endforeach()
+  foreach(e ${EXPENSIVE_EXAMPLES})
+    set(${e}_PARENT_GROUP mbo_benchmarks)
+  endforeach()
+  foreach(EXAMPLE ${EXAMPLES} ${EXPENSIVE_EXAMPLES})
+    set(DOXIFIED_SOURCE ${PROJECT_BINARY_DIR}/doc/${EXAMPLE}.dox.c)
+    add_custom_command(OUTPUT ${DOXIFIED_SOURCE}
+        COMMAND runhaskell
+        ${PROJECT_SOURCE_DIR}/utilities/ProgramToDoxygen.hs
+        ${CMAKE_CURRENT_SOURCE_DIR}/${EXAMPLE}.c
+        ${EXAMPLE}
+        ${${EXAMPLE}_PARENT_GROUP} ${DOXIFIED_SOURCE}
+        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${EXAMPLE}.c)
+    add_custom_target(${EXAMPLE}-doxygen DEPENDS ${DOXIFIED_SOURCE})
+    add_dependencies(doc ${EXAMPLE}-doxygen)
+  endforeach()
 endif()

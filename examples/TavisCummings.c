@@ -17,10 +17,10 @@ You should have received a copy of the GNU General Public License along
 with mbo.  If not, see <http://www.gnu.org/licenses/>.
 */
 /**
- * \example TavisCummings.c
- * Illustrates the construction of the Tavis-Cummings Hamiltonian using
- * MBO.
- * */
+\par
+Illustrates the construction of the Tavis-Cummings Hamiltonian using
+MBO.
+*/
 #include <Mbo.h>
 #include <MboVec.h>
 #include <stdio.h>
