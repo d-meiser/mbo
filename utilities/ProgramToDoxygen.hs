@@ -64,7 +64,7 @@ render groupName parentGroup (LiterateSource blocks) =
       filter (not . emptyBlock) blocks
     rawCode =
       unlines $
-      (\ls -> "\\subsection Plain source code\n":ls) $
+      (\ls -> "<h2>Plain source code</h2>\n\n":ls) $
       (\ls -> ["\\code\n"] ++ ls ++ ["\\endcode"]) $
       map rawContents $
       filter isCode $
