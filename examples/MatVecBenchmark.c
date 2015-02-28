@@ -18,15 +18,52 @@ with mbo.  If not, see <http://www.gnu.org/licenses/>.
 */
 /*
 \par
-These benchmarks compare the performance of #MboNumOp to assembled sparse
-matrix vector multiplies.
+These benchmarks compare the performance of matrix vector multiplies
+using #MboNumOp to assembled sparse matrix vector multiplies.  The
+assembled matrices correspond to regular compressed sparse row (CSR)
+matrices.  This matrix format is sometimes referred to as Yale formate.
+
+
+<h3>Performance model for assembled operator application</h3>
 
 \par
-We need the main Mbo.h header as well as MboVec.h
+Operator application for assembled matrices is typically memory
+bandwidth limited.  For each complex multiply-add we need to load at
+least \f$(8+16)\f$ Byte.  The first \f$8\f$ Byte are for the column
+index of the non-zero.  The second \f$16\f$ Byte are the complex number
+for the non-zero entry in the matrix.  Note that this estimate assumes
+that the right hand side values are caches which is not always the case.
+24B per multiply add is thus an optimistic estimate.  It corresponds to
+an arithmetic intensity of \f$1/3\f$ floating point operations per Byte.
+For a stream bandwidth of \f$ {\rm BW} \f$ we get \f$ 1/3 ({\rm BW} /
+({\rm GB}/{\rm s})) {\rm GFLOP}/{\rm s} \f$.
+
+
+<h3>Performance model for #MboNumOp</h3>
+
+\par
+The implementation of the matrix vector multiply inside of #MboNumOp is
+going to evolve.  Currently, this method is essentially streaming both
+source and destination vector for each simple operator.  A simple
+operator in this context is a tensor product composed entirely of
+identities and individual sparse matrix entries.  This means that the
+#MboNumOp matrix vector multiply is largely memory bandwidth limited.
+In its current implementation we have an arithmetic intensity of
+\f$1/4\f$.  The fact that this implementation is still slightly faster
+than the assembled matrix vector multiply despite being even more memory
+bandwidth bound is probably due to the more regular data access pattern.
+We avoid the indirect data accesses in the assembled matrix vector
+multiply.
+
+
+\par
+Before we start we need to bring the Mbo library into scop by including
+several headers.  We need the main Mbo.h header as well as MboVec.h
 */
 #include <Mbo.h>
 #include <MboVec.h>
 /*
+\par
 In addition we need the following system headers
 */
 #include <stdio.h>
@@ -35,15 +72,21 @@ In addition we need the following system headers
 #include <time.h>
 #include <math.h>
 
+/*
+\par
+The following two functions are used to construct the #MboNumOp's needed
+in this benchmark.  They are defined further down.
+*/
 static MboNumOp buildTavisCummingsHamiltonian(int nAtoms, int nPhotons);
 static MboNumOp buildJx(int nAtoms);
 
 /*
-The following function builds the operatars we're using for the comparison.
-Currently we're using the many particle angular momentum operator \f$J_x\f$ as
-well as the Tavis-Cummings Hamiltonian.  `numOps` specifies the
-total number of operators that have been allocated in the `ops`
-array.
+\par
+The following function builds all operators we're using for the
+comparison.  Currently we're using the many particle angular momentum
+operator \f$J_x\f$ as well as the Tavis-Cummings Hamiltonian.  `numOps`
+specifies the total number of operators that have been allocated in the
+`ops` array.
 */
 static void buildAllOps(int numOps, MboNumOp* ops)
 {
@@ -65,9 +108,13 @@ static void buildAllOps(int numOps, MboNumOp* ops)
 	}
 }
 
-static void buildAllOps(int numOps, MboNumOp* ops);
 static void runBenchmark(MboNumOp op);
 
+/*
+\par
+The benchmarks are run by simply creating the operators and then
+invoking runBenchmark on each one of them.
+*/
 int main() {
 	MboNumOp *ops;
 	int numOps = 20, i;
@@ -79,18 +126,34 @@ int main() {
 		runBenchmark(ops[i]);
 	}
 
+/*
+Here we release all resources associated with the operators.
+*/
 	for (i = 0; i < numOps; ++i) {
 		mboNumOpDestroy(&ops[i]);
 	}
 	free(ops);
 }
 
+/*
+\par
+The CSR data structure defined in the following code is used to
+represent the assembled matrices.  `dim` is the dimension of the matrix;
+`i` is an array with the offsets for the different rows; `j` are the
+column indices of the non-zero entries; and `a` are the non-zero values.
+*/
 struct CSR {
 	MboGlobInd dim;
 	MboGlobInd *i;
 	MboGlobInd *j;
 	struct MboAmplitude *a;
 };
+
+/*
+\par
+The following function initializes a CSR structure in a well defined
+state.
+*/
 static struct CSR createCSR()
 {
 	struct CSR csr;
@@ -99,6 +162,11 @@ static struct CSR createCSR()
 	csr.a = 0;
 	return csr;
 }
+
+/*
+\par
+The following function deallocates all memory in a CSR matrix.
+*/
 static void destroyCSR(struct CSR *csr)
 {
 	free(csr->i);
@@ -106,6 +174,13 @@ static void destroyCSR(struct CSR *csr)
 	free(csr->a);
 }
 
+/*
+\par
+`getCSRMatrix` creates the CSR matrix corresponding to a #MboNumOp.
+This function uses #mboNumOpRowOffsets and #mboNumOpSparseMatrix to
+obtain the sparse matrix data.  `csr` should have been previously
+created with `createCSR`.
+*/
 static void getCSRMatrix(MboNumOp op, struct CSR *csr)
 {
 	MboProdSpace h;
@@ -121,6 +196,12 @@ static void getCSRMatrix(MboNumOp op, struct CSR *csr)
 	mboNumOpSparseMatrix(op, 0, dim, csr->i, csr->j, csr->a);
 }
 
+/*
+\par
+`BenchmarkData` is a simple container for the results from a benchmark run.  It
+is used to record the execution times of several runs, storage requirements, and
+the number of floating point operations.
+*/
 struct BenchmarkData {
 	int numIters;
 	double *times;
@@ -128,6 +209,10 @@ struct BenchmarkData {
 	double numFlops;
 };
 
+/*
+\par
+A `struct BenchmarkData` can be initialized with the following function
+*/
 static struct BenchmarkData createBenchmarkData(int numIters)
 {
 	struct BenchmarkData bm;
@@ -138,11 +223,18 @@ static struct BenchmarkData createBenchmarkData(int numIters)
 	return bm;
 }
 
+/*
+and it is destroyed with
+*/
 static void destroyBenchmarkData(struct BenchmarkData *bm)
 {
 	free(bm->times);
 }
 
+/*
+\par
+A CSR matrix can be applied to a vector by means of the following function.
+*/
 static void applyCSRMatrix(struct MboAmplitude alpha, struct CSR *csr,
 			   struct MboAmplitude *x, struct MboAmplitude beta,
 			   struct MboAmplitude *y)
@@ -167,6 +259,12 @@ static void applyCSRMatrix(struct MboAmplitude alpha, struct CSR *csr,
 	}
 }
 
+/*
+\par
+This is a simple driver for timing the execution time of the matrix vector
+multiplication using assembled matrices.  This driver simply invokes
+`applyCSRMatrix` repeatedly and records the execution time.
+*/
 static struct BenchmarkData runAssembledBenchmark(MboNumOp op, int numIters)
 {
 	struct CSR csr = createCSR();
@@ -203,6 +301,9 @@ static struct BenchmarkData runAssembledBenchmark(MboNumOp op, int numIters)
 	return bm;
 }
 
+/*
+The driver for the #MboNumOp's is completely analogous:
+*/
 static struct BenchmarkData runMboBenchmark(MboNumOp op, int numIters)
 {
 	clock_t tstart, tend;
@@ -238,6 +339,11 @@ static struct BenchmarkData runMboBenchmark(MboNumOp op, int numIters)
 	return bm;
 }
 
+/*
+\par
+The average of several numbers is computed as follows.  This can be used to get
+average run times for the different benchmarks.
+*/
 static double average(const double *x, int n)
 {
 	double avg = 0.0;
@@ -250,6 +356,10 @@ static double average(const double *x, int n)
 	return avg / (double)n;
 }
 
+/*
+\par
+A pair of assembled/unassembled benchmarks is printed to the screen as follows
+*/
 static void printBenchmarkReport(struct BenchmarkData *assembledBM,
 				 struct BenchmarkData *mboBenchmark, int valid)
 {
@@ -272,6 +382,10 @@ static void printBenchmarkReport(struct BenchmarkData *assembledBM,
 	}
 }
 
+/*
+\par
+To compute the error we use the L2 norm of the difference between two vectors:
+*/
 static double distance(MboVec x, MboVec y, MboGlobInd d)
 {
 	MboGlobInd i;
@@ -291,6 +405,12 @@ static double distance(MboVec x, MboVec y, MboGlobInd d)
 	return dist;
 }
 
+/*
+\par
+The `verify` method compares the results obtained from the assembled operators
+and the unassembled operators in the L2 norm.  If the error is "small enough" we
+return a nonzero value to indicate success.
+*/
 static int verify(MboNumOp op)
 {
 	int valid = 0;
@@ -309,8 +429,8 @@ static int verify(MboNumOp op)
 	mboVecSetRandom(x);
 
 /*
- Compute result with MboNumOp
- */
+Compute result with MboNumOp
+*/
 	mboVecCreate(dim, &yMboNumOp);
 	mboVecSet(&beta, yMboNumOp);
 	mboVecGetViewR(x, &xarr);
@@ -348,6 +468,11 @@ Compute result with assembled operator
 	return valid;
 }
 
+/*
+\par
+Running of the benchmarks, verification, and reporting for a given operator is
+orchestrated as follows:
+*/
 void runBenchmark(MboNumOp op)
 {
 	static const int numIters = 2;
@@ -360,11 +485,21 @@ void runBenchmark(MboNumOp op)
 	destroyBenchmarkData(&mboBenchmark);
 }
 
+/*
+\par
+Resonance frequency of ith atom used in the construction of the Tavis-Cummings
+Hamiltonian below.  This is an entirely arbitrary choice
+*/
 static double omega(int i)
 {
 	return 1.3 * i;
 }
 
+/*
+\par
+Finally, the last two functions are used to construct the operators in the
+benchmark.
+*/
 MboNumOp buildTavisCummingsHamiltonian(int nAtoms, int nPhotons)
 {
 	MboProdSpace hSingleAtom, hAtoms, hField, hTot;
