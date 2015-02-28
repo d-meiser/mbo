@@ -16,25 +16,57 @@ for more details.
 You should have received a copy of the GNU General Public License along
 with mbo.  If not, see <http://www.gnu.org/licenses/>.
 */
+/*
+\page Benchmarks Some benchmarks of mbo operators
 
-/**
- * \example Benchmark.c
- *
- * Performance measurements and comparisons between assembled matrices
- * and MboNumOp operators.
- * */
+\par
+These benchmarks compare the performance of #MboNumOp to assembled sparse
+matrix vector multiplies.
+
+\par
+We need the main Mbo.h header as well as MboVec.h
+*/
 #include <Mbo.h>
 #include <MboVec.h>
+/*
+In addition we need the following system headers
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <time.h>
 #include <math.h>
 
-static const double TOLERANCE = 1.0e-10;
-
 static MboNumOp buildTavisCummingsHamiltonian(int nAtoms, int nPhotons);
 static MboNumOp buildJx(int nAtoms);
+
+/*
+The following function builds the operatars we're using for the comparison.
+Currently we're using the many particle angular momentum operator \f$J_x\f$ as
+well as the Tavis-Cummings Hamiltonian.  \code numOps \endcode specifies the
+total number of operators that have been allocated in the \code ops \endcode
+array.
+*/
+static void buildAllOps(int numOps, MboNumOp* ops)
+{
+	int i;
+
+	static const int numPtclsJxMin = 8;
+	static const int numPtclsJxMax = 18;
+	for (i = numPtclsJxMin; i < numPtclsJxMax; ++i) {
+		if (numOps <= 0) return;
+		*ops = buildJx(i);
+		++ops;
+		--numOps;
+	}
+	for (i = 0; i < 10; ++i) {
+		if (numOps <= 0) return;
+		*ops = buildTavisCummingsHamiltonian(10 + i, 10);
+		++ops;
+		--numOps;
+	}
+}
+
 static void buildAllOps(int numOps, MboNumOp* ops);
 static void runBenchmark(MboNumOp op);
 
@@ -53,24 +85,6 @@ int main() {
 		mboNumOpDestroy(&ops[i]);
 	}
 	free(ops);
-}
-
-void buildAllOps(int numOps, MboNumOp* ops)
-{
-	int i;
-
-	for (i = 0; i < 10; ++i) {
-		if (numOps <= 0) return;
-		*ops = buildJx(8 + i);
-		++ops;
-		--numOps;
-	}
-	for (i = 0; i < 10; ++i) {
-		if (numOps <= 0) return;
-		*ops = buildTavisCummingsHamiltonian(10 + i, 10);
-		++ops;
-		--numOps;
-	}
 }
 
 struct CSR {
@@ -296,7 +310,9 @@ static int verify(MboNumOp op)
 	mboVecCreate(dim, &x);
 	mboVecSetRandom(x);
 
-	/* Compute result with MboNumOp */
+/*
+ Compute result with MboNumOp
+ */
 	mboVecCreate(dim, &yMboNumOp);
 	mboVecSet(&beta, yMboNumOp);
 	mboVecGetViewR(x, &xarr);
@@ -305,7 +321,9 @@ static int verify(MboNumOp op)
 	mboVecReleaseView(x, &xarr);
 	mboVecReleaseView(yMboNumOp, &yarr);
 
-	/* Compute result with assembled operator */
+/*
+Compute result with assembled operator
+*/
 	mboVecCreate(dim, &yAssembled);
 	mboVecSet(&beta, yAssembled);
 	mboVecGetViewR(x, &xarr);
@@ -322,6 +340,7 @@ static int verify(MboNumOp op)
 	mboVecDestroy(&yAssembled);
 	destroyCSR(&csr);
 
+	static const double TOLERANCE = 1.0e-10;
 	if (error > TOLERANCE) {
 		valid = 0;
 	} else {
@@ -359,7 +378,9 @@ MboNumOp buildTavisCummingsHamiltonian(int nAtoms, int nPhotons)
 	int i;
 	MBO_STATUS err;
 
-	/* build various Hilbert spaces */
+/*
+build various Hilbert spaces
+*/
 	hSingleAtom = mboProdSpaceCreate(2);
 	hAtoms = mboProdSpaceCreate(0);
 	for (i = 0; i < nAtoms; ++i) {
@@ -370,7 +391,9 @@ MboNumOp buildTavisCummingsHamiltonian(int nAtoms, int nPhotons)
 	mboProdSpaceMul(hAtoms, &hTot);
 	mboProdSpaceMul(hField, &hTot);
 
-	/* build atomic operators */
+/*
+build atomic operators
+*/
 	sm = mboSigmaMinus();
 	sp = mboSigmaPlus();
 	sz = mboSigmaZ();
@@ -390,7 +413,9 @@ MboNumOp buildTavisCummingsHamiltonian(int nAtoms, int nPhotons)
 	}
 	mboTensorOpIdentity(hAtoms, &idAtoms);
 
-	/* build field operators */
+/*
+build field operators
+*/
 	a = mboAnnihilationOp(nPhotons + 1);
 	ad = mboCreationOp(nPhotons + 1);
 	numberOp = mboNumOp(nPhotons + 1);
@@ -399,13 +424,17 @@ MboNumOp buildTavisCummingsHamiltonian(int nAtoms, int nPhotons)
 	mboTensorOpNull(hField, &Ad);
 	mboTensorOpAddTo(ad, 0, Ad);
 	mboTensorOpNull(hField, &N);
-	/* The frequency of the cavity */
+/*
+The frequency of the cavity
+*/
 	tmp.re = 2.7;
 	tmp.im = 0;
 	mboTensorOpAddScaledTo(&tmp, numberOp, 0, N);
 	mboTensorOpIdentity(hField, &idField);
 
-	/* Assemble Hamiltonian */
+/*
+Assemble Hamiltonian
+*/
 	factors = malloc(2 * sizeof(*factors));
 	mboTensorOpNull(hTot, &H);
 	factors[0] = idField;
@@ -425,7 +454,9 @@ MboNumOp buildTavisCummingsHamiltonian(int nAtoms, int nPhotons)
 	err = mboNumOpCompile(H, &H_compiled);
 	assert(err == MBO_SUCCESS);
 
-	/* Release all resources */
+/*
+Release all resources
+*/
 	mboElemOpDestroy(&sm);
 	mboElemOpDestroy(&sp);
 	mboElemOpDestroy(&sz);
@@ -459,14 +490,18 @@ MboNumOp buildJx(int nAtoms)
 	int i;
 	MBO_STATUS err;
 
-	/* build various Hilbert spaces */
+/*
+build various Hilbert spaces
+*/
 	hSingleAtom = mboProdSpaceCreate(2);
 	hAtoms = mboProdSpaceCreate(0);
 	for (i = 0; i < nAtoms; ++i) {
 		mboProdSpaceMul(hSingleAtom, &hAtoms);
 	}
 
-	/* build atomic operators */
+/* 
+build atomic operators
+*/
 	sm = mboSigmaMinus();
 	sp = mboSigmaPlus();
 	mboTensorOpNull(hAtoms, &Jx);
@@ -480,7 +515,9 @@ MboNumOp buildJx(int nAtoms)
 	err = mboNumOpCompile(Jx, &Jx_compiled);
 	assert(err == MBO_SUCCESS);
 
-	/* Release all resources */
+/*
+Release all resources
+*/
 	mboElemOpDestroy(&sm);
 	mboElemOpDestroy(&sp);
 	mboProdSpaceDestroy(&hSingleAtom);
