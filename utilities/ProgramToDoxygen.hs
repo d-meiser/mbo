@@ -52,9 +52,7 @@ render groupName parentGroup (LiterateSource blocks) =
   "@defgroup " ++ groupName ++ " " ++ groupName ++ "\n" ++
   "@ingroup " ++ parentGroup ++ "\n" ++
   "@{\n" ++
-  "\n\n<h2>Annotated source code</h2>\n\n" ++
   annotatedCode ++
-  "\n\n<h2>Source code without comments</h2>\n\n" ++
   rawCode ++
   "@}\n" ++
   "*/\n"
