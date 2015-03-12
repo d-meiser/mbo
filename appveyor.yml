@@ -1,7 +1,7 @@
 version: 1.0.{build}
 before_build:
-- cinst wget -x86
-- cinst 7zip.commandline -x86
+- cinst wget -x86 -y
+- cinst 7zip.commandline -x86 -y
 - wget -q http://googletest.googlecode.com/files/gtest-1.7.0.zip
 - 7z x gtest-1.7.0.zip > NUL
 build:
