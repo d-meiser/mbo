@@ -441,7 +441,7 @@ TEST(MboTensorOp, RowOffsetsIdentity) {
   MboNumOp idc;
   ASSERT_EQ(MBO_SUCCESS, mboNumOpCompile(id, &idc));
 
-  std::vector<MboGlobInd> i(dim + 1);
+  std::vector<MboGlobInd> i(dim + 1, -100);
   mboNumOpRowOffsets(idc, 0, 2, &i[0]);
   EXPECT_EQ(0, i[0]);
   EXPECT_EQ(1, i[1]);
@@ -1064,3 +1064,4 @@ TEST(MboNumOp, DeleteDiagonalSp) {
   mboProdSpaceDestroy(&h);
   mboNumOpDestroy(&Op_comp);
 }
+

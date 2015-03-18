@@ -16,10 +16,10 @@ for more details.
 You should have received a copy of the GNU General Public License along
 with mbo.  If not, see <http://www.gnu.org/licenses/>.
 */
-/**
- * \example OpenMP.c
- * Illustrates the parallel application of an MBO operator.
- * */
+/*
+\par
+Illustrates the parallel application of an MBO operator.
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>

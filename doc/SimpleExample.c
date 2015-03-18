@@ -1,8 +1,14 @@
 /**
- * \example SimpleExample.c
- * Basic example: embed spin lowering operator into a many particle
- * space.
- * */
+@defgroup SimpleExample SimpleExample
+@ingroup mbo_examples
+
+@{
+\par
+Basic example: embed spin lowering operator into a many particle
+space.
+
+\code
+*/
 #include <Mbo.h>
 
 int main()
@@ -26,4 +32,9 @@ int main()
 	mboProdSpaceDestroy(&manyParticleSpace);
 	mboElemOpDestroy(&sm);
 }
+
+/**
+\endcode
+@}
+*/
 

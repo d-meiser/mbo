@@ -16,6 +16,12 @@ for more details.
 You should have received a copy of the GNU General Public License along
 with mbo.  If not, see <http://www.gnu.org/licenses/>.
 */
+/**
+ * @file Mbo.h
+ * @brief The core modules of the mbo library.
+ * @ingroup mbo_core
+ * @{
+ * */
 #ifndef MBO_H
 #define MBO_H
 
@@ -35,3 +41,4 @@ extern "C" {
 }
 #endif
 #endif
+/** @} */
