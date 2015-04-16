@@ -58,6 +58,7 @@ static MBO_STATUS sortOps(struct SimpleTOp* ops, int numOps, MboProdSpace h) {
 	reorderedOps =
 	    (struct SimpleTOp *)malloc(numOps * sizeof(*reorderedOps));
 	if (!reorderedOps) {
+		free(opCtxs);
 		return MBO_OUT_OF_MEMORY;
 	}
 
