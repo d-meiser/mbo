@@ -45,7 +45,9 @@ add_library(MBO
     ${MBO_HDRS}
     )
 if(UNIX)
-  target_link_libraries(MBO m)
+  if(NOT EXPLICIT_MATH_LIB_NOT_NEEDED)
+    target_link_libraries(MBO m)
+  endif()
   if(MBO_ENABLE_COVERAGE)
     target_link_libraries(MBO gcov)
   endif()
