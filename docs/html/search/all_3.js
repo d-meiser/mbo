@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['re',['re',['../structMboAmplitude.html#aba099cb22559d3830ba3761eb4f12587',1,'MboAmplitude']]]
+  ['im',['im',['../structMboAmplitude.html#a4792b57f80d371bf308de5a683838cc0',1,'MboAmplitude']]]
 ];

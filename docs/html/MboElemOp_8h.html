@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.8"/>
-<title>MBO: /home/dmeiser/Documents/misc/n3/include/MboElemOp.h File Reference</title>
+<title>MBO: /home/dmeiser/Documents/misc/mbo/include/MboElemOp.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -40,7 +40,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Data&#160;Structures</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
-      <li><a href="examples.html"><span>Examples</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -97,6 +96,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;MboExport.h&gt;</code><br />
 <code>#include &lt;<a class="el" href="MboIndices_8h_source.html">MboIndices.h</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="MboErrors_8h_source.html">MboErrors.h</a>&gt;</code><br />
 </div>
 <p><a href="MboElemOp_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -108,24 +108,24 @@ Typedefs</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga28d1649b52dcf4e9acae4c322cfba19f"><td class="memItemLeft" align="right" valign="top">MBO_EXPORT void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mbo__elemop.html#ga28d1649b52dcf4e9acae4c322cfba19f">mboElemOpCreate</a> (<a class="el" href="group__mbo__elemop.html#ga3bc079fb6656f649809d7cd7d6e8ddb5">MboElemOp</a> *elemOp)</td></tr>
-<tr class="memdesc:ga28d1649b52dcf4e9acae4c322cfba19f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a MboElemOp object.  <a href="group__mbo__elemop.html#ga28d1649b52dcf4e9acae4c322cfba19f">More...</a><br /></td></tr>
-<tr class="separator:ga28d1649b52dcf4e9acae4c322cfba19f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga69458ba492ed0ea4c8c97424debe67f3"><td class="memItemLeft" align="right" valign="top">MBO_EXPORT <a class="el" href="group__mbo__errors.html#ga37b5d6e8277b2da9e0f501d3c933136b">MBO_STATUS</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mbo__elemop.html#ga69458ba492ed0ea4c8c97424debe67f3">mboElemOpCreate</a> (<a class="el" href="group__mbo__elemop.html#ga3bc079fb6656f649809d7cd7d6e8ddb5">MboElemOp</a> *elemOp)</td></tr>
+<tr class="memdesc:ga69458ba492ed0ea4c8c97424debe67f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a MboElemOp object.  <a href="group__mbo__elemop.html#ga69458ba492ed0ea4c8c97424debe67f3">More...</a><br /></td></tr>
+<tr class="separator:ga69458ba492ed0ea4c8c97424debe67f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gab8cef26a5c6ef8eed05a6666bf439917"><td class="memItemLeft" align="right" valign="top">MBO_EXPORT void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mbo__elemop.html#gab8cef26a5c6ef8eed05a6666bf439917">mboElemOpDestroy</a> (<a class="el" href="group__mbo__elemop.html#ga3bc079fb6656f649809d7cd7d6e8ddb5">MboElemOp</a> *elemOp)</td></tr>
 <tr class="memdesc:gab8cef26a5c6ef8eed05a6666bf439917"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroy a MboElemOp object.  <a href="group__mbo__elemop.html#gab8cef26a5c6ef8eed05a6666bf439917">More...</a><br /></td></tr>
 <tr class="separator:gab8cef26a5c6ef8eed05a6666bf439917"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga34d0fbc1cfcc48392ab8a76f3ff6755a"><td class="memItemLeft" align="right" valign="top">MBO_EXPORT void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mbo__elemop.html#ga34d0fbc1cfcc48392ab8a76f3ff6755a">mboElemOpAddTo</a> (<a class="el" href="group__mbo__indices.html#ga0b1d081a169ef61bd1bdf0cec6b0630e">MboLocInd</a> r, <a class="el" href="group__mbo__indices.html#ga0b1d081a169ef61bd1bdf0cec6b0630e">MboLocInd</a> c, struct <a class="el" href="structMboAmplitude.html">MboAmplitude</a> *a, <a class="el" href="group__mbo__elemop.html#ga3bc079fb6656f649809d7cd7d6e8ddb5">MboElemOp</a> *elemOp)</td></tr>
-<tr class="memdesc:ga34d0fbc1cfcc48392ab8a76f3ff6755a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a non-zero entry to an MboElemOp.  <a href="group__mbo__elemop.html#ga34d0fbc1cfcc48392ab8a76f3ff6755a">More...</a><br /></td></tr>
-<tr class="separator:ga34d0fbc1cfcc48392ab8a76f3ff6755a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3eba71bc6f7e438e7a49c6e6010f5211"><td class="memItemLeft" align="right" valign="top">MBO_EXPORT <a class="el" href="group__mbo__errors.html#ga37b5d6e8277b2da9e0f501d3c933136b">MBO_STATUS</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mbo__elemop.html#ga3eba71bc6f7e438e7a49c6e6010f5211">mboElemOpAddTo</a> (<a class="el" href="group__mbo__indices.html#ga0b1d081a169ef61bd1bdf0cec6b0630e">MboLocInd</a> r, <a class="el" href="group__mbo__indices.html#ga0b1d081a169ef61bd1bdf0cec6b0630e">MboLocInd</a> c, struct <a class="el" href="structMboAmplitude.html">MboAmplitude</a> *a, <a class="el" href="group__mbo__elemop.html#ga3bc079fb6656f649809d7cd7d6e8ddb5">MboElemOp</a> *elemOp)</td></tr>
+<tr class="memdesc:ga3eba71bc6f7e438e7a49c6e6010f5211"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a non-zero entry to an MboElemOp.  <a href="group__mbo__elemop.html#ga3eba71bc6f7e438e7a49c6e6010f5211">More...</a><br /></td></tr>
+<tr class="separator:ga3eba71bc6f7e438e7a49c6e6010f5211"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga609ad6ecbc76a3fb777ec2dd7ece41b3"><td class="memItemLeft" align="right" valign="top">MBO_EXPORT void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mbo__elemop.html#ga609ad6ecbc76a3fb777ec2dd7ece41b3">mboElemOpScale</a> (struct <a class="el" href="structMboAmplitude.html">MboAmplitude</a> *a, <a class="el" href="group__mbo__elemop.html#ga3bc079fb6656f649809d7cd7d6e8ddb5">MboElemOp</a> elemOp)</td></tr>
 <tr class="memdesc:ga609ad6ecbc76a3fb777ec2dd7ece41b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rescale an elementary operator.  <a href="group__mbo__elemop.html#ga609ad6ecbc76a3fb777ec2dd7ece41b3">More...</a><br /></td></tr>
 <tr class="separator:ga609ad6ecbc76a3fb777ec2dd7ece41b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gae858f7f4cefc47987b891899a1d8aea2"><td class="memItemLeft" align="right" valign="top">MBO_EXPORT void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mbo__elemop.html#gae858f7f4cefc47987b891899a1d8aea2">mboElemOpPlus</a> (<a class="el" href="group__mbo__elemop.html#ga3bc079fb6656f649809d7cd7d6e8ddb5">MboElemOp</a> elemOpA, <a class="el" href="group__mbo__elemop.html#ga3bc079fb6656f649809d7cd7d6e8ddb5">MboElemOp</a> *elemOpB)</td></tr>
-<tr class="memdesc:gae858f7f4cefc47987b891899a1d8aea2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add elementary operators.  <a href="group__mbo__elemop.html#gae858f7f4cefc47987b891899a1d8aea2">More...</a><br /></td></tr>
-<tr class="separator:gae858f7f4cefc47987b891899a1d8aea2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga97e517172b47a747f297e99c8584e85c"><td class="memItemLeft" align="right" valign="top">MBO_EXPORT void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mbo__elemop.html#ga97e517172b47a747f297e99c8584e85c">mboElemOpMul</a> (<a class="el" href="group__mbo__elemop.html#ga3bc079fb6656f649809d7cd7d6e8ddb5">MboElemOp</a> elemOpA, <a class="el" href="group__mbo__elemop.html#ga3bc079fb6656f649809d7cd7d6e8ddb5">MboElemOp</a> *elemOpB)</td></tr>
-<tr class="memdesc:ga97e517172b47a747f297e99c8584e85c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add elementary operators.  <a href="group__mbo__elemop.html#ga97e517172b47a747f297e99c8584e85c">More...</a><br /></td></tr>
-<tr class="separator:ga97e517172b47a747f297e99c8584e85c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0d3cde7050bb8b4b256db2e1185cf6de"><td class="memItemLeft" align="right" valign="top">MBO_EXPORT <a class="el" href="group__mbo__errors.html#ga37b5d6e8277b2da9e0f501d3c933136b">MBO_STATUS</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mbo__elemop.html#ga0d3cde7050bb8b4b256db2e1185cf6de">mboElemOpPlus</a> (<a class="el" href="group__mbo__elemop.html#ga3bc079fb6656f649809d7cd7d6e8ddb5">MboElemOp</a> elemOpA, <a class="el" href="group__mbo__elemop.html#ga3bc079fb6656f649809d7cd7d6e8ddb5">MboElemOp</a> *elemOpB)</td></tr>
+<tr class="memdesc:ga0d3cde7050bb8b4b256db2e1185cf6de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add elementary operators.  <a href="group__mbo__elemop.html#ga0d3cde7050bb8b4b256db2e1185cf6de">More...</a><br /></td></tr>
+<tr class="separator:ga0d3cde7050bb8b4b256db2e1185cf6de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga095d935c0c32cbf769845c5cacda9bae"><td class="memItemLeft" align="right" valign="top">MBO_EXPORT <a class="el" href="group__mbo__errors.html#ga37b5d6e8277b2da9e0f501d3c933136b">MBO_STATUS</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mbo__elemop.html#ga095d935c0c32cbf769845c5cacda9bae">mboElemOpMul</a> (<a class="el" href="group__mbo__elemop.html#ga3bc079fb6656f649809d7cd7d6e8ddb5">MboElemOp</a> elemOpA, <a class="el" href="group__mbo__elemop.html#ga3bc079fb6656f649809d7cd7d6e8ddb5">MboElemOp</a> *elemOpB)</td></tr>
+<tr class="memdesc:ga095d935c0c32cbf769845c5cacda9bae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add elementary operators.  <a href="group__mbo__elemop.html#ga095d935c0c32cbf769845c5cacda9bae">More...</a><br /></td></tr>
+<tr class="separator:ga095d935c0c32cbf769845c5cacda9bae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gad86e5808fbb059044ac773b6acce1ffd"><td class="memItemLeft" align="right" valign="top">MBO_EXPORT <a class="el" href="group__mbo__elemop.html#ga3bc079fb6656f649809d7cd7d6e8ddb5">MboElemOp</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mbo__elemop.html#gad86e5808fbb059044ac773b6acce1ffd">mboElemOpCopy</a> (<a class="el" href="group__mbo__elemop.html#ga3bc079fb6656f649809d7cd7d6e8ddb5">MboElemOp</a> elemOp)</td></tr>
 <tr class="memdesc:gad86e5808fbb059044ac773b6acce1ffd"><td class="mdescLeft">&#160;</td><td class="mdescRight">copy an elementary operator  <a href="group__mbo__elemop.html#gad86e5808fbb059044ac773b6acce1ffd">More...</a><br /></td></tr>
 <tr class="separator:gad86e5808fbb059044ac773b6acce1ffd"><td class="memSeparator" colspan="2">&#160;</td></tr>

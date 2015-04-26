@@ -40,7 +40,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Data&#160;Structures</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
-      <li><a href="examples.html"><span>Examples</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -108,6 +107,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga91470b74cbd8ae3009b4b9f8430b2087"><td class="memItemLeft" align="right" valign="top">MBO_EXPORT void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mbo__tensorop.html#ga91470b74cbd8ae3009b4b9f8430b2087">mboTensorOpAddScaledTo</a> (struct <a class="el" href="structMboAmplitude.html">MboAmplitude</a> *alpha, <a class="el" href="group__mbo__elemop.html#ga3bc079fb6656f649809d7cd7d6e8ddb5">MboElemOp</a> elemop, int i, <a class="el" href="group__mbo__tensorop.html#ga80e92cba3a8e5df5f0cee2132f5bf50a">MboTensorOp</a> top)</td></tr>
 <tr class="memdesc:ga91470b74cbd8ae3009b4b9f8430b2087"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds scaled version of embedded operator to tensor operator.  <a href="#ga91470b74cbd8ae3009b4b9f8430b2087">More...</a><br /></td></tr>
 <tr class="separator:ga91470b74cbd8ae3009b4b9f8430b2087"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa7e64f9ed154431ad57886258ed49939"><td class="memItemLeft" align="right" valign="top">MBO_EXPORT <a class="el" href="group__mbo__tensorop.html#ga80e92cba3a8e5df5f0cee2132f5bf50a">MboTensorOp</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mbo__tensorop.html#gaa7e64f9ed154431ad57886258ed49939">mboTensorOpCopy</a> (<a class="el" href="group__mbo__tensorop.html#ga80e92cba3a8e5df5f0cee2132f5bf50a">MboTensorOp</a> a)</td></tr>
+<tr class="memdesc:gaa7e64f9ed154431ad57886258ed49939"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a deep copy of a tensor operator.  <a href="#gaa7e64f9ed154431ad57886258ed49939">More...</a><br /></td></tr>
+<tr class="separator:gaa7e64f9ed154431ad57886258ed49939"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaac98e2225c1125b5843a5c20022ea4dc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaac98e2225c1125b5843a5c20022ea4dc"></a>
 MBO_EXPORT void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__mbo__tensorop.html#gaac98e2225c1125b5843a5c20022ea4dc">mboTensorOpMul</a> (<a class="el" href="group__mbo__tensorop.html#ga80e92cba3a8e5df5f0cee2132f5bf50a">MboTensorOp</a> a, <a class="el" href="group__mbo__tensorop.html#ga80e92cba3a8e5df5f0cee2132f5bf50a">MboTensorOp</a> b, <a class="el" href="group__mbo__tensorop.html#ga80e92cba3a8e5df5f0cee2132f5bf50a">MboTensorOp</a> *c)</td></tr>
 <tr class="memdesc:gaac98e2225c1125b5843a5c20022ea4dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Multiply two operators and add result to third (*c) += a * b. <br /></td></tr>
@@ -180,8 +182,7 @@ MBO_EXPORT void&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 
 <p>Adds scaled version of embedded operator to tensor operator. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="group__mbo__tensorop.html#ga0ed0e1991025ca578bd335cb806c8161" title="Add an embedding to a tensor operator. ">mboTensorOpAddTo</a> </dd></dl>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="ComputeMatrix_8c-example.html#a9">ComputeMatrix.c</a>, <a class="el" href="OpenMP_8c-example.html#a7">OpenMP.c</a>, and <a class="el" href="TavisCummings_8c-example.html#a7">TavisCummings.c</a>.</dd>
-</dl>
+
 </div>
 </div>
 <a class="anchor" id="ga0ed0e1991025ca578bd335cb806c8161"></a>
@@ -224,8 +225,7 @@ MBO_EXPORT void&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
   </table>
   </dd>
 </dl>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="SimpleExample_8c-example.html#a4">SimpleExample.c</a>, and <a class="el" href="TavisCummings_8c-example.html#a8">TavisCummings.c</a>.</dd>
-</dl>
+
 </div>
 </div>
 <a class="anchor" id="ga14a7e8c9d57ec6bd71c183390df87a63"></a>
@@ -254,6 +254,31 @@ MBO_EXPORT void&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 
 </div>
 </div>
+<a class="anchor" id="gaa7e64f9ed154431ad57886258ed49939"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MBO_EXPORT <a class="el" href="group__mbo__tensorop.html#ga80e92cba3a8e5df5f0cee2132f5bf50a">MboTensorOp</a> mboTensorOpCopy </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__mbo__tensorop.html#ga80e92cba3a8e5df5f0cee2132f5bf50a">MboTensorOp</a>&#160;</td>
+          <td class="paramname"><em>a</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a deep copy of a tensor operator. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">a</td><td>Operator to copy. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Deeop copy of a. </dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="ga834e3a69aec1dbaf1c1e712a3d308e59"></a>
 <div class="memitem">
 <div class="memproto">
@@ -270,8 +295,7 @@ MBO_EXPORT void&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 
 <p>Destroy a tensor operator object. </p>
 <dl class="section see"><dt>See also</dt><dd>mboTensorOpCreate, mboTensorOpCreateIdentity </dd></dl>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="ComputeMatrix_8c-example.html#a22">ComputeMatrix.c</a>, <a class="el" href="OpenMP_8c-example.html#a10">OpenMP.c</a>, <a class="el" href="SimpleExample_8c-example.html#a5">SimpleExample.c</a>, and <a class="el" href="TavisCummings_8c-example.html#a23">TavisCummings.c</a>.</dd>
-</dl>
+
 </div>
 </div>
 <a class="anchor" id="gab84626657c9e016e8a4a7f3a9ae435c0"></a>
@@ -326,8 +350,7 @@ MBO_EXPORT void&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
   </dd>
 </dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="group__mbo__tensorop.html#ga834e3a69aec1dbaf1c1e712a3d308e59" title="Destroy a tensor operator object. ">mboTensorOpDestroy</a>, <a class="el" href="group__mbo__tensorop.html#gaf9e342dc31acaf8b38f842c990e185be" title="Create a tensor operator corresponding to the Null operator. ">mboTensorOpNull</a> </dd></dl>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="TavisCummings_8c-example.html#a9">TavisCummings.c</a>.</dd>
-</dl>
+
 </div>
 </div>
 <a class="anchor" id="gae2f2756990a2473f2bf70a22a0d2ff08"></a>
@@ -362,8 +385,7 @@ MBO_EXPORT void&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 
 <p>Tensor product of two operators. </p>
 <p>*c += ops[0] x ops[1] x ... x ops[n] </p>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="TavisCummings_8c-example.html#a13">TavisCummings.c</a>.</dd>
-</dl>
+
 </div>
 </div>
 <a class="anchor" id="gaf9e342dc31acaf8b38f842c990e185be"></a>
@@ -399,8 +421,7 @@ MBO_EXPORT void&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
   </dd>
 </dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="group__mbo__tensorop.html#ga834e3a69aec1dbaf1c1e712a3d308e59" title="Destroy a tensor operator object. ">mboTensorOpDestroy</a>, <a class="el" href="group__mbo__tensorop.html#ga4987a0d58e37b003218c1b19fa4c5532" title="Create a tensor operator corresponding to the Identity operator. ">mboTensorOpIdentity</a> </dd></dl>
-<dl><dt><b>Examples: </b></dt><dd><a class="el" href="ComputeMatrix_8c-example.html#a8">ComputeMatrix.c</a>, <a class="el" href="OpenMP_8c-example.html#a6">OpenMP.c</a>, <a class="el" href="SimpleExample_8c-example.html#a3">SimpleExample.c</a>, and <a class="el" href="TavisCummings_8c-example.html#a6">TavisCummings.c</a>.</dd>
-</dl>
+
 </div>
 </div>
 <a class="anchor" id="ga43dc28caca2d683e0066507c1fb96180"></a>
