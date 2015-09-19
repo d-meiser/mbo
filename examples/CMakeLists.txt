@@ -19,7 +19,7 @@ foreach(e ${EXAMPLES} ${EXPENSIVE_EXAMPLES})
   target_link_libraries(${e} MBO)
 endforeach()
 
-if(RUN_EXAMPLES_AS_TESTS)
+if(MBO_RUN_EXAMPLES_AS_TESTS)
   foreach(e ${EXAMPLES})
     add_test(${e} ${e})
   endforeach()
