@@ -6,7 +6,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/cmake")
 include(AddCCompilerFlagIfSupported)
 include(AddCLinkerFlagIfSupported)
 
-option(RUN_EXAMPLES_AS_TESTS 
+option(MBO_RUN_EXAMPLES_AS_TESTS 
     "Whether to run the examples as part of the test suite" OFF)
 option(MBO_ENABLE_COVERAGE
     "Instrument tests for coverage" OFF)

@@ -11,15 +11,15 @@ before_install:
 script:
   - mkdir -p build
   - cd build
-  - cmake -DCMAKE_BUILD_TYPE=Debug -DMBO_ENABLE_COVERAGE=ON -DMBO_BUILD_TESTS=ON -DRUN_EXAMPLES_AS_TESTS=ON -Dgtest_disable_pthreads=ON ..
+  - cmake -DCMAKE_BUILD_TYPE=Debug -DMBO_ENABLE_COVERAGE=ON -DMBO_BUILD_TESTS=ON -DMBO_RUN_EXAMPLES_AS_TESTS=ON -Dgtest_disable_pthreads=ON ..
   - make -j4
   - ctest -j4 --output-on-failure
   - rm -rf *
-  - cmake -DCMAKE_BUILD_TYPE=Debug -DMBO_ENABLE_COVERAGE=ON -DMBO_BUILD_TESTS=ON -DRUN_EXAMPLES_AS_TESTS=ON -DBUILD_SHARED_LIBS=ON -DGTEST_DISABLE_PTHREADS=ON ..
+  - cmake -DCMAKE_BUILD_TYPE=Debug -DMBO_ENABLE_COVERAGE=ON -DMBO_BUILD_TESTS=ON -DMBO_RUN_EXAMPLES_AS_TESTS=ON -DBUILD_SHARED_LIBS=ON -DGTEST_DISABLE_PTHREADS=ON ..
   - make -j4 
   - ctest -j4 --output-on-failure
   - rm -rf *
-  - cmake -DCMAKE_BUILD_TYPE=Debug -DMBO_ENABLE_COVERAGE=ON -DMBO_BUILD_SHARED_LIBS=ON -DRUN_EXAMPLES_AS_TESTS=ON  -DMBO_BUILD_TESTS=ON -Dgtest_disable_pthreads=ON ..
+  - cmake -DCMAKE_BUILD_TYPE=Debug -DMBO_ENABLE_COVERAGE=ON -DMBO_BUILD_SHARED_LIBS=ON -DMBO_RUN_EXAMPLES_AS_TESTS=ON  -DMBO_BUILD_TESTS=ON -Dgtest_disable_pthreads=ON ..
   - make -j8
   - ctest -j4 --output-on-failure
 after_success:
