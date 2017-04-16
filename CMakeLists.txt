@@ -56,6 +56,16 @@ elseif("${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC")
 elseif("${CMAKE_C_COMPILER_ID}" STREQUAL "Intel")
 endif()
 
+try_compile(EXPLICIT_MATH_LIB_NOT_NEEDED
+    ${PROJECT_SOURCE_DIR}/cmake
+    ${PROJECT_SOURCE_DIR}/cmake/trycompile/explicitMathLibNotNeeded.c
+    )
+if(EXPLICIT_MATH_LIB_NOT_NEEDED)
+  message(STATUS "Linking against math libraries not needed.")
+else()
+  message(STATUS "Linking against math libraries required.")
+endif()
+
 find_package(OpenMP)
 if(OPENMP_FOUND)
   set(HAVE_OPENMP TRUE)
